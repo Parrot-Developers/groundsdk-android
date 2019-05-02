@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.parrot.drone.groundsdkdemo.settings.ThermalSettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/content_margin">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                android:id="@+id/mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/property_thermal_mode"/>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                android:id="@+id/sensitivity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/property_thermal_sensitivity"/>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_emissivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPadding="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                android:id="@+id/emissivity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:title="@string/property_thermal_emissivity"
+                app:format="double_format"/>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_background_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPadding="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                android:id="@+id/background_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/property_thermal_background_temperature"
+                app:format="double_format"/>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/title_palette"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp"
+            app:cardBackgroundColor="?android:attr/headerBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:text="@string/property_thermal_palette"/>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_palette"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioGroup
+                    android:id="@+id/palette_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/btn_absolute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/property_thermal_palette_absolute"/>
+
+                    <RadioButton
+                        android:id="@+id/btn_relative"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/property_thermal_palette_relative"/>
+
+                    <RadioButton
+                        android:id="@+id/btn_spot"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/property_thermal_palette_spot"/>
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/btn_add_color"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_add_color"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/colors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="LinearLayoutManager"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/lowest_temperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:title="@string/property_thermal_lowest_temperature"
+                    app:format="double_format"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/highest_temperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:title="@string/property_thermal_highest_temperature"
+                    app:format="double_format"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                    android:id="@+id/colorization_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/property_thermal_colorization_mode"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.ToggleSettingView
+                    android:id="@+id/locked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/property_thermal_palette_locked"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                    android:id="@+id/spot_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/property_thermal_spot_type"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/threshold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:title="@string/property_thermal_threshold"
+                    app:format="double_format"/>
+
+                <Button
+                    android:id="@+id/btn_send_palette"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_send_palette"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/title_rendering"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp"
+            app:cardBackgroundColor="?android:attr/headerBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:text="@string/property_thermal_rendering"/>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_rendering"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin"
+            app:cardCornerRadius="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                    android:id="@+id/rendering_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/property_thermal_rendering_mode"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/blending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:title="@string/property_thermal_blending"
+                    app:format="double_format"/>
+
+                <Button
+                    android:id="@+id/btn_send_rendering"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_send_rendering"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>

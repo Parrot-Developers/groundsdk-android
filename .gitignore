@@ -1,0 +1,12 @@
+# android studio project
+*.iml
+
+# python
+*.pyc
+
+# backup files
+*~
+*.swp
+
+# Mac junk
+.DS_Store

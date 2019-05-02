@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="2dp"
+        android:height="22dp"
+        android:viewportWidth="10.124996"
+        android:viewportHeight="78.36488">
+    <path
+        android:pathData="m11.159,0.014c0.119,8.51 -10.243,11.013 -10.126,22.299l0.126,16.02 -0.159,15.938c0.044,9.817 10.492,13.495 10.159,24.063"
+        android:strokeLineCap="butt"
+        android:strokeColor="#808080"
+        android:fillAlpha="1"
+        android:fillColor="#a8a8a8"
+        android:strokeWidth="2"
+        android:strokeLineJoin="miter"
+        android:strokeAlpha="1"/>
+    <path
+        android:pathData="m7.575,30.583c0,15.75 0,15.75 0,15.75"
+        android:strokeLineCap="butt"
+        android:strokeColor="#808080"
+        android:fillColor="#00000000"
+        android:strokeWidth="1"
+        android:strokeLineJoin="miter"
+        android:strokeAlpha="1"/>
+    <path
+        android:pathData="m4.9,30.583c0,15.75 0,15.75 0,15.75"
+        android:strokeLineCap="butt"
+        android:strokeColor="#808080"
+        android:fillColor="#00000000"
+        android:strokeWidth="1"
+        android:strokeLineJoin="miter"
+        android:strokeAlpha="1"/>
+</vector>

@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    defaultConfig.testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    sourceSets.androidTest.java.srcDirs += '../unittest-tools/java'
+
+    resourcePrefix 'gsdk_'
+}
+
+dependencies {
+    implementation project(':sdkcore')
+
+    implementation supportCoreUtils
+    // we need to explicitly add support v4 (which Play Services Location depends on) to force same version as other
+    // support libraries
+    implementation supportV4
+    implementation googlePlayServicesLocation
+
+    implementation retrofit
+    implementation retrofitGsonConverter
+    implementation retrofitScalarsConverter
+    implementation retrofitLoggingInterceptor
+
+    compileOnly supportAnnotations
+
+    androidTestImplementation(testRunner) {
+        // android test runner comes with its own hamcrest-core library, but an older version that
+        // what we wish to use, so exclude it to avoid conflict with our own
+        exclude module: 'hamcrest-core'
+    }
+
+    androidTestImplementation hamcrest
+    androidTestImplementation mockito
+}

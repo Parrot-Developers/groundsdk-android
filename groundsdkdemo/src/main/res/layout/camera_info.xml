@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    card_view:contentPadding="@dimen/content_margin"
+    card_view:cardCornerRadius="4dp">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout>
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical|start"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAllCaps="true"
+                tools:text="@string/peripheral_camera_thermal"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/btn_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:text="@string/action_edit"
+                tools:ignore="ContentDescription"/>
+        </LinearLayout>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_active_state"/>
+
+            <TextView
+                android:id="@+id/active_state"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="true"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_mode"/>
+
+            <TextView
+                android:id="@+id/mode"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="PHOTO BRACKETING RECTILINEAR DNG_AND_JPEG FRAMES_3_EV_3"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_exposure"/>
+
+            <TextView
+                android:id="@+id/exposure"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="MANUAL_ISO_SENSITIVITY"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_exposure_lock"/>
+
+            <TextView
+                android:id="@+id/exposure_lock"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="MANUAL_ISO_SENSITIVITY"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_ev_compensation"/>
+
+            <TextView
+                android:id="@+id/ev"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="EV_MINUS_2_67"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_white_balance"/>
+
+            <TextView
+                android:id="@+id/white_balance"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="CUSTOM K_10000"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_white_balance_lock"/>
+
+            <TextView
+                android:id="@+id/white_balance_lock"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="lockable:\u00a0false enabled:\u00a0false"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_photo_state"/>
+
+            <TextView
+                android:id="@+id/photo_state"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="TAKING_PHOTOS id:\u00a01 count:\u00a024"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_recording_state"/>
+
+            <TextView
+                android:id="@+id/recording_state"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="STARTED id:\u00a01 date:\u00a02017-31-12 23:59:59 duration:\u00a023h59m59s"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_auto_record"/>
+
+            <TextView
+                android:id="@+id/auto_record"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="Off"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_hdr"/>
+
+            <TextView
+                android:id="@+id/hdr"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="enable:\u00a0false available:\u00a0false active:\u00a0false"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_style"/>
+
+            <TextView
+                android:id="@+id/style"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="STANDARD saturation:\u00a00 contrast:\u00a00 sharpness:\u00a00"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_camera_zoom_info"/>
+
+            <TextView
+                android:id="@+id/zoom_info"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="AVAILABLE max loss less: 1.40 max lossy: 2.98"/>
+        </TableRow>
+
+        <LinearLayout>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/btn_photo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/action_start_photo_capture"
+                tools:ignore="ContentDescription"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/btn_record"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="@string/action_start_recording"
+                tools:ignore="ContentDescription"/>
+        </LinearLayout>
+    </TableLayout>
+</android.support.v7.widget.CardView>

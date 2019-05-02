@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">GroundSdk Demo</string>
+    <string name="title_activity_manual_copter_settings">Manual Copter Settings</string>
+    <string name="title_activity_magnetometer_calibration">Magneto Calibration</string>
+    <string name="title_activity_return_home_settings">Return Home Settings</string>
+    <string name="title_activity_flight_plan_settings">Flight Plan Settings</string>
+    <string name="title_activity_follow_me_settings">Follow Me Settings</string>
+    <string name="title_activity_guided_edit">Guided Flight Edition</string>
+    <string name="title_activity_poi_edit">Point Of Interest Edition</string>
+    <string name="title_activity_target_tracker_settings">Target Tracker Settings</string>
+    <string name="title_activity_wifi_ap_settings">Wifi Access Point Settings</string>
+    <string name="title_activity_camera_settings">Camera settings</string>
+    <string name="title_activity_antiflicker_settings">Anti-flicker settings</string>
+    <string name="title_activity_gimbal_settings">Gimbal settings</string>
+    <string name="title_activity_gimbal_offsets_correction">Gimbal offsets correction</string>
+    <string name="title_activity_gimbal_calibration">Gimbal calibration</string>
+    <string name="title_activity_geofence_settings">Geofence settings</string>
+    <string name="title_activity_leds_settings">LEDs Settings</string>
+    <string name="title_activity_firmware_manager">Firmwares</string>
+    <string name="title_activity_drone_finder">Drone Finder</string>
+    <string name="title_activity_sc2_grab">Inputs grab setup</string>
+    <string name="title_activity_sc2_mapping">Mappings</string>
+    <string name="title_activity_sc2_axes_setup">Axes setup</string>
+    <string name="title_activity_media_browser">Browse Media</string>
+    <string name="title_activity_debug_settings">Debug Settings</string>
+    <string name="title_activity_precise_home_settings">Precise Home Settings</string>
+    <string name="title_activity_thermal_settings">Thermal Settings</string>
+    <string name="title_activity_user_account">User Account</string>
+    <string name="title_activity_facilities">Facilities</string>
+    <string name="title_dialog_password">Enter password</string>
+    <string name="title_dialog_download_media">Downloading media</string>
+    <string name="title_dialog_delete_media">Deleting media</string>
+    <string name="title_dialog_delete_all_media">Deleting all media</string>
+    <string name="title_dialog_connector_choice">Choose connector</string>
+    <string name="title_dialog_wifi_auto_mode_choice">Choose band</string>
+    <string name="title_dialog_animation_choice">Choose animation</string>
+    <string name="title_dialog_flip_direction_choice">Choose flip direction</string>
+    <string name="title_dialog_format">Formatting options</string>
+    <string name="title_dialog_media_resources">Resources</string>
+    <string name="title_dialog_edit_color">Edit color</string>
+    <string name="label_password">Password</string>
+    <string name="label_storage_name">Storage Name</string>
+    <string name="known">KNOWN</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="unsupported">N/A</string>
+    <string name="no_value">--</string>
+    <string name="no_error">No error</string>
+    <string name="action_hud">HUD</string>
+    <string name="action_forget">Forget</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_activate">Activate</string>
+    <string name="action_deactivate">Deactivate</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_delete_all">Delete all</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_calibrate">Calibrate</string>
+    <string name="action_scan">Scan</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
+    <string name="action_see_stream">See stream</string>
+    <string name="action_see_thermal_stream">See thermal stream</string>
+    <string name="action_grab">Grab</string>
+    <string name="action_release">Release</string>
+    <string name="action_edit_mappings">Mappings</string>
+    <string name="action_new_mapping">New mapping</string>
+    <string name="action_reset_mapping">Reset mapping</string>
+    <string name="action_update">Update</string>
+    <string name="action_factory_reset">Factory reset</string>
+    <string name="action_reset_settings">Reset settings</string>
+    <string name="action_start_alert_sound">Start alert</string>
+    <string name="action_stop_alert_sound">Stop alert</string>
+    <string name="action_edit_axes_setup">Axes setup</string>
+    <string name="action_browse">Browse</string>
+    <string name="action_download">Download</string>
+    <string name="action_see_debug_settings">Debug Settings</string>
+    <string name="action_upload">Upload</string>
+    <string name="action_play">Play</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_autoselect_channel">Auto select channel</string>
+    <string name="action_change_password">Change password</string>
+    <string name="action_abort">Abort</string>
+    <string name="action_start_anim">Start animation</string>
+    <string name="action_move_to_location">Move to location</string>
+    <string name="action_move_to_relative_position">Move to relative position</string>
+    <string name="action_stop_current_move">Stop current move</string>
+    <string name="action_format">Format</string>
+    <string name="action_start_recording">Start recording</string>
+    <string name="action_stop_recording">Stop recording</string>
+    <string name="action_start_photo_capture">Start photo capture</string>
+    <string name="action_stop_photo_capture">Stop photo capture</string>
+    <string name="action_start">Start</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_restart">Restart</string>
+    <string name="action_start_piloted_poi">Start piloted POI</string>
+    <string name="action_stop_piloted_poi">Stop piloted POI</string>
+    <string name="action_enable_tracking">Enable controller tracking</string>
+    <string name="action_disable_tracking">Disable controller tracking</string>
+    <string name="action_start_offsets_correction">Start offsets correction</string>
+    <string name="action_set_user_account">Set user account</string>
+    <string name="action_add_color">Add color</string>
+    <string name="action_send_palette">Send palette</string>
+    <string name="action_send_rendering">Send rendering</string>
+    <string name="action_ok">OK</string>
+    <string name="header_instruments">Instruments</string>
+    <string name="header_piloting_itf">Piloting interfaces</string>
+    <string name="header_peripherals">Peripherals</string>
+    <string name="property_piloting_itf_state">State</string>
+    <string name="property_smart_takeoff_land">Smart Take-off/Land</string>
+    <string name="property_takeoff_land">Take-off/Land</string>
+    <string name="property_max_altitude">Max. altitude</string>
+    <string name="property_min_altitude">Min. altitude</string>
+    <string name="property_max_distance">Max. distance</string>
+    <string name="property_max_pitch_roll">Max. pitch/roll</string>
+    <string name="property_max_pitch_roll_velocity">Max. pitch/roll velocity</string>
+    <string name="property_max_vertical_speed">Max. vertical speed</string>
+    <string name="property_max_yaw_speed">Max. yaw rotation speed</string>
+    <string name="property_banked_turn_mode">Banked-turn mode</string>
+    <string name="property_thrown_take_off">Thrown take-off</string>
+    <string name="property_reporter_uploading">Uploading</string>
+    <string name="property_reporter_pending_count">Reports to upload</string>
+    <string name="property_altimeter_takeoff_altitude">Take off altitude</string>
+    <string name="property_altimeter_ground_altitude">Ground altitude</string>
+    <string name="property_altimeter_absolute_altitude">Absolute altitude</string>
+    <string name="property_altimeter_vertical_speed">Vertical speed</string>
+    <string name="property_antiflicker_mode">Mode</string>
+    <string name="property_antiflicker_value">Value</string>
+    <string name="property_attitude_pitch">Pitch</string>
+    <string name="property_attitude_roll">Roll</string>
+    <string name="property_compass_heading">Heading</string>
+    <string name="property_flying_indicators_state">State</string>
+    <string name="property_flying_indicators_landed_state">Landed state</string>
+    <string name="property_flying_indicators_flying_state">Flying state</string>
+    <string name="property_gps_fixed">Fixed</string>
+    <string name="property_gps_location">Location</string>
+    <string name="property_gps_vertical_accuracy">Vert. accuracy</string>
+    <string name="property_gps_satellites">Satellites</string>
+    <string name="property_speedometer_ground_speed">Ground speed</string>
+    <string name="property_speedometer_ned_speed">Speed (NED referential)</string>
+    <string name="property_speedometer_drone_speed">Speed (drone referential)</string>
+    <string name="property_speedometer_air_speed">Air speed</string>
+    <string name="property_magnetometer_sensor_status">Sensor status</string>
+    <string name="property_magnetometer_calibrated">Calibrated</string>
+    <string name="property_magnetometer_not_calibrated">Not calibrated</string>
+    <string name="property_photo_progress_remaining_time">Remaining time</string>
+    <string name="property_photo_progress_remaining_distance">Remaining distance</string>
+    <string name="property_return_home_reason">Return reason</string>
+    <string name="property_home_location">Home location</string>
+    <string name="property_current_target">Current target</string>
+    <string name="property_gps_fixed_on_takeoff">Fixed on take-off</string>
+    <string name="property_preferred_target">Preferred target</string>
+    <string name="property_autostart_on_disconnect_delay">Autostart on disconnect delay</string>
+    <string name="property_home_reachability">Home reachability</string>
+    <string name="property_warning_trigger_delay">Warning trigger delay</string>
+    <string name="property_drone_finder_state">State</string>
+    <string name="property_stream_info_enabled">Enabled</string>
+    <string name="property_stream_info_state">State</string>
+    <string name="property_stream_main_camera_active">Main camera active</string>
+    <string name="property_stream_thermal_camera_active">Thermal camera active</string>
+    <string name="property_stream_thermal">Thermal</string>
+    <string name="property_virtual_gamepad_state">State</string>
+    <string name="property_virtual_gamepad_last_event"><u>Last nav. event</u>:</string>
+    <string name="property_sc2_gamepad_active_model">Active model</string>
+    <string name="property_sc2_gamepad_inputs"><u>Grabbed inputs</u>:</string>
+    <string name="property_sc2_gamepad_events"><u>Grabbed events</u>:</string>
+    <string name="property_sc2_gamepad_last_event"><u>Last grabbed event</u>:</string>
+    <string name="property_gamepad_mapping_drone_model">Drone Model:</string>
+    <string name="property_gamepad_mapping_type">Mapping Type:</string>
+    <string name="property_gamepad_mapping_action">Action:</string>
+    <string name="property_gamepad_mapping_axis">Axis:</string>
+    <string name="property_gamepad_mapping_buttons">Buttons:</string>
+    <string name="property_sysinfo_firmware">Firmware version</string>
+    <string name="property_sysinfo_firmware_blacklisted">Firmware blacklisted</string>
+    <string name="property_sysinfo_hardware">Hardware version</string>
+    <string name="property_sysinfo_serial">Serial number</string>
+    <string name="property_sysinfo_cpu_id">CPU Identifier</string>
+    <string name="property_sysinfo_board_id">Board Identifier</string>
+    <string name="property_mapping_axis">Axis</string>
+    <string name="property_mapping_buttons">Buttons</string>
+    <string name="property_axis_setup_interpolator">Interpolator</string>
+    <string name="property_axis_setup_reversed">Reversed</string>
+    <string name="property_media_store_picture_count">Pictures</string>
+    <string name="property_media_store_video_count">Videos</string>
+    <string name="property_media_count">Media:</string>
+    <string name="property_resources_count">Resources:</string>
+    <string name="property_crash_downloader_downloading">Downloading</string>
+    <string name="property_crash_downloader_status">Status</string>
+    <string name="property_crash_downloader_downloaded_count">Downloaded count</string>
+    <string name="property_flightdata_downloader_downloading">Downloading</string>
+    <string name="property_flightdata_downloader_status">Status</string>
+    <string name="property_flightdata_downloader_downloaded_count">Downloaded count</string>
+    <string name="property_unavailability_reasons">Unavailability reasons</string>
+    <string name="property_latest_activation_error">Latest activation error</string>
+    <string name="property_latest_upload_state">Latest upload state</string>
+    <string name="property_known_flight_plan">Known flight plan</string>
+    <string name="property_paused">Paused</string>
+    <string name="property_return_home_on_disconnect">Return Home on disconnect</string>
+    <string name="property_latest_mission_item_executed">Latest mission item executed</string>
+    <string name="property_wifi_environment">Environment</string>
+    <string name="property_wifi_country">Country</string>
+    <string name="property_wifi_default_country">Default country used</string>
+    <string name="property_wifi_channel">Channel</string>
+    <string name="property_wifi_channel_selection_mode">Selection mode</string>
+    <string name="property_wifi_ssid">SSID</string>
+    <string name="property_wifi_security">Security</string>
+    <string name="property_wifi_occupation">Occupation rate:</string>
+    <string name="property_radio_rssi">RSSI</string>
+    <string name="property_radio_link_signal_quality">Link signal quality</string>
+    <string name="property_radio_link_signal_perturbed">Link signal perturbed</string>
+    <string name="property_radio_4g_interfering">4G interfering</string>
+    <string name="property_battery_level">Level</string>
+    <string name="property_battery_charging">Charging</string>
+    <string name="property_battery_health">Health</string>
+    <string name="property_flight_meter_last_flight_duration">Last flight duration</string>
+    <string name="property_flight_meter_total_flight_duration">Total flight duration</string>
+    <string name="property_flight_meter_total_flight_count">Total flight count</string>
+    <string name="property_front_left_motor">Front Left</string>
+    <string name="property_front_right_motor">Front right</string>
+    <string name="property_rear_left_motor">Rear Left</string>
+    <string name="property_rear_right_motor">Rear Right</string>
+    <string name="property_tracking_pitf_issues">Tracking Issues</string>
+    <string name="property_follow_me_mode">Mode</string>
+    <string name="property_follow_me_behavior">Behavior</string>
+    <string name="property_target_tracker_trajectory">Target trajectory</string>
+    <string name="property_target_tracker_horizontal_framing">Horz. framing position</string>
+    <string name="property_target_tracker_vertical_framing">Vert. framing position</string>
+    <string name="property_available_animations">Available</string>
+    <string name="property_current_animation">Current</string>
+    <string name="property_current_directive">Current directive</string>
+    <string name="property_current_poi">Current POI</string>
+    <string name="property_latest_finished_flight">Latest finished flight</string>
+    <string name="property_user_storage_state">State</string>
+    <string name="property_user_storage_name">Name</string>
+    <string name="property_user_storage_capacity">Capacity</string>
+    <string name="property_user_storage_available">Available</string>
+    <string name="property_user_storage_formatting_types">Formatting types</string>
+    <string name="property_user_storage_formatting_state">Formatting state</string>
+    <string name="property_camera_active_state">Active</string>
+    <string name="property_camera_mode">Mode</string>
+    <string name="property_camera_exposure">Exposure</string>
+    <string name="property_camera_exposure_iso">ISO sensitivity</string>
+    <string name="property_camera_exposure_shutter_speed">Shutter speed</string>
+    <string name="property_camera_exposure_max_iso">Max. ISO sensitivity</string>
+    <string name="property_camera_exposure_manual_iso">Manual ISO sensitivity</string>
+    <string name="property_camera_exposure_manual_shutter_speed">Manual shutter speed</string>
+    <string name="property_camera_exposure_lock">Exposure lock</string>
+    <string name="property_camera_exposure_lock_center_x">Region lock center x</string>
+    <string name="property_camera_exposure_lock_center_y">Region lock center y</string>
+    <string name="property_camera_ev_compensation">EV compensation</string>
+    <string name="property_camera_white_balance">White balance</string>
+    <string name="property_camera_white_balance_custom_temperature">Custom temperature</string>
+    <string name="property_camera_white_balance_lock">White balance lock</string>
+    <string name="property_camera_white_balance_lock_enabled">Lock enabled</string>
+    <string name="property_camera_photo">Photo</string>
+    <string name="property_camera_photo_state">Photo state</string>
+    <string name="property_camera_photo_format">Format</string>
+    <string name="property_camera_photo_file_format">File format</string>
+    <string name="property_camera_photo_burst">Burst</string>
+    <string name="property_camera_photo_bracketing">Bracketing</string>
+    <string name="property_camera_photo_timelapse_interval">Time-lapse interval</string>
+    <string name="property_camera_photo_gpslapse_interval">GPS-lapse interval</string>
+    <string name="property_camera_recording">Recording</string>
+    <string name="property_camera_recording_state">Recording state</string>
+    <string name="property_camera_auto_record">Auto-record</string>
+    <string name="property_camera_hdr">HDR</string>
+    <string name="property_camera_hdr_enable">HDR enabled</string>
+    <string name="property_camera_style">Style</string>
+    <string name="property_camera_style_saturation">Saturation</string>
+    <string name="property_camera_style_contrast">Contrast</string>
+    <string name="property_camera_style_sharpness">Sharpness</string>
+    <string name="property_camera_recording_resolution">Resolution</string>
+    <string name="property_camera_recording_framerate">Framerate</string>
+    <string name="property_camera_recording_hyperlapse">Hyperlapse</string>
+    <string name="property_camera_zoom_info">Zoom info</string>
+    <string name="property_camera_zoom_available">AVAILABLE</string>
+    <string name="property_camera_zoom_unavailable">UNAVAILABLE</string>
+    <string name="property_camera_zoom_max_speed">Max zoom speed</string>
+    <string name="property_camera_zoom_quality_degradation">Quality degradation allowed</string>
+    <string name="property_camera_zoom">Zoom</string>
+    <string name="property_gimbal_supported_axes">Supported axes</string>
+    <string name="property_gimbal_locked_axes">Locked axes</string>
+    <string name="property_gimbal_stabilized_axes">Stabilized axes</string>
+    <string name="property_gimbal_bounds">Bounds</string>
+    <string name="property_gimbal_max_speeds">Max speeds</string>
+    <string name="property_gimbal_attitude">Attitude</string>
+    <string name="property_gimbal_calibrated">Calibrated</string>
+    <string name="property_gimbal_calibration_state">Calibration state</string>
+    <string name="property_gimbal_errors">Errors</string>
+    <string name="property_gimbal_offset_yaw">Yaw offset</string>
+    <string name="property_gimbal_offset_pitch">Pitch offset</string>
+    <string name="property_gimbal_offset_roll">Roll offset</string>
+    <string name="property_gimbal_control">Control</string>
+    <string name="property_gimbal_control_position">Position</string>
+    <string name="property_gimbal_control_velocity">Velocity</string>
+    <string name="property_geofence_center">Center</string>
+    <string name="property_geofence_mode">Mode</string>
+    <string name="property_leds_state">Switch state</string>
+    <string name="property_auto_connection_drone">Drone</string>
+    <string name="property_auto_connection_remote_control">Remote control</string>
+    <string name="property_user_location">Location</string>
+    <string name="property_user_location_authorized">Authorized</string>
+    <string name="property_user_heading">Heading</string>
+    <string name="property_address">Address</string>
+    <string name="property_firmware_manager_firmwares">Firmwares</string>
+    <string name="property_firmware_manager_local">Local</string>
+    <string name="property_flightdata_manager_file_count">Flight data files</string>
+    <string name="property_updater_unavailability_reasons">Unavailability reasons</string>
+    <string name="property_updater_downloadable_firmwares">To download</string>
+    <string name="property_updater_applicable_firmwares">To apply</string>
+    <string name="property_updater_downloading">Downloading</string>
+    <string name="property_updater_updating">Updating</string>
+    <string name="property_updater_ideal_version">Ideal version</string>
+    <string name="property_precise_home_mode">Mode</string>
+    <string name="property_precise_home_state">State</string>
+    <string name="property_thermal_mode">Mode</string>
+    <string name="property_thermal_sensitivity">Sensitivity</string>
+    <string name="property_thermal_emissivity">Emissivity</string>
+    <string name="property_thermal_background_temperature">Background temperature</string>
+    <string name="property_thermal_palette">Palette</string>
+    <string name="property_thermal_palette_absolute">Absolute</string>
+    <string name="property_thermal_palette_relative">Relative</string>
+    <string name="property_thermal_palette_spot">Spot</string>
+    <string name="property_thermal_lowest_temperature">Lowest temperature</string>
+    <string name="property_thermal_highest_temperature">Highest temperature</string>
+    <string name="property_thermal_colorization_mode">Colorization mode</string>
+    <string name="property_thermal_palette_locked">Locked</string>
+    <string name="property_thermal_spot_type">Type</string>
+    <string name="property_thermal_threshold">Threshold</string>
+    <string name="property_thermal_red">Red</string>
+    <string name="property_thermal_green">Green</string>
+    <string name="property_thermal_blue">Blue</string>
+    <string name="property_thermal_position">Position</string>
+    <string name="property_thermal_rendering">Rendering</string>
+    <string name="property_thermal_rendering_mode">Mode</string>
+    <string name="property_thermal_blending">Blending rate</string>
+    <string name="boolean_setting_enabled">On</string>
+    <string name="boolean_setting_disabled">Off</string>
+    <string name="valid">Valid</string>
+    <string name="invalid">Invalid</string>
+    <string name="int_value_format">%1$d</string>
+    <string name="double_value_format">%1$.2f</string>
+    <string name="double_setting_format">%1$.2f/&lt;b>%2$.2f&lt;/b>/%3$.2f</string>
+    <string name="int_setting_format">%1$d/&lt;b>%2$d&lt;/b>/%3$d</string>
+    <string name="double_step_format"> (+/- %1$.2f)</string>
+    <string name="double_range_format">%1$.2f/%2$.2f</string>
+    <string name="can_take_off">Can take off</string>
+    <string name="can_land">Can land</string>
+    <string name="critical_alarm_format">&lt;b>&lt;font color="red">%1$s&lt;/font>&lt;/b></string>
+    <string name="warning_alarm_format">&lt;b>&lt;font color="#FFA500">%1$s&lt;/font>&lt;/b></string>
+    <string name="off_alarm_format">&lt;font color="black">%1$s&lt;/font></string>
+    <string name="not_supported_alarm_format">&lt;i>&lt;font color="gray">%1$s&lt;/font>&lt;/i></string>
+    <string name="speed_format">%1$.2f m/s</string>
+    <string name="speed_ned_format">north: %1$.2f m/s east: %2$.2f m/s down: %3$.2f m/s</string>
+    <string name="speed_drone_format">forward: %1$.2f m/s right: %2$.2f m/s</string>
+    <string name="distance_format">%1$.2f m</string>
+    <string name="altitude_format">%1$.2f m</string>
+    <string name="angle_format">%1$.1f °</string>
+    <string name="angle_velocity_format">%1$.2f °/s</string>
+    <string name="pressed_button_format">&lt;b>%1$s&lt;/b></string>
+    <string name="released_button_format">%1$s</string>
+    <string name="button_event_format">%1$s %2$s</string>
+    <string name="axis_event_format">%1$s (%2$d)</string>
+    <string name="time_s_format">%1$.1f s</string>
+    <string name="motor_in_error_format">&lt;b>%1$s&lt;/b></string>
+    <string name="media_count_format">%1$d (resources: %2$d)</string>
+    <string name="media_type_format">%1$s [%2$s]</string>
+    <string name="media_photo_mode_format">%1$s (%2$s)</string>
+    <string name="media_photo_panorama_type_format">%1$s: %2$s</string>
+    <string name="media_resource_format">%1$s: %2$s</string>
+    <string name="media_runid_format">Run Id: %1$s</string>
+    <string name="media_counter_format">%1$d/%2$d</string>
+    <string name="media_resources_format">Format: %1$s</string>
+    <string name="media_resources_size">Size: %1$s</string>
+    <string name="media_resources_duration">Duration: %1$s</string>
+    <string name="rssi_format">%1$d dBm</string>
+    <string name="link_signal_quality">%1$d</string>
+    <string name="channel_occupation_format">&lt;b>%1$s&lt;/b>(%2$d)</string>
+    <string name="battery_level_format">%1$d %%</string>
+    <string name="percent_format">%1$d %%</string>
+    <string name="animating_format">%1$s (%2$d %% %3$s)</string>
+    <string name="gps_satellites_format">%1$d</string>
+    <string name="gps_vertical_accuracy_format">%1$.1f m</string>
+    <string name="animation_candle_format">
+        CANDLE [speed: %1$.2f m/s, vertical-distance: %2$.2f m, mode: %3$s]
+    </string>
+    <string name="animation_dolly_slide_format">
+        DOLLY_SLIDE [speed: %1$.2f m/s, angle: %2$.1f °, horizontal-distance: %3$.2f m, mode: %4$s]
+    </string>
+    <string name="animation_dronie_format">
+        DRONIE [speed: %1$.2f m/s, distance: %2$.2f m, mode: %3$s]
+    </string>
+    <string name="animation_flip_format">
+        FLIP [direction: %1$s]
+    </string>
+    <string name="animation_horizontal_panorama_format">
+        HORIZONTAL PANORAMA [angle: %1$.1f °, speed: %2$.2f °/s]
+    </string>
+    <string name="animation_horizontal_reveal_format">
+        HORIZONTAL REVEAL [speed: %1$.2f m/s, distance: %2$.2f m, mode: %3$s]
+    </string>
+    <string name="animation_parabola_format">
+        PARABOLA [speed: %1$.2f m/s, vertical-distance: %2$.2f m, mode: %3$s]
+    </string>
+    <string name="animation_spiral_format">
+        SPIRAL [speed: %1$.2f m/s, radius-variation: %2$.1f, vertical-distance: %3$.2f m, revolution-amount: %4$.1f
+        , mode: %5$s]
+    </string>
+    <string name="animation_vertical_reveal_format">
+        VERTICAL_REVEAL [vertical-speed: %1$.2f m/s, vertical_distance: %2$.2f m, rotation-angle: %3$.1f °
+        , rotation_speed: %4$.2f °/s, mode: %5$s]
+    </string>
+    <string name="animation_vertigo_format">
+        VERTIGO [duration: %1$d s, max-zoom: %2$.2f, finish-action: %3$s, mode: %4$s]
+    </string>
+    <string name="animation_twist_up_format">
+        TWIST_UP [vertical-speed: %1$.2f m/s, vertical_distance: %2$.2f m, rotation-angle: %3$.1f °
+        , rotation_speed: %4$.2f °/s, mode: %5$s]
+    </string>
+    <string name="animation_position_twist_up_format">
+        POSITION_TWIST_UP [vertical-speed: %1$.2f m/s, vertical_distance: %2$.2f m, rotation-angle: %3$.1f °
+        , rotation_speed: %4$.2f °/s, mode: %5$s]
+    </string>
+    <string name="animation_horizontal_180_photo_panorama_format">
+        HORIZONTAL_180_PHOTO_PANORAMA
+    </string>
+    <string name="animation_vertical_180_photo_panorama_format">
+        VERTICAL_180_PHOTO_PANORAMA
+    </string>
+    <string name="animation_spherical_photo_panorama_format">
+        SPHERICAL_PHOTO_PANORAMA
+    </string>
+    <string name="exposure_lock_region_format">%1$s x:\u00a0%2$.2f y:\u00a0%3$.2f width:\u00a0%4$.2f height:\u00a0%5$.2f</string>
+    <string name="white_balance_lock_format">lockable:\u00a0%1$b locked:\u00a0%2$b</string>
+    <string name="recording_state_format">%1$s id:\u00a0%2$s date:\u00a0%3$s duration:\u00a0%4$s</string>
+    <string name="style_format" tools:ignore="PluralsCandidate">%1$s saturation:\u00a0%2$d contrast:\u00a0%3$d sharpness:\u00a0%4$d</string>
+    <string name="photo_state_format">%1$s id:\u00a0%2$s count:\u00a0%3$d</string>
+    <string name="hdr_format">enable:\u00a0%1$b available:\u00a0%2$b active:\u00a0%3$b</string>
+    <string name="zoom_info_format">%1$s current: %2$.2f max loss less: %3$.2f max lossy: %4$.2f</string>
+    <string name="zoom_level_format">x%1$.2f</string>
+    <string name="zoom_velocity_format">%1$.2f tan(deg)/sec</string>
+    <string name="trajectory_format">
+        lat.\u00a0%1$.2f° lng.\u00a0%2$.2f° alt.\u00a0%3$.2fm north\u00a0%4$.2fm/s east\u00a0%5$.2fm/s
+        down\u00a0%6$.2fm/s
+    </string>
+    <string name="firmware_download_state_format">%1$d (%2$s) (%3$d%%) / %4$d (%5$d%%)</string>
+    <string name="firmware_update_state_format">%1$s\n%2$d (%3$s) (%4$d%%) / %5$d (%6$d%%)</string>
+    <string name="user_storage_formatting_state_format">%1$s: %2$d%%</string>
+    <string name="device_id_format">%1$s [%2$s]</string>
+    <string name="device_state_format">%1$s %2$s</string>
+    <string name="drone_finder_drone_id_format">%1$s (%2$s)</string>
+    <string name="drone_finder_drone_info_format">%1$s %2$s RSSI: %3$d dBm SECURITY: %4$s</string>
+    <string name="live_stream_state_format">Live: %1$s %2$s</string>
+    <string name="piloting_itf_manual_copter">Manual Copter</string>
+    <string name="piloting_itf_return_home">Return Home</string>
+    <string name="piloting_itf_flight_plan">Flight Plan</string>
+    <string name="piloting_itf_guided">Guided Flight</string>
+    <string name="piloting_itf_poi">Point Of Interest</string>
+    <string name="piloting_itf_look_at">Look At</string>
+    <string name="piloting_itf_follow_me">Follow Me</string>
+    <string name="piloting_itf_animation">Animations</string>
+    <string name="instrument_alarms">Alarms</string>
+    <string name="instrument_altimeter">Altimeter</string>
+    <string name="instrument_attitude">Attitude</string>
+    <string name="instrument_camera_exposure_values">Camera Exposure Values</string>
+    <string name="instrument_compass">Compass</string>
+    <string name="instrument_flying_indicators">Flying Indicators</string>
+    <string name="instrument_gps">Gps</string>
+    <string name="instrument_speedometer">Speedometer</string>
+    <string name="instrument_radio">Radio</string>
+    <string name="instrument_battery">Battery</string>
+    <string name="instrument_flight_meter">Flight Meter</string>
+    <string name="instrument_photo_progress">Photo Progress</string>
+    <string name="peripheral_magnetometer">Magnetometer</string>
+    <string name="peripheral_drone_finder">Drone Finder</string>
+    <string name="peripheral_live_stream">Live Stream</string>
+    <string name="peripheral_virtual_gamepad">Virtual Gamepad</string>
+    <string name="peripheral_gamepad">Gamepad</string>
+    <string name="peripheral_sysinfo">System Info</string>
+    <string name="peripheral_beeper">Beeper</string>
+    <string name="peripheral_leds">LEDs</string>
+    <string name="peripheral_media_store">Media Store</string>
+    <string name="peripheral_dev_box">Dev Box</string>
+    <string name="peripheral_crash_downloader">Crash Downloader</string>
+    <string name="peripheral_flightdata_downloader">Flight Data Downloader</string>
+    <string name="peripheral_flightlog_downloader">Flight Log Downloader</string>
+    <string name="peripheral_wifi_ap">Wifi Access Point</string>
+    <string name="peripheral_wifi_scanner">Wifi Scanner</string>
+    <string name="peripheral_copter_motors">Motors</string>
+    <string name="peripheral_user_storage">User Storage</string>
+    <string name="peripheral_camera_main">Main Camera</string>
+    <string name="peripheral_camera_thermal">Thermal Camera</string>
+    <string name="peripheral_anti_flicker">Anti-Flicker</string>
+    <string name="peripheral_gimbal">Gimbal</string>
+    <string name="peripheral_target_tracker">Target Tracker</string>
+    <string name="peripheral_geofence">Geofence</string>
+    <string name="peripheral_updater">Updater</string>
+    <string name="peripheral_precise_home">Precise Home</string>
+    <string name="peripheral_thermal_control">Thermal Control</string>
+    <string name="facility_auto_connection">Auto Connection</string>
+    <string name="facility_blackbox_reporter">BlackBox Reporter</string>
+    <string name="facility_crash_reporter">Crash Reporter</string>
+    <string name="facility_user_location">User Location</string>
+    <string name="facility_user_heading">User Heading</string>
+    <string name="facility_reverse_geocoder">Reverse Geocoder</string>
+    <string name="facility_flightdata_manager">Flight Data Manager</string>
+    <string name="facility_flightlog_reporter">Flight Log Reporter</string>
+    <string name="facility_firmware_manager">Firmware Manager</string>
+    <string name="facility_user_account">User Account</string>
+    <string name="axis_information">Axis information:</string>
+    <string name="roll_axis">Roll:</string>
+    <string name="pitch_axis">Pitch:</string>
+    <string name="yaw_axis">Yaw:</string>
+    <string name="calibration_failed">Failed:</string>
+    <string name="axis_to_calibrate">Axis to calibrate: %1$s</string>
+    <string name="calibrate_all_axes">Calibrate all axis simultaneously</string>
+    <string name="cancel_calibration">Cancel calibration</string>
+    <string name="calibration_OK">OK</string>
+    <string name="calibration_KO">KO</string>
+    <string name="remote_controls">Remote Controls</string>
+    <string name="drones">Drones</string>
+    <string name="hint_axis_mapping_setup">Use your gamepad to select an axis\nPress DONE when finished</string>
+    <string name="hint_buttons_mapping_setup">Use your gamepad to (un/)select buttons/axis\nPress DONE when finished</string>
+    <string name="hint_warn_mapping_override">This will override an existing mapping</string>
+    <string name="media_download_failed">Error downloading media</string>
+    <string name="media_delete_failed">Error deleting media</string>
+    <string name="media_delete_all_failed">Error deleting all media</string>
+    <string name="toast_missing_flight_plan_file">No such mavlink file: %s</string>
+    <string name="gimbal_calibration_succeed">Gimbal calibration succeed</string>
+    <string name="gimbal_calibration_failed">Gimbal calibration failed</string>
+    <string name="location_move">Location move</string>
+    <string name="altitude">Altitude (m)</string>
+    <string name="orientation">Orientation</string>
+    <string-array name="orientation_modes">
+        <item>NONE</item>
+        <item>TO TARGET</item>
+        <item>START</item>
+        <item>DURING</item>
+    </string-array>
+    <string name="heading">Heading (°)</string>
+    <string name="relative_move">Relative move</string>
+    <string name="forward">Forward (m)</string>
+    <string name="right">To the Right (m)</string>
+    <string name="downward">Downward (m)</string>
+    <string name="rotation">Rotation (°)</string>
+    <string name="default_altitude_value">5</string>
+    <string name="default_component_value">0</string>
+    <string name="bitrate_format" tools:ignore="PluralsCandidate">%1$d bit/s</string>
+    <string name="user_account_note">Note: this utility only allows to define the data related to the user account, the current values are not displayed.</string>
+    <string name="user_account_provider">Account provider</string>
+    <string name="user_account_id">Account id</string>
+    <string name="allow_accountless_data">Allow accountless data</string>
+    <string name="allow_anonymous_data">Allow anonymous data</string>
+</resources>
+

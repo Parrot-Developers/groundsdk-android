@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<vector android:height="24dp" android:viewportHeight="708.66144"
+        android:viewportWidth="708.66144" android:width="24dp"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillAlpha="1" android:fillColor="#00000000"
+          android:pathData="M25.8,354.1a328.7,328.7 0,1 0,657.5 0a328.7,328.7 0,1 0,-657.5 0z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="29.70975685"/>
+    <path android:fillColor="#00000000"
+          android:pathData="M200.8,342.7h305.6v18.7h-305.6z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="23.50035667"/>
+    <path android:fillColor="#00000000"
+          android:pathData="M200.8,192.2h305.6v18.7h-305.6z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="23.50035667"/>
+    <path android:fillColor="#00000000"
+          android:pathData="M198.8,489.2h305.6v18.7h-305.6z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="23.50035667"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M297,242h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M297,288.4h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M299,387.4h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M299,435.9h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M301,536.9h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M301,581.4h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M297,136.9h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+    <path android:fillAlpha="1" android:fillColor="#000000"
+          android:pathData="M297,88.4h105.1v24.2h-105.1z"
+          android:strokeAlpha="1" android:strokeColor="#000000" android:strokeWidth="2"/>
+</vector>

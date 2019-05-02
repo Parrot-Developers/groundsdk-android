@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    defaultConfig.testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    sourceSets {
+        main.java.srcDirs += "${project.buildDir}/generated/arsdk/gen"
+        androidTest.java.srcDirs += '../unittest-tools/java'
+    }
+}
+
+dependencies {
+    implementation project(':groundsdk')
+    implementation project(':sdkcore')
+    implementation supportCoreUtils // used by DeviceCtrlCompat
+    implementation gson
+
+    implementation retrofit
+    implementation retrofitGsonConverter
+    implementation retrofitScalarsConverter
+    implementation retrofitLoggingInterceptor
+
+    compileOnly supportAnnotations
+
+    androidTestImplementation project(':sdkcore-testing')
+
+    androidTestImplementation(testRunner) {
+        // android test runner comes with its own hamcrest-core library, but an older version that
+        // what we wish to use, so exclude it to avoid conflict with our own
+        exclude module: 'hamcrest-core'
+    }
+
+    androidTestImplementation hamcrest
+    androidTestImplementation mockito
+}

@@ -1,0 +1,43 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.library'
+
+android {
+    sourceSets.main.java.srcDirs += "${project.buildDir}/generated/arsdk/gen"
+
+    lintOptions {
+        disable 'RestrictedApi', 'VisibleForTests'
+    }
+}
+
+dependencies {
+    implementation project(path: ':sdkcore')
+    implementation hamcrest
+
+    compileOnly supportAnnotations
+}
+
+/* Task to generate testing arsdk commands java code */
+task('generateCommands', type: Exec) {
+    ext.srcFiles = file("${arsdkxmldir}/xml").listFiles().findAll {
+        it.name.endsWith('.xml')
+    }
+    ext.srcFiles += file("tools/common.py")
+    ext.parser = new File(arsdkxmldir, 'arsdkgen.py')
+    ext.generator = file("../tools/arsdkgenjavatests.py")
+    ext.destDir = file("${project.buildDir}/generated/arsdk/gen")
+    ext.srcFiles += ext.parser
+    ext.srcFiles += ext.generator
+    inputs.files srcFiles
+    outputs.dir destDir
+    workingDir "."
+    def cmdline
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        cmdline = ["/usr/local/bin/python3", ext.parser.absolutePath, ext.generator.absolutePath, "-o", ext.destDir.absolutePath]
+    } else {
+        cmdline = [ext.parser.absolutePath, ext.generator.absolutePath, "-o", ext.destDir.absolutePath]
+    }
+    commandLine cmdline
+}
+
+preBuild.dependsOn(generateCommands)

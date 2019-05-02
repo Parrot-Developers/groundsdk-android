@@ -1,0 +1,254 @@
+[
+  {
+    "name": "Import device to empty store",
+
+    "desc": "Tests proper import of device default declaration to a store that is empty",
+
+    "app-defaults": {
+      "anafi_4k": {
+        "device": {
+          "defaults": {
+            "componentA": {
+              "setting1": 1,
+              "setting2": 2
+            },
+            "componentB": {
+              "setting1": "A"
+            },
+            "name": "Anafi 4K"
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "device-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2
+        },
+        "componentB": {
+          "setting1": "A"
+        },
+        "model": 2324,
+        "name": "Anafi 4K",
+        "preset": "preset-default-anafi_4k"
+      }
+    }
+  },
+
+  {
+    "name": "Import preset to empty store",
+
+    "desc": "Tests proper import of model preset declaration to a store that is empty",
+
+    "app-defaults": {
+      "anafi_4k": {
+        "preset": {
+          "defaults": {
+            "componentA": {
+              "setting1": 1,
+              "setting2": 2
+            },
+            "componentB": {
+              "setting1": "A"
+            }
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2
+        },
+        "componentB": {
+          "setting1": "A"
+        }
+      }
+    }
+  },
+
+  {
+    "name": "Overrides apply before defaults ",
+
+    "desc": "Ensures that overrides block in app defaults declaration applies before defaults block",
+
+    "app-defaults": {
+      "anafi_4k": {
+        "preset": {
+          "defaults": {
+            "componentA": {
+              "setting1": 1,
+              "setting2": 2
+            },
+            "componentB": {
+              "setting1": "A"
+            }
+          },
+          "overrides": {
+            "componentB": {
+              "setting1": "B",
+              "setting2": "C"
+            }
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2
+        },
+        "componentB": {
+          "setting1": "B",
+          "setting2": "C"
+        }
+      }
+    }
+  },
+
+  {
+    "name": "Merge to existing defaults",
+
+    "desc": "Ensures that defaults block in app defaults declaration does not override existing defaults in store",
+
+    "initial-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2
+        }
+      }
+    },
+
+    "app-defaults": {
+      "anafi_4k": {
+        "preset": {
+          "defaults": {
+            "componentA": {
+              "setting1": 0,
+              "setting2": {
+                "sub1": 1,
+                "sub2": 2
+              },
+              "setting3": 3
+            }
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2,
+          "setting3": 3
+        }
+      }
+    }
+  },
+
+  {
+    "name": "Override existing defaults",
+
+    "desc": "Ensures that overrides block in app defaults declaration properly overrides existing defaults in store",
+
+    "initial-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2,
+          "setting4": 4
+        }
+      }
+    },
+
+    "app-defaults": {
+      "anafi_4k": {
+        "preset": {
+          "overrides": {
+            "componentA": {
+              "setting1": 0,
+              "setting2": {
+                "sub1": 1,
+                "sub2": 2
+              },
+              "setting3": 3
+            }
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 0,
+          "setting2": {
+            "sub1": 1,
+            "sub2": 2
+          },
+          "setting3": 3,
+          "setting4": 4
+        }
+      }
+    }
+  },
+
+  {
+    "name": "Clear by overrides",
+
+    "desc": [
+      "Ensures that a null entry in an overrides block in app defaults declaration properly deletes corresponding",
+      "defaults in store"
+    ],
+
+    "initial-store": {
+      "preset-default-anafi_4k": {
+        "componentA": {
+          "setting1": 1,
+          "setting2": 2
+        },
+        "componentB": {
+          "setting1": 3,
+          "setting2": {
+            "sub1": 4,
+            "sub2": 5
+          }
+        }
+      }
+    },
+
+    "app-defaults": {
+      "anafi_4k": {
+        "preset": {
+          "overrides": {
+            "componentA": null,
+            "componentB": {
+              "setting1": null,
+              "setting2": {
+                "sub1": null
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "expected-store": {
+      "preset-default-anafi_4k": {
+        "componentB": {
+          "setting2": {
+            "sub2": 5
+          }
+        }
+      }
+    }
+  }
+]

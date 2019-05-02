@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<resources>
+
+    <!-- Configures how GsdkStreamView scales the rendered stream inside the view. -->
+    <attr name="gsdk_scaleType" format="enum">
+
+        <!-- Scales the stream so that its largest dimension spans the whole view; its smallest dimension is scaled
+             accordingly to respect original aspect ratio, centered in the view; introduced padding, if any, is
+             rendered according to gsdk_paddingFill.
+             See also com.parrot.drone.groundsdk.stream.GsdkStreamView#SCALE_TYPE_FIT. -->
+        <enum name="fit" value="0"/>
+
+        <!-- Scales the stream so that its smallest dimension spans the whole view; its largest dimension is scaled
+             accordingly to respect original aspect ratio, and cropped to the view; no padding is introduced.
+             See also com.parrot.drone.groundsdk.stream.GsdkStreamView#SCALE_TYPE_CROP. -->
+        <enum name="crop" value="1"/>
+
+    </attr>
+
+    <!-- Configures how GsdkStreamView pads the rendered stream inside the view, when required. -->
+    <attr name="gsdk_paddingFill" format="enum">
+
+        <!-- Padding introduced by gsdk_scaleType:fit is filled with default reset color.
+             See also com.parrot.drone.groundsdk.stream.GsdkStreamView#PADDING_FILL_NONE. -->
+        <enum name="none" value="0"/>
+
+        <!-- Padding introduced by gsdk_scaleType:fit is filled by first rendering the current stream frame as if
+             gsdk_scaleType:crop was used, blurred, then overlaying the scaled frame on top of it.
+             See also com.parrot.drone.groundsdk.stream.GsdkStreamView#PADDING_FILL_BLUR_CROP. -->
+        <enum name="blur_crop" value="1"/>
+
+        <!-- Padding introduced by gsdk_scaleType:fit is filled by repeating current frame borders, blurred.
+             See also com.parrot.drone.groundsdk.stream.GsdkStreamView#PADDING_FILL_BLUR_EXTEND. -->
+        <enum name="blur_extend" value="2"/>
+
+    </attr>
+
+    <!-- Configures whether GsdkStreamView renders zebras on overexposed zones. -->
+    <attr name="gsdk_zebrasEnabled" format="boolean"/>
+
+    <!-- Configures the luminance threshold for GsdkStreamView to consider a rendered pixel overexposed. -->
+    <attr name="gsdk_zebraThreshold" format="fraction"/>
+
+    <!-- GsdkStreamView configuration attributes.
+         See com.parrot.drone.groundsdk.stream.GsdkStreamView. -->
+    <declare-styleable name="GsdkStreamView">
+
+        <!-- Configures scale type. Default value is gsdk_scaleType:fit.
+             See com.parrot.drone.groundsdk.stream.GsdkStreamView#setScaleType. -->
+        <attr name="gsdk_scaleType"/>
+
+        <!-- Configures padding fill. Default value is gsdk_paddingFill:none.
+             See com.parrot.drone.groundsdk.stream.GsdkStreamView#setPaddingFill. -->
+        <attr name="gsdk_paddingFill"/>
+
+        <!-- Configures overexposure zebras rendering. Default value is false.
+             See com.parrot.drone.groundsdk.stream.GsdkStreamView#enableZebras. -->
+        <attr name="gsdk_zebrasEnabled"/>
+
+        <!-- Configures overexposure zebras threshold. Default value is 0%.
+             See com.parrot.drone.groundsdk.stream.GsdkStreamView#setZebraThreshold. -->
+        <attr name="gsdk_zebraThreshold"/>
+
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+<resources>
+    <!-- Application key -->
+    <string name="gsdk_application_key"/>
+
+    <!-- Tells whether connection using local wifi is enabled -->
+    <bool name="gsdk_wifi_enabled">true</bool>
+
+    <!-- Tells whether connection using usb device (i.e. Sky Controller) is enabled -->
+    <bool name="gsdk_usb_enabled">true</bool>
+
+    <!-- Tells whether connection using "Usb Debug Bridge" is enabled -->
+    <bool name="gsdk_usb_debug_enabled">false</bool>
+
+    <!-- Tells whether connection using ble is enabled (Ble support is deprecated) -->
+    <bool name="gsdk_ble_enabled">false</bool>
+
+    <!-- Tells whether dev tool box is enabled -->
+    <bool name="gsdk_dev_toolbox_enabled">false</bool>
+
+    <!-- Tells whether drone settings ares stored locally and sent to the drone when connecting. Values are:
+         OFF: don't store offline settings
+         MODEL: store settings, values are shared for all devices of the same model -->
+    <string name="gsdk_offline_settings_mode">MODEL</string>
+
+    <!-- Tells whether GroundSdk USB/RC accessory bootstrap activity is enabled. -->
+    <bool name="gsdk_rc_accessory_bootstrap_activity_enabled">true</bool>
+
+    <!-- Tells whether GPS ephemeris synchronization is enabled. -->
+    <bool name="gsdk_ephemeris_sync_enabled">true</bool>
+    <!-- Tells whether crash report synchronization is enabled. -->
+    <bool name="gsdk_crash_report_enabled">true</bool>
+
+    <!-- Space quota for crash report synchronization, in bytes. Value 0 disables quota.
+         Quota is checked when groundsdk first starts. Eldest crash report files are deleted until the total size
+         of all collected crash report files is lower than this quota. -->
+    <integer name="gsdk_crash_report_quota">0</integer>
+
+    <!-- Tells whether device firmware synchronization is enabled. -->
+    <bool name="gsdk_firmware_enabled">true</bool>
+
+    <!-- Alternate firmware server to use. Empty to use the default server. -->
+    <string name="gsdk_firmware_server"/>
+
+    <!-- Tells whether blackbox synchronization is enabled. -->
+    <bool name="gsdk_blackbox_enabled">true</bool>
+
+    <!-- Space quota for blackbox synchronization, in bytes. Value 0 disables quota.
+         Quota is checked when groundsdk first starts. Eldest blackbox files are deleted until the total size
+         of all collected blackbox files is lower than this quota. -->
+    <integer name="gsdk_blackbox_quota">0</integer>
+
+    <!-- Tells whether flight data synchronization is enabled. -->
+    <bool name="gsdk_flight_data_enabled">true</bool>
+
+    <!-- Space quota for flight data synchronization, in bytes. Value 0 disables quota.
+         Quota is checked when groundsdk first starts. Eldest flight data files are deleted until the total size
+         of all collected flight data files is lower than this quota. -->
+    <integer name="gsdk_flight_data_quota">0</integer>
+
+    <!-- Tells whether flight log synchronization is enabled. -->
+    <bool name="gsdk_flight_log_enabled">true</bool>
+
+    <!-- Space quota for flight log synchronization, in bytes. Value 0 disables quota.
+         Quota is checked when groundsdk first starts. Eldest flight log files are deleted until the total size
+         of all collected flight log files is lower than this quota. -->
+    <integer name="gsdk_flight_log_quota">0</integer>
+
+    <!-- Tells whether video decoding is enabled. -->
+    <bool name="gsdk_video_decoding_enabled">true</bool>
+
+    <!-- Defines the set of device models to be supported.
+         Leaving this value empty commands GroundSdk to support all known device models; otherwise, GroundSdk will
+         explicitly ignore any device whose model is not listed in this array.
+         Each item in the array must be the name from either the Drone.Model or the RemoteControl.Model enum, in
+         upper-case. For instance:
+         <item>ANAFI_4K</item>
+         <item>SKYCONTROLLER_3</item>
+         ... -->
+    <string-array name="gsdk_supported_devices"/>
+
+    <!-- Tells whether automatic devices connection will be started automatically each time the first GroundSdk session
+         is started. -->
+    <bool name="gsdk_auto_connection_at_startup">false</bool>
+
+    <!-- Tells whether wifi access point country will automatically be selected by reverse geocoding system location.
+         If true:
+         - the wifi country setting is changed each time a new country is detected from the current location, and it
+         cannot be changed from the API
+         - the environment is forced to outdoor, and it cannot be changed from the API. -->
+    <bool name="gsdk_auto_select_wifi_country">true</bool>
+
+    <!-- Default country code that will be returned by the reverse geocoder.
+         Empty to not return a default country code. -->
+    <string name="gsdk_reverse_geocoder_default_country_code"/>
+
+    <!-- Maximum size for the in-memory cache gsdk maintains for media thumbnails, in bytes. -->
+    <integer name="gsdk_media_thumbnail_cache_size">0</integer>
+
+</resources>

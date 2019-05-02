@@ -1,0 +1,539 @@
+{
+  "anafi_4k": {
+    "device": {
+
+      "defaults": {
+
+        "name": "Anafi 4K",
+
+        "firmware": "1.0.0",
+
+        "antiFlicker": {
+          "supportedModes": ["OFF", "HZ_50", "HZ_60", "AUTO"]
+        },
+
+        "camera0": {
+          "model": "MAIN",
+          "supportedModes": ["RECORDING", "PHOTO"],
+          "recordingCapabilities": [
+            {
+              "modes": ["STANDARD"],
+              "resolutions": ["RES_DCI_4K"],
+              "framerates": ["FPS_24"],
+              "hdr": false
+            },
+            {
+              "modes": ["STANDARD", "HYPERLAPSE"],
+              "resolutions": ["RES_UHD_4K", "RES_2_7K"],
+              "framerates": ["FPS_9", "FPS_24", "FPS_25", "FPS_30"],
+              "hdr": true
+            },
+            {
+              "modes": ["STANDARD", "HYPERLAPSE"],
+              "resolutions": ["RES_1080P"],
+              "framerates": ["FPS_9", "FPS_24", "FPS_25", "FPS_30"],
+              "hdr": false
+            },
+            {
+              "modes": ["SLOW_MOTION", "HIGH_FRAMERATE"],
+              "resolutions": ["RES_720P"],
+              "framerates": ["FPS_96", "FPS_100", "FPS_120"],
+              "hdr": false
+            },
+            {
+              "modes": ["SLOW_MOTION", "HIGH_FRAMERATE"],
+              "resolutions": ["RES_1080P"],
+              "framerates": ["FPS_48", "FPS_50", "FPS_60"],
+              "hdr": false
+            }
+          ],
+          "recordingSupportedHyperlapses": ["RATIO_15", "RATIO_30", "RATIO_60", "RATIO_120", "RATIO_240"],
+          "photoCapabilities": [
+            {
+              "modes": ["SINGLE", "TIME_LAPSE", "GPS_LAPSE"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["DNG_AND_JPEG"],
+              "hdr": false
+            },
+            {
+              "modes": ["SINGLE", "BURST", "TIME_LAPSE", "GPS_LAPSE"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["JPEG"],
+              "hdr": true
+            },
+            {
+              "modes": ["BRACKETING"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["JPEG", "DNG_AND_JPEG"],
+              "hdr": false
+            }
+          ],
+          "photoSupportedBursts": ["BURST_14_OVER_1S"],
+          "photoSupportedBracketings": ["EV_1", "EV_2", "EV_3", "EV_1_2", "EV_1_3", "EV_2_3", "EV_1_2_3"],
+          "photoTimelapseRange": [2, 60],
+          "photoGpslapseRange": [1, 50],
+          "supportedExposureModes": ["AUTOMATIC", "AUTOMATIC_PREFER_ISO_SENSITIVITY", "AUTOMATIC_PREFER_SHUTTER_SPEED",
+            "MANUAL_ISO_SENSITIVITY", "MANUAL_SHUTTER_SPEED", "MANUAL"],
+          "supportedShutterSpeeds": ["ONE_OVER_10000", "ONE_OVER_8000", "ONE_OVER_6400", "ONE_OVER_5000",
+            "ONE_OVER_4000", "ONE_OVER_3200", "ONE_OVER_2500", "ONE_OVER_2000", "ONE_OVER_1600", "ONE_OVER_1250",
+            "ONE_OVER_1000", "ONE_OVER_800", "ONE_OVER_640", "ONE_OVER_500", "ONE_OVER_400", "ONE_OVER_320",
+            "ONE_OVER_240", "ONE_OVER_200", "ONE_OVER_160", "ONE_OVER_120", "ONE_OVER_100", "ONE_OVER_80",
+            "ONE_OVER_60", "ONE_OVER_50", "ONE_OVER_40", "ONE_OVER_30"],
+          "supportedIsoSensitivities": ["ISO_100", "ISO_160", "ISO_200", "ISO_320", "ISO_400", "ISO_640", "ISO_800",
+            "ISO_1200", "ISO_1600", "ISO_2500", "ISO_3200"],
+          "maxIsoSensitivities": ["ISO_3200"],
+          "supportedEvCompensations": ["EV_MINUS_3", "EV_MINUS_2_67", "EV_MINUS_2_33", "EV_MINUS_2", "EV_MINUS_1_67",
+            "EV_MINUS_1_33", "EV_MINUS_1", "EV_MINUS_0_67", "EV_MINUS_0_33", "EV_0", "EV_0_33", "EV_0_67", "EV_1",
+            "EV_1_33", "EV_1_67", "EV_2", "EV_2_33", "EV_2_67", "EV_3"],
+          "supportedWhiteBalanceModes": ["AUTOMATIC", "INCANDESCENT", "FLUORESCENT", "SUNNY", "CLOUDY", "SHADED",
+            "CUSTOM"],
+          "supportedWhiteBalanceTemperatures": ["K_2000", "K_2250", "K_2500", "K_2750", "K_3000", "K_3250", "K_3500",
+            "K_3750", "K_4000", "K_4250", "K_4500", "K_4750", "K_5000", "K_5250", "K_5500", "K_5750", "K_6000",
+            "K_6250", "K_6500", "K_6750", "K_7000", "K_7250", "K_7500", "K_7750", "K_8000", "K_8250", "K_8500",
+            "K_8750", "K_9000", "K_9250", "K_9500", "K_9750", "K_10000"],
+          "supportedStyles": ["STANDARD", "PLOG", "INTENSE", "PASTEL"],
+          "saturationRange": [-2, 2],
+          "contrastRange": [-2, 2],
+          "sharpnessRange": [-1, 1],
+          "autoRecordSupport": true,
+          "autoHdrSupport": true,
+          "zoomMaxSpeedRange": [0.01, 10]
+        },
+
+        "flightMeter": {
+          "lastDuration": 0,
+          "totalDuration": 0,
+          "totalCount": 0
+        },
+
+        "flightPlan": {
+          "returnHomeOnDisconnectMutability": false
+        },
+
+        "geofence": {
+          "maxAltitudeRange": [0.5, 150],
+          "maxDistanceRange": [10, 2000]
+        },
+
+        "gimbal": {
+          "supportedAxes": ["PITCH", "ROLL"],
+          "maxSpeedsRange": {
+            "PITCH": [1, 180],
+            "ROLL": [0, 0]
+          }
+        },
+
+        "manualCopter": {
+          "maxPitchRollRange": [1, 40],
+          "maxPitchRollVelocityRange": [80, 300],
+          "maxVerticalSpeedRange": [0.1, 4],
+          "maxYawRotationSpeedRange": [3, 200],
+          "bankedTurnModeSupport": true,
+          "thrownTakeOffModeSupport": true
+        },
+
+        "preciseHome": {
+          "supportedModes": ["DISABLED", "STANDARD"]
+        },
+
+        "returnHome": {
+          "autoStartOnDisconnectDelayRange": [0, 120],
+          "minAltitudeRange": [20, 100]
+        },
+
+        "systemInfo": {
+          "firmwareVersion": "1.0.0"
+        }
+      }
+    },
+
+    "preset": {
+      "defaults": {
+
+        "antiFlicker": {
+          "mode": "AUTO"
+        },
+
+        "camera0": {
+          "mode": "RECORDING",
+          "recordingMode": "STANDARD",
+          "recordingResolutions": {
+            "STANDARD": "RES_UHD_4K"
+          },
+          "recordingFramerates": {
+            "STANDARD": "FPS_30"
+          },
+          "recordingHyperlapse": "RATIO_15",
+          "photoMode": "SINGLE",
+          "photoFormats": {
+            "SINGLE": "RECTILINEAR"
+          },
+          "photoFileFormats": {
+            "SINGLE": "JPEG"
+          },
+          "photoBurst": "BURST_14_OVER_1S",
+          "photoBracketing": "EV_1",
+          "photoTimelapse": 2,
+          "photoGpslapse": 1,
+          "exposureMode": "AUTOMATIC_PREFER_SHUTTER_SPEED",
+          "shutterSpeed": "ONE_OVER_50",
+          "isoSensitivity": "ISO_1200",
+          "maxIsoSensitivity": "ISO_3200",
+          "evCompensation": "EV_0",
+          "whiteBalanceMode": "AUTOMATIC",
+          "whiteBalanceTemperature": "K_2250",
+          "style": "STANDARD",
+          "saturation": 0,
+          "contrast": 0,
+          "sharpness": 0,
+          "autoRecord": true,
+          "autoHdr": false,
+          "zoomMaxSpeed": 0.3400000035762787,
+          "zoomQualityDegradationAllowance": true
+        },
+
+        "geofence": {
+          "maxAltitude": 30,
+          "maxDistance": 100,
+          "mode": "ALTITUDE"
+        },
+
+        "gimbal": {
+          "stabilizedAxes": ["PITCH", "ROLL"],
+          "maxSpeeds": {
+            "PITCH": 10,
+            "ROLL": 0
+          }
+        },
+
+        "manualCopter": {
+          "maxPitchRoll": 10,
+          "maxPitchRollVelocity": 80,
+          "maxVerticalSpeed": 1,
+          "maxYawRotationSpeed": 10,
+          "bankedTurnMode": true,
+          "thrownTakeOffMode": true
+        },
+
+        "preciseHome": {
+          "mode": "STANDARD"
+        },
+
+        "returnHome": {
+          "preferredTarget": "TRACKED_TARGET_POSITION",
+          "autoStartOnDisconnectDelay": 0,
+          "minAltitude": 30
+        }
+      }
+    }
+  },
+
+  "anafi_thermal": {
+    "device": {
+
+      "defaults": {
+
+        "name": "Anafi Thermal",
+
+        "firmware": "1.5.0",
+
+        "antiFlicker": {
+          "supportedModes": ["OFF", "HZ_50", "HZ_60", "AUTO"]
+        },
+
+        "camera0": {
+          "model": "MAIN",
+          "supportedModes": ["RECORDING", "PHOTO"],
+          "recordingCapabilities": [
+            {
+              "modes": ["STANDARD"],
+              "resolutions": ["RES_DCI_4K"],
+              "framerates": ["FPS_24"],
+              "hdr": false
+            },
+            {
+              "modes": ["STANDARD", "HYPERLAPSE"],
+              "resolutions": ["RES_UHD_4K", "RES_2_7K"],
+              "framerates": ["FPS_9", "FPS_24", "FPS_25", "FPS_30"],
+              "hdr": true
+            },
+            {
+              "modes": ["STANDARD", "HYPERLAPSE"],
+              "resolutions": ["RES_1080P"],
+              "framerates": ["FPS_9", "FPS_24", "FPS_25", "FPS_30"],
+              "hdr": false
+            },
+            {
+              "modes": ["SLOW_MOTION", "HIGH_FRAMERATE"],
+              "resolutions": ["RES_720P"],
+              "framerates": ["FPS_96", "FPS_100", "FPS_120"],
+              "hdr": false
+            },
+            {
+              "modes": ["SLOW_MOTION", "HIGH_FRAMERATE"],
+              "resolutions": ["RES_1080P"],
+              "framerates": ["FPS_48", "FPS_50", "FPS_60"],
+              "hdr": false
+            }
+          ],
+          "recordingSupportedHyperlapses": ["RATIO_15", "RATIO_30", "RATIO_60", "RATIO_120", "RATIO_240"],
+          "photoCapabilities": [
+            {
+              "modes": ["SINGLE", "TIME_LAPSE", "GPS_LAPSE"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["DNG_AND_JPEG"],
+              "hdr": false
+            },
+            {
+              "modes": ["SINGLE", "BURST", "TIME_LAPSE", "GPS_LAPSE"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["JPEG"],
+              "hdr": true
+            },
+            {
+              "modes": ["BRACKETING"],
+              "formats": ["FULL_FRAME", "RECTILINEAR"],
+              "fileFormats": ["JPEG", "DNG_AND_JPEG"],
+              "hdr": false
+            }
+          ],
+          "photoSupportedBursts": ["BURST_14_OVER_1S"],
+          "photoSupportedBracketings": ["EV_1", "EV_2", "EV_3", "EV_1_2", "EV_1_3", "EV_2_3", "EV_1_2_3"],
+          "photoTimelapseRange": [2, 60],
+          "photoGpslapseRange": [1, 50],
+          "supportedExposureModes": ["AUTOMATIC", "AUTOMATIC_PREFER_ISO_SENSITIVITY", "AUTOMATIC_PREFER_SHUTTER_SPEED",
+            "MANUAL_ISO_SENSITIVITY", "MANUAL_SHUTTER_SPEED", "MANUAL"],
+          "supportedShutterSpeeds": ["ONE_OVER_10000", "ONE_OVER_8000", "ONE_OVER_6400", "ONE_OVER_5000",
+            "ONE_OVER_4000", "ONE_OVER_3200", "ONE_OVER_2500", "ONE_OVER_2000", "ONE_OVER_1600", "ONE_OVER_1250",
+            "ONE_OVER_1000", "ONE_OVER_800", "ONE_OVER_640", "ONE_OVER_500", "ONE_OVER_400", "ONE_OVER_320",
+            "ONE_OVER_240", "ONE_OVER_200", "ONE_OVER_160", "ONE_OVER_120", "ONE_OVER_100", "ONE_OVER_80",
+            "ONE_OVER_60", "ONE_OVER_50", "ONE_OVER_40", "ONE_OVER_30"],
+          "supportedIsoSensitivities": ["ISO_100", "ISO_160", "ISO_200", "ISO_320", "ISO_400", "ISO_640", "ISO_800",
+            "ISO_1200", "ISO_1600", "ISO_2500", "ISO_3200"],
+          "maxIsoSensitivities": ["ISO_3200"],
+          "supportedEvCompensations": ["EV_MINUS_3", "EV_MINUS_2_67", "EV_MINUS_2_33", "EV_MINUS_2", "EV_MINUS_1_67",
+            "EV_MINUS_1_33", "EV_MINUS_1", "EV_MINUS_0_67", "EV_MINUS_0_33", "EV_0", "EV_0_33", "EV_0_67", "EV_1",
+            "EV_1_33", "EV_1_67", "EV_2", "EV_2_33", "EV_2_67", "EV_3"],
+          "supportedWhiteBalanceModes": ["AUTOMATIC", "INCANDESCENT", "FLUORESCENT", "SUNNY", "CLOUDY", "SHADED",
+            "CUSTOM"],
+          "supportedWhiteBalanceTemperatures": ["K_2000", "K_2250", "K_2500", "K_2750", "K_3000", "K_3250", "K_3500",
+            "K_3750", "K_4000", "K_4250", "K_4500", "K_4750", "K_5000", "K_5250", "K_5500", "K_5750", "K_6000",
+            "K_6250", "K_6500", "K_6750", "K_7000", "K_7250", "K_7500", "K_7750", "K_8000", "K_8250", "K_8500",
+            "K_8750", "K_9000", "K_9250", "K_9500", "K_9750", "K_10000"],
+          "supportedStyles": ["STANDARD", "PLOG", "INTENSE", "PASTEL"],
+          "saturationRange": [-2, 2],
+          "contrastRange": [-2, 2],
+          "sharpnessRange": [-1, 1],
+          "autoRecordSupport": true,
+          "autoHdrSupport": true,
+          "zoomMaxSpeedRange": [0.01, 10]
+        },
+
+        "camera1": {
+          "model": "THERMAL",
+          "supportedModes": ["RECORDING", "PHOTO"],
+          "recordingCapabilities": [
+            {
+              "modes": ["STANDARD"],
+              "resolutions": ["RES_1080P_4_3"],
+              "framerates": ["FPS_9"],
+              "hdr": false
+            }
+          ],
+          "recordingSupportedHyperlapses": [],
+          "photoCapabilities": [
+            {
+              "modes": ["SINGLE", "TIME_LAPSE", "GPS_LAPSE"],
+              "formats": ["RECTILINEAR"],
+              "fileFormats": ["JPEG"],
+              "hdr": false
+            }
+          ],
+          "photoSupportedBursts": [],
+          "photoSupportedBracketings": [],
+          "photoTimelapseRange": [2, 60],
+          "photoGpslapseRange": [1, 50],
+          "supportedExposureModes": ["AUTOMATIC"],
+          "supportedShutterSpeeds": [],
+          "supportedIsoSensitivities": [],
+          "maxIsoSensitivities": ["ISO_50"],
+          "supportedEvCompensations": [],
+          "supportedWhiteBalanceModes": ["AUTOMATIC"],
+          "supportedWhiteBalanceTemperatures": [],
+          "supportedStyles": ["STANDARD"],
+          "saturationRange": [-2, 2],
+          "contrastRange": [-2, 2],
+          "sharpnessRange": [-1, 1],
+          "autoRecordSupport": true,
+          "autoHdrSupport": false,
+          "zoomMaxSpeedRange": [0.01, 10]
+        },
+
+        "thermal": {
+          "supportedModes": ["DISABLED", "STANDARD"]
+        },
+
+        "flightMeter": {
+          "lastDuration": 0,
+          "totalDuration": 0,
+          "totalCount": 0
+        },
+
+        "flightPlan": {
+          "returnHomeOnDisconnectMutability": false
+        },
+
+        "geofence": {
+          "maxAltitudeRange": [0.5, 150],
+          "maxDistanceRange": [10, 2000]
+        },
+
+        "gimbal": {
+          "supportedAxes": ["PITCH", "ROLL"],
+          "maxSpeedsRange": {
+            "PITCH": [1, 180],
+            "ROLL": [0, 0]
+          }
+        },
+
+        "manualCopter": {
+          "maxPitchRollRange": [1, 40],
+          "maxPitchRollVelocityRange": [80, 300],
+          "maxVerticalSpeedRange": [0.1, 4],
+          "maxYawRotationSpeedRange": [3, 200],
+          "bankedTurnModeSupport": true,
+          "thrownTakeOffModeSupport": true
+        },
+
+        "preciseHome": {
+          "supportedModes": ["DISABLED", "STANDARD"]
+        },
+
+        "returnHome": {
+          "autoStartOnDisconnectDelayRange": [0, 120],
+          "minAltitudeRange": [20, 100]
+        },
+
+        "systemInfo": {
+          "firmwareVersion": "1.5.0"
+        }
+      }
+    },
+
+    "preset": {
+      "defaults": {
+
+        "antiFlicker": {
+          "mode": "AUTO"
+        },
+
+        "camera0": {
+          "mode": "RECORDING",
+          "recordingMode": "STANDARD",
+          "recordingResolutions": {
+            "STANDARD": "RES_UHD_4K"
+          },
+          "recordingFramerates": {
+            "STANDARD": "FPS_30"
+          },
+          "recordingHyperlapse": "RATIO_15",
+          "photoMode": "SINGLE",
+          "photoFormats": {
+            "SINGLE": "RECTILINEAR"
+          },
+          "photoFileFormats": {
+            "SINGLE": "JPEG"
+          },
+          "photoBurst": "BURST_14_OVER_1S",
+          "photoBracketing": "EV_1",
+          "photoTimelapse": 2,
+          "photoGpslapse": 1,
+          "exposureMode": "AUTOMATIC_PREFER_SHUTTER_SPEED",
+          "shutterSpeed": "ONE_OVER_50",
+          "isoSensitivity": "ISO_1200",
+          "maxIsoSensitivity": "ISO_3200",
+          "evCompensation": "EV_0",
+          "whiteBalanceMode": "AUTOMATIC",
+          "whiteBalanceTemperature": "K_2250",
+          "style": "STANDARD",
+          "saturation": 0,
+          "contrast": 0,
+          "sharpness": 0,
+          "autoRecord": true,
+          "autoHdr": false,
+          "zoomMaxSpeed": 0.3400000035762787,
+          "zoomQualityDegradationAllowance": true
+        },
+
+        "camera1": {
+          "mode": "RECORDING",
+          "recordingMode": "STANDARD",
+          "recordingResolutions": {
+            "STANDARD": "RES_1080P_4_3"
+          },
+          "recordingFramerates": {
+            "STANDARD": "FPS_9"
+          },
+          "photoMode": "SINGLE",
+          "photoFormats": {
+            "SINGLE": "RECTILINEAR"
+          },
+          "photoFileFormats": {
+            "SINGLE": "JPEG"
+          },
+          "photoTimelapse": 2,
+          "photoGpslapse": 1,
+          "exposureMode": "AUTOMATIC",
+          "maxIsoSensitivity": "ISO_50",
+          "whiteBalanceMode": "AUTOMATIC",
+          "style": "STANDARD",
+          "saturation": 0,
+          "contrast": 0,
+          "sharpness": 0,
+          "autoRecord": true,
+          "autoHdr": false,
+          "zoomMaxSpeed": 0.3400000035762787,
+          "zoomQualityDegradationAllowance": true
+        },
+
+        "thermal": {
+          "mode": "DISABLED",
+          "sensitivity" : "LOW_RANGE"
+        },
+
+        "geofence": {
+          "maxAltitude": 30,
+          "maxDistance": 100,
+          "mode": "ALTITUDE"
+        },
+
+        "gimbal": {
+          "stabilizedAxes": ["PITCH", "ROLL"],
+          "maxSpeeds": {
+            "PITCH": 10,
+            "ROLL": 0
+          }
+        },
+
+        "manualCopter": {
+          "maxPitchRoll": 10,
+          "maxPitchRollVelocity": 80,
+          "maxVerticalSpeed": 1,
+          "maxYawRotationSpeed": 10,
+          "bankedTurnMode": true,
+          "thrownTakeOffMode": true
+        },
+
+        "preciseHome": {
+          "mode": "STANDARD"
+        },
+
+        "returnHome": {
+          "preferredTarget": "TRACKED_TARGET_POSITION",
+          "autoStartOnDisconnectDelay": 0,
+          "minAltitude": 30
+        }
+      }
+    }
+  }
+}

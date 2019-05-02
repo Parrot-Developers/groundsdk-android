@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.parrot.drone.groundsdkdemo.edit.GuidedEditActivity"
+    tools:ignore="AutoFill">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1"
+            android:stretchColumns="0">
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAllCaps="true"
+                android:text="@string/location_move"/>
+
+            <com.parrot.drone.groundsdkdemo.edit.CustomMapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:focusableInTouchMode="true"/>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/altitude_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/altitude"/>
+
+                <EditText
+                    android:id="@+id/altitude_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_altitude_value"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/orientation_spinner"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/orientation"/>
+
+                <Spinner
+                    android:id="@+id/orientation_spinner"
+                    android:layout_gravity="center_vertical|end"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/heading_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/heading"/>
+
+                <EditText
+                    android:id="@+id/heading_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_component_value"/>
+            </TableRow>
+
+            <Button
+                android:id="@+id/btn_move_to"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:text="@string/action_move_to_location"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAllCaps="true"
+                android:text="@string/relative_move"/>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/forward_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/forward"/>
+
+                <EditText
+                    android:id="@+id/forward_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_component_value"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/right_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/right"/>
+
+                <EditText
+                    android:id="@+id/right_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_component_value"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/downward_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/downward"/>
+
+                <EditText
+                    android:id="@+id/downward_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_component_value"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/rotation_edit"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/rotation"/>
+
+                <EditText
+                    android:id="@+id/rotation_edit"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_gravity="center_vertical|end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="@string/default_component_value"/>
+            </TableRow>
+
+            <Button
+                android:id="@+id/btn_move_by"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/action_move_to_relative_position"/>
+
+        </TableLayout>
+
+        <Button
+            android:id="@+id/btn_stop"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/action_stop_current_move"/>
+
+    </LinearLayout>
+</ScrollView>

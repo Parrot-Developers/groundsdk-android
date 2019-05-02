@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (C) 2019 Parrot Drones SAS
+  ~
+  ~     Redistribution and use in source and binary forms, with or without
+  ~     modification, are permitted provided that the following conditions
+  ~     are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in
+  ~       the documentation and/or other materials provided with the
+  ~       distribution.
+  ~     * Neither the name of the Parrot Company nor the names
+  ~       of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written
+  ~       permission.
+  ~
+  ~     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ~     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  ~     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  ~     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  ~     PARROT COMPANY BE LIABLE FOR ANY DIRECT, INDIRECT,
+  ~     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  ~     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  ~     OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  ~     AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  ~     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  ~     SUCH DAMAGE.
+  ~
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.parrot.drone.groundsdkdemo">
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat"
+        android:extractNativeLibs="false"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="23">
+        <activity
+            android:name=".DeviceListActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".info.FacilitiesInfoActivity"
+                  android:label="@string/title_activity_facilities"
+                  android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".info.DroneInfoActivity"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".info.RCInfoActivity"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.ManualCopterSettingsActivity"
+            android:label="@string/title_activity_manual_copter_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.Magnetometer3StepCalibrationActivity"
+            android:label="@string/title_activity_magnetometer_calibration"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.Magnetometer1StepCalibrationActivity"
+            android:label="@string/title_activity_magnetometer_calibration"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.ReturnHomeSettingsActivity"
+            android:label="@string/title_activity_return_home_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".hud.CopterHudActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.DroneFinderActivity"
+            android:label="@string/title_activity_drone_finder"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.VideoStreamActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.ThermalStreamActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.gamepad.GamepadGrabActivity"
+            android:label="@string/title_activity_sc2_grab"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.gamepad.GamepadMappingsActivity"
+            android:label="@string/title_activity_sc2_mapping"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.gamepad.GamepadEditMappingActivity"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.gamepad.GamepadAxesSetupActivity"
+            android:label="@string/title_activity_sc2_axes_setup"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.MediaStoreBrowserActivity"
+            android:label="@string/title_activity_media_browser"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.DebugSettingsActivity"
+            android:label="@string/title_activity_debug_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.FlightPlanSettingsActivity"
+            android:label="@string/title_activity_flight_plan_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".edit.GuidedEditActivity"
+            android:label="@string/title_activity_guided_edit"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".edit.PointOfInterestEditActivity"
+            android:label="@string/title_activity_poi_edit"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.FollowMeSettingsActivity"
+            android:label="@string/title_activity_follow_me_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.WifiAccessPointSettingsActivity"
+            android:label="@string/title_activity_wifi_ap_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.TargetTrackerSettingsActivity"
+            android:label="@string/title_activity_target_tracker_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.CameraSettingsActivity"
+            android:label="@string/title_activity_camera_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.GimbalSettingsActivity"
+            android:label="@string/title_activity_gimbal_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.GimbalOffsetsCorrectionActivity"
+            android:label="@string/title_activity_gimbal_offsets_correction"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".peripheral.GimbalCalibrationActivity"
+            android:label="@string/title_activity_gimbal_calibration"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.AntiFlickerSettingsActivity"
+            android:label="@string/title_activity_antiflicker_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.GeofenceSettingsActivity"
+            android:label="@string/title_activity_geofence_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.LedsSettingsActivity"
+            android:label="@string/title_activity_leds_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".facility.FirmwareManagerActivity"
+            android:label="@string/title_activity_firmware_manager"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.PreciseHomeSettingsActivity"
+            android:label="@string/title_activity_precise_home_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".settings.ThermalSettingsActivity"
+            android:label="@string/title_activity_thermal_settings"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".facility.UserAccountActivity"
+            android:label="@string/title_activity_user_account"
+            android:theme="@style/AppTheme"/>
+
+        <activity android:name=".peripheral.MediaReplayActivity"
+                  android:theme="@style/AppTheme.NoActionBar"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAoG0oOtTct5XcYs2e8m1MaA1azsdhO9-E"/>
+    </application>
+
+</manifest>
