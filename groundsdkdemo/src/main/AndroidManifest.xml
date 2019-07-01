@@ -109,6 +109,10 @@
             android:label="@string/title_activity_sc2_axes_setup"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".settings.CopilotSettingsActivity"
+            android:label="@string/title_activity_copilot"
+            android:theme="@style/AppTheme"/>
+        <activity
             android:name=".peripheral.MediaStoreBrowserActivity"
             android:label="@string/title_activity_media_browser"
             android:theme="@style/AppTheme"/>
@@ -198,7 +202,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAoG0oOtTct5XcYs2e8m1MaA1azsdhO9-E"/>
+            android:value="@string/gsdkdemo_google_geo_api_key"/>
     </application>
 
 </manifest>

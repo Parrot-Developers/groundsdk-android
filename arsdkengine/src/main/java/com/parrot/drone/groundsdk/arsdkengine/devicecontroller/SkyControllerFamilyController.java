@@ -42,6 +42,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.crashml.FtpRepor
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.flightlog.FtpFlightLogDownloader;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.updater.FirmwareUpdaterProtocol;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.updater.UpdaterController;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerCopilot;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerDroneFinder;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerMagnetometer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerSystemInfo;
@@ -75,6 +76,7 @@ public class SkyControllerFamilyController extends RCController {
                 new Sc3Gamepad(this),
                 new SkyControllerSystemInfo(this),
                 new SkyControllerMagnetometer(this),
+                new SkyControllerCopilot(this),
                 UpdaterController.create(this, FirmwareUpdaterProtocol.Ftp::new),
                 FtpReportDownloader.create(this),
                 FtpFlightLogDownloader.create(this)

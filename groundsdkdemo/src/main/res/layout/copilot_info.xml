@@ -55,7 +55,7 @@
                 android:layout_gravity="center_vertical|start"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textAllCaps="true"
-                android:text="@string/peripheral_thermal_control"/>
+                android:text="@string/peripheral_copilot"/>
 
             <Button
                 style="?android:attr/buttonBarButtonStyle"
@@ -70,37 +70,13 @@
         <TableRow>
 
             <TextView
-                android:text="@string/property_thermal_mode"/>
+                android:text="@string/property_copilot_source"/>
 
             <TextView
-                android:id="@+id/mode"
+                android:id="@+id/source"
                 android:layout_weight="1"
                 android:gravity="center_vertical|end"
-                tools:text="STANDARD"/>
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:text="@string/property_thermal_sensitivity"/>
-
-            <TextView
-                android:id="@+id/sensitivity"
-                android:layout_weight="1"
-                android:gravity="center_vertical|end"
-                tools:text="HIGH_RANGE"/>
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:text="@string/property_thermal_calibration_mode"/>
-
-            <TextView
-                android:id="@+id/calibration_mode"
-                android:layout_weight="1"
-                android:gravity="center_vertical|end"
-                tools:text="AUTOMATIC"/>
+                tools:text="REMOTE_CONTROL"/>
         </TableRow>
 
     </TableLayout>

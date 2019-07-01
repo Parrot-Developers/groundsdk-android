@@ -38,17 +38,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.parrot.drone.groundsdk.device.Drone;
-import com.parrot.drone.groundsdk.device.peripheral.ThermalControl;
+import com.parrot.drone.groundsdk.device.RemoteControl;
+import com.parrot.drone.groundsdk.device.peripheral.Copilot;
 import com.parrot.drone.groundsdkdemo.R;
-import com.parrot.drone.groundsdkdemo.settings.ThermalSettingsActivity;
+import com.parrot.drone.groundsdkdemo.settings.CopilotSettingsActivity;
 
 import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
 
-class ThermalContent extends PeripheralContent<Drone, ThermalControl> {
+class CopilotContent extends PeripheralContent<RemoteControl, Copilot> {
 
-    ThermalContent(@NonNull Drone drone) {
-        super(R.layout.thermal_info, drone, ThermalControl.class);
+    CopilotContent(@NonNull RemoteControl rc) {
+        super(R.layout.copilot_info, rc, Copilot.class);
     }
 
     @Override
@@ -57,43 +57,31 @@ class ThermalContent extends PeripheralContent<Drone, ThermalControl> {
     }
 
     private static final class ViewHolder
-            extends PeripheralContent.ViewHolder<ThermalContent, ThermalControl> {
+            extends PeripheralContent.ViewHolder<CopilotContent, Copilot> {
 
         @NonNull
         private final Button mEditButton;
 
         @NonNull
-        private final TextView mModeText;
-
-        @NonNull
-        private final TextView mSensitivityText;
-
-        @NonNull
-        private final TextView mCalibrationModeText;
+        private final TextView mSourceText;
 
         ViewHolder(@NonNull View rootView) {
             super(rootView);
             mEditButton = findViewById(R.id.btn_edit);
-            mModeText = findViewById(R.id.mode);
-            mSensitivityText = findViewById(R.id.sensitivity);
-            mCalibrationModeText = findViewById(R.id.calibration_mode);
             mEditButton.setOnClickListener(mClickListener);
+            mSourceText = findViewById(R.id.source);
         }
 
         @Override
-        void onBind(@NonNull ThermalContent content, @NonNull ThermalControl thermal) {
-            mModeText.setText(thermal.mode().getValue().toString());
-            mSensitivityText.setText(thermal.sensitivity().getValue().toString());
-            ThermalControl.Calibration calibration = thermal.calibration();
-            mCalibrationModeText.setText(calibration == null ?
-                    mContext.getString(R.string.unsupported) : calibration.mode().getValue().toString());
+        void onBind(@NonNull CopilotContent content, @NonNull Copilot copilot) {
+            mSourceText.setText(copilot.source().getValue().toString());
         }
 
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override
-            void onClick(View v, @NonNull ThermalContent content, @NonNull ThermalControl thermal) {
-                mContext.startActivity(new Intent(mContext, ThermalSettingsActivity.class)
+            void onClick(View v, @NonNull CopilotContent content, @NonNull Copilot preciseHome) {
+                mContext.startActivity(new Intent(mContext, CopilotSettingsActivity.class)
                         .putExtra(EXTRA_DEVICE_UID, content.mDevice.getUid()));
             }
         };

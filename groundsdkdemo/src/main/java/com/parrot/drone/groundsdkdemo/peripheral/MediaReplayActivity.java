@@ -86,7 +86,6 @@ public class MediaReplayActivity extends GroundSdkActivityBase {
 
         mProgressHandler = new Handler();
 
-
         streamServer.replay(source, stream -> {
             if (stream != null) {
                 updateStream(stream);
@@ -106,11 +105,16 @@ public class MediaReplayActivity extends GroundSdkActivityBase {
 
     private void updateStream(@NonNull Replay stream) {
         mStreamView.setStream(stream);
-        if (stream.state() == Stream.State.STOPPED) {
-            stream.pause();
-        }
 
+        Stream.State state = stream.state();
         Replay.PlayState playState = stream.playState();
+        long duration = stream.duration();
+
+        if (state == Stream.State.STOPPED) {
+            stream.pause();
+        } else if (state == Stream.State.STARTED && stream.position() >= duration) {
+            stream.stop();
+        }
 
         mPlayPauseBtn.setImageResource(playState == Replay.PlayState.PLAYING ?
                 android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
@@ -121,8 +125,6 @@ public class MediaReplayActivity extends GroundSdkActivityBase {
                 stream.play();
             }
         });
-
-        int duration = (int) stream.duration();
 
         setTime(mDurationText, duration);
 
@@ -141,7 +143,7 @@ public class MediaReplayActivity extends GroundSdkActivityBase {
         };
 
         mSeekBar.setEnabled(duration > 0);
-        mSeekBar.setMax(duration);
+        mSeekBar.setMax((int) duration);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override

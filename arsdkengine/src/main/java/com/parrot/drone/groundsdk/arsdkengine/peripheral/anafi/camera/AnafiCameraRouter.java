@@ -104,11 +104,13 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                 if (!key.startsWith(SETTINGS_KEY_PREFIX)) {
                     continue;
                 }
-                int id;
+
                 String suffix = key.substring(SETTINGS_KEY_PREFIX.length());
-                if (suffix.isEmpty()) {
-                    // legacy setting for main camera did not have any id, so fallback gracefully
-                    id = CAMERA_ID_MAIN;
+                boolean legacySettings = suffix.isEmpty();
+
+                int id;
+                if (legacySettings) {
+                    id = CAMERA_ID_MAIN; // legacy settings did not have any id, so fallback to main camera
                 } else try {
                     id = Integer.parseInt(suffix);
                 } catch (NumberFormatException e) {
@@ -119,11 +121,13 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                 }
 
                 PersistentStore.Dictionary settingsDict = mDeviceController.getDeviceDict().getDictionary(key);
-
                 Model model;
                 try {
-                    // legacy setting for main camera did not have any id, so fallback gracefully
-                    model = MODEL_SETTING.loadOrThrow(settingsDict, Model.MAIN);
+                    model = MODEL_SETTING.loadOrThrow(settingsDict, () -> {
+                        if (legacySettings) {
+                            return Model.MAIN; // legacy setting did not have any model, so fallback to main camera
+                        } else throw new IllegalArgumentException("Missing required camera model");
+                    });
                 } catch (IllegalArgumentException e) {
                     if (ULog.e(TAG_CAMERA)) {
                         ULog.e(TAG_CAMERA, "Could not load stored camera settings [id: " + id + "]", e);
@@ -241,6 +245,10 @@ public final class AnafiCameraRouter extends DronePeripheralController {
         @NonNull
         final ComponentStore<Peripheral> mPeripheralStore;
 
+        /** Dictionary containing device specific values for the camera, such as settings ranges, supported status. */
+        @Nullable
+        final PersistentStore.Dictionary mSettingsDict;
+
         /**
          * Constructor.
          *
@@ -249,16 +257,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
         CameraControllerBase(@NonNull CameraInfo info) {
             mInfo = info;
             mPeripheralStore = mInfo.mRouter.mComponentStore;
-        }
-
-        /**
-         * Loads up-to-date settings for this camera.
-         *
-         * @return camera settings dictionary, if settings persistence is enabled, otherwise {@code null}
-         */
-        @Nullable
-        final PersistentStore.Dictionary loadSettings() {
-            return offlineSettingsEnabled() ?
+            mSettingsDict = offlineSettingsEnabled() ?
                     mInfo.mRouter.mDeviceController.getDeviceDict().getDictionary(mInfo.mSettingsKey) : null;
         }
 
@@ -866,7 +865,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                 // new drone-announced camera, create a controller for it
                 controller = new CameraController(new CameraInfo(camId, model, settingsKey));
                 mCameraControllers.put(camId, controller);
-                MODEL_SETTING.save(mDeviceController.getDeviceDict().getDictionary(settingsKey), model);
+                MODEL_SETTING.save(controller.mSettingsDict, model);
             }
 
             controller.onCameraCapabilities(

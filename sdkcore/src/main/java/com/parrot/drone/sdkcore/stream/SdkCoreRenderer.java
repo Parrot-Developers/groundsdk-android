@@ -178,7 +178,7 @@ public class SdkCoreRenderer {
      *
      * @param renderZone render zone to configure
      *
-     * @return {@code true] if successful, otherwise {@code false}
+     * @return {@code true} if successful, otherwise {@code false}
      */
     public boolean setRenderZone(@NonNull Rect renderZone) {
         assertThread();

@@ -41,7 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Provides utilities to manipulate {@link InputStream} & {@link OutputStream}.
+ * Provides utilities to manipulate {@link InputStream} and {@link OutputStream}.
  */
 public final class IoStreams {
 

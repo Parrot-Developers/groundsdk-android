@@ -207,7 +207,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mFlightLogDownloader, isDownloading(0));
 
-        verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"), eq(new File(RECORD_STORAGE, "log-1.bin")),
+        verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"), eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock download error
@@ -240,7 +240,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "log-1.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock download completion
@@ -299,7 +299,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "log-1.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock download cancel
@@ -329,7 +329,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "log-1.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock download completion
@@ -369,7 +369,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "log-1.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock 1st download completion
@@ -384,7 +384,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any());
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-3.bin"),
-                eq(new File(RECORD_STORAGE, "log-3.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-3.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock 3nd download completion
@@ -414,7 +414,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "log-1.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock 1st download completion
@@ -429,7 +429,7 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any());
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-3.bin"),
-                eq(new File(RECORD_STORAGE, "log-3.bin")),
+                eq(new File(RECORD_STORAGE, "123_log-3.bin")),
                 mStatusCallbackCaptor.capture());
 
         // mock data sync unavailable - make drone flying

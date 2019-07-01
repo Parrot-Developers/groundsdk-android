@@ -47,7 +47,7 @@ import com.parrot.drone.groundsdk.internal.component.SingletonComponentCore;
  */
 public class TargetTrackerCore extends SingletonComponentCore implements TargetTracker {
 
-    /** Default value for both horizontal & vertical framing position. */
+    /** Default value for both horizontal and vertical framing position. */
     public static final double DEFAULT_FRAMING_POSITION = 0.5;
 
     /** Description of TargetTracker. */

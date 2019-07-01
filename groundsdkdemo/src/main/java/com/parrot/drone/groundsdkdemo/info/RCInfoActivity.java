@@ -135,6 +135,7 @@ public class RCInfoActivity extends GroundSdkActivityBase
                 new DroneFinderContent(mRc),
                 new VirtualGamepadContent(mRc),
                 new GamepadContent(mRc),
+                new CopilotContent(mRc),
                 new SysInfoContent(mRc),
                 new CrashReportDownloaderContent(mRc),
                 new FlightLogDownloaderContent(mRc),

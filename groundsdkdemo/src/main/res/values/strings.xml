@@ -54,6 +54,7 @@
     <string name="title_activity_sc2_grab">Inputs grab setup</string>
     <string name="title_activity_sc2_mapping">Mappings</string>
     <string name="title_activity_sc2_axes_setup">Axes setup</string>
+    <string name="title_activity_copilot">Copilot settings</string>
     <string name="title_activity_media_browser">Browse Media</string>
     <string name="title_activity_debug_settings">Debug Settings</string>
     <string name="title_activity_precise_home_settings">Precise Home Settings</string>
@@ -204,6 +205,7 @@
     <string name="property_gamepad_mapping_action">Action:</string>
     <string name="property_gamepad_mapping_axis">Axis:</string>
     <string name="property_gamepad_mapping_buttons">Buttons:</string>
+    <string name="property_copilot_source">Source</string>
     <string name="property_sysinfo_firmware">Firmware version</string>
     <string name="property_sysinfo_firmware_blacklisted">Firmware blacklisted</string>
     <string name="property_sysinfo_hardware">Hardware version</string>
@@ -349,6 +351,8 @@
     <string name="property_precise_home_state">State</string>
     <string name="property_thermal_mode">Mode</string>
     <string name="property_thermal_sensitivity">Sensitivity</string>
+    <string name="property_thermal_calibration">Calibration</string>
+    <string name="property_thermal_calibration_mode">Calibration mode</string>
     <string name="property_thermal_emissivity">Emissivity</string>
     <string name="property_thermal_background_temperature">Background temperature</string>
     <string name="property_thermal_palette">Palette</string>
@@ -510,6 +514,7 @@
     <string name="peripheral_live_stream">Live Stream</string>
     <string name="peripheral_virtual_gamepad">Virtual Gamepad</string>
     <string name="peripheral_gamepad">Gamepad</string>
+    <string name="peripheral_copilot">Copilot</string>
     <string name="peripheral_sysinfo">System Info</string>
     <string name="peripheral_beeper">Beeper</string>
     <string name="peripheral_leds">LEDs</string>

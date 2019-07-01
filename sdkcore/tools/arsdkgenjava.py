@@ -10,11 +10,11 @@ import textwrap
 def make_cmd_javadoc(cmd, indent = ""):
     doc = indent + "/**\n"
     wrapper = textwrap.TextWrapper(width = 120, initial_indent = indent + " * ", subsequent_indent = indent + " * ")
-    doc += wrapper.fill(cmd.doc.desc)
+    doc += wrapper.fill(cmd.doc.desc.replace('>', '&gt;'))
     if len(cmd.args) > 0:
         doc += "\n" + indent + " * "
     for arg in cmd.args:
-        doc += "\n" + wrapper.fill("@param %s: %s" % (arg.name, arg.doc))
+        doc += "\n" + wrapper.fill("@param %s: %s" % (java_arg_name(arg), arg.doc.replace('>', '&gt;')))
     return doc + "\n" + indent + " */"
 
 def make_javadoc(txt, indent = ""):
@@ -22,7 +22,7 @@ def make_javadoc(txt, indent = ""):
         txt += '.'
     doc = indent + "/**\n"
     wrapper = textwrap.TextWrapper(width = 120, initial_indent = indent + " * ", subsequent_indent = indent + " * ")
-    doc += wrapper.fill(txt)
+    doc += wrapper.fill(txt.replace('>', '&gt;'))
     return doc + "\n" + indent + " */"
 #===============================================================================
 #===============================================================================
@@ -72,8 +72,8 @@ def gen_java_feature_enum(enum, out):
         out.write("         *\n")
         out.write("         * @returns {@code true} if this enum is in specified bitfield, otherwise {@code false}\n")
         out.write("         */\n")
-        out.write("        public boolean inBitField(%s bitField) {\n", bitFieldType)
-        out.write("            return (bitField & (%s << value)) != 0;\n", base)
+        out.write("        public boolean inBitField(%s bitfield) {\n", bitFieldType)
+        out.write("            return (bitfield & (%s << value)) != 0;\n", base)
         out.write("        }\n\n")
         out.write("        /**\n")
         out.write("         * Applies a function to each armed enum value in a given bitfield.\n");

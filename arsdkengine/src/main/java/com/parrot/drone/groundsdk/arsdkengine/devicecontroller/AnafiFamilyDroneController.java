@@ -60,7 +60,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiRemovableUse
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiStreamServer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiSystemInfo;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiTargetTracker;
-import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiThermalControl;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.thermalcontrol.AnafiThermalControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera.AnafiAntiFlicker;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera.AnafiCameraRouter;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.flightdata.AnafiFlightDataDownloader;

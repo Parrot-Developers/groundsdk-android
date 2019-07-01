@@ -280,8 +280,6 @@ static void pdraw_end_of_range(struct pdraw *pdraw, uint64_t timestamp,
 	self->playback.speed = 0;
 
 	self->cbs.on_playback_state(&self->playback, self->userdata);
-
-	LOG_IF_ERR(pdraw_close(pdraw));
 }
 
 /**

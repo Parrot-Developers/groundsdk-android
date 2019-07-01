@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
+    defaultConfig {
+        // Google Geo API key. Put your own key to enable google Maps related features in demo.
+        resValue 'string', 'gsdkdemo_google_geo_api_key', ''
+    }
+
     lintOptions {
         disable 'StringFormatInvalid', 'IconMissingDensityFolder'
         checkDependencies true

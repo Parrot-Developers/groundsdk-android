@@ -67,6 +67,8 @@ final class ResolutionAdapter {
                 return CameraRecording.Resolution.RES_1080P_4_3;
             case RES_720P:
                 return CameraRecording.Resolution.RES_720P;
+            case RES_720P_SD:
+                return CameraRecording.Resolution.RES_720P_4_3;
             case RES_480P:
                 return CameraRecording.Resolution.RES_480P;
         }
@@ -95,6 +97,8 @@ final class ResolutionAdapter {
                 return ArsdkFeatureCamera.Resolution.RES_1080P_SD;
             case RES_720P:
                 return ArsdkFeatureCamera.Resolution.RES_720P;
+            case RES_720P_4_3:
+                return ArsdkFeatureCamera.Resolution.RES_720P_SD;
             case RES_480P:
                 return ArsdkFeatureCamera.Resolution.RES_480P;
         }

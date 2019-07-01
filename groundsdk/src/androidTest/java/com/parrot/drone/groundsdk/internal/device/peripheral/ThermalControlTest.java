@@ -219,6 +219,92 @@ public class ThermalControlTest {
     }
 
     @Test
+    public void testCalibration() {
+        mThermalControlImpl.publish();
+
+        verifyZeroInteractions(mMockBackend);
+
+        // test calibration is not provided by default
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mThermalControl.calibration(), nullValue());
+
+        // mock calibration available
+        ThermalControlCore.CalibrationCore calibrationImpl = mThermalControlImpl.createCalibrationIfNeeded();
+
+        ThermalControl.Calibration calibration = mThermalControl.calibration();
+        assertThat(calibration, notNullValue());
+
+        // test calibration initial values
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.noneOf(ThermalControl.Calibration.Mode.class)),
+                settingIsUpToDate()));
+
+        // mock low-level sends supported modes and current mode
+        calibrationImpl.mode()
+                       .updateAvailableValues(EnumSet.allOf(ThermalControl.Calibration.Mode.class))
+                       .updateValue(ThermalControl.Calibration.Mode.AUTOMATIC);
+        mThermalControlImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // test nothing changes if low-level denies
+        doReturn(false).when(mMockBackend).setCalibrationMode(any());
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        verify(mMockBackend, times(1)).setCalibrationMode(ThermalControl.Calibration.Mode.MANUAL);
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // test nothing changes if values do not change
+        doReturn(true).when(mMockBackend).setCalibrationMode(any());
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.AUTOMATIC);
+
+        verify(mMockBackend, never()).setCalibrationMode(ThermalControl.Calibration.Mode.AUTOMATIC);
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // test user changes value
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        verify(mMockBackend, times(2)).setCalibrationMode(ThermalControl.Calibration.Mode.MANUAL);
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpdating()));
+
+        // mock update from low-level
+        calibrationImpl.mode().updateValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        // verify changes are not published until notifyUpdated() is called
+        assertThat(mComponentChangeCnt, is((3)));
+
+        mThermalControlImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpToDate()));
+
+        // test manual calibration trigger
+        calibration.calibrate();
+        verify(mMockBackend).calibrate();
+
+        verifyNoMoreInteractions(mMockBackend);
+    }
+
+    @Test
     public void testEmissivity() {
         mThermalControlImpl.publish();
 
@@ -274,17 +360,41 @@ public class ThermalControlTest {
     @Test
     public void testCancelRollbacks() {
         doReturn(true).when(mMockBackend).setMode(any());
+        doReturn(true).when(mMockBackend).setSensitivity(any());
+        doReturn(true).when(mMockBackend).setCalibrationMode(any());
+
         mThermalControlImpl.mode()
                            .updateAvailableValues(EnumSet.allOf(ThermalControl.Mode.class))
                            .updateValue(ThermalControl.Mode.DISABLED);
+        mThermalControlImpl.sensitivity()
+                           .updateAvailableValues(EnumSet.allOf(ThermalControl.Sensitivity.class))
+                           .updateValue(ThermalControl.Sensitivity.LOW_RANGE);
+
+        ThermalControlCore.CalibrationCore calibrationImpl = mThermalControlImpl.createCalibrationIfNeeded();
+        calibrationImpl.mode()
+                       .updateAvailableValues(EnumSet.allOf(ThermalControl.Calibration.Mode.class))
+                       .updateValue(ThermalControl.Calibration.Mode.AUTOMATIC);
+
         mThermalControlImpl.publish();
 
         assertThat(mThermalControl.mode(), allOf(
                 enumSettingValueIs(ThermalControl.Mode.DISABLED),
                 settingIsUpToDate()));
 
+        assertThat(mThermalControl.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.LOW_RANGE),
+                settingIsUpToDate()));
+
+        ThermalControl.Calibration calibration = mThermalControl.calibration();
+        assertThat(calibration, notNullValue());
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
         // mock user changes settings
         mThermalControl.mode().setValue(ThermalControl.Mode.STANDARD);
+        mThermalControl.sensitivity().setValue(ThermalControl.Sensitivity.HIGH_RANGE);
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
 
         // cancel all rollbacks
         mThermalControlImpl.cancelSettingsRollbacks();
@@ -294,12 +404,28 @@ public class ThermalControlTest {
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
                 settingIsUpToDate()));
 
+        assertThat(mThermalControl.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.HIGH_RANGE),
+                settingIsUpToDate()));
+
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpToDate()));
+
         // mock timeout
         mockSettingTimeout();
 
         // nothing should change
         assertThat(mThermalControl.mode(), allOf(
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
+                settingIsUpToDate()));
+
+        assertThat(mThermalControl.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.HIGH_RANGE),
+                settingIsUpToDate()));
+
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
                 settingIsUpToDate()));
     }
 

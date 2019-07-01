@@ -36,7 +36,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -68,15 +67,14 @@ import static com.google.android.gms.common.ConnectionResult.SUCCESS;
  * <p>
  * It uses fused location provider from Google Play Services as default provider. It combines NETWORK
  * and GPS providers for better results. If Play Services are not available, we use {@link LocationManager} with
- * both providers.<br>
+ * GPS provider.<br>
  * However, it is possible to disable the NETWORK provider when necessary. In this case, {@link LocationManager} is used
  * with only the GPS provider.
  * <p>
  * Use case (when the drone is flying):
- * a. The engine connects to a drone using USB remote control => using NETWORK provider is allowed (in addition
- * to the GPS provider)
- * b. The engine connects to a drone using local wifi => disable NETWORK provider.
- * The reason for this is that NETWORK provider using WIFI creates perturbations on the drone video stream.
+ * a. Default usage: disable NETWORK provider, because it uses WIFI which creates perturbations on the drone video
+ * stream.
+ * b. Follow me: enable NETWORK provider to increase accuracy.
  */
 public final class SystemLocationCore implements SystemLocation {
 
@@ -88,7 +86,7 @@ public final class SystemLocationCore implements SystemLocation {
         /** Android location API, using only GPS provider. */
         GPS_ONLY,
 
-        /** Android location API, using both GPS and WIFI network provider. */
+        /** Google Play Services location API, using both GPS and NETWORK provider. */
         FUSED,
     }
 
@@ -337,7 +335,7 @@ public final class SystemLocationCore implements SystemLocation {
         if (!checkAuthorization()) {
             return;
         }
-        if (mWifiEnforcementTokens.isEmpty() && !mWifiDenialTokens.isEmpty()) {
+        if ((mWifiEnforcementTokens.isEmpty() && !mWifiDenialTokens.isEmpty()) || mFusedLocationClient == null) {
             if (mLocationType != LocationType.GPS_ONLY) {
                 stopMonitoring();
                 startGpsMonitoring();
@@ -366,23 +364,19 @@ public final class SystemLocationCore implements SystemLocation {
 
     /**
      * Starts location request using any provider. It will use fused location from Google Play Services if available,
-     * otherwise it will use Android location API without specifying any provider.
+     * otherwise it does nothing.
      */
     @RequiresPermission(ACCESS_FINE_LOCATION)
     @SuppressLint("MissingPermission")
     private void startFusedMonitoring() {
         if (mFusedLocationClient != null) {
             ULog.i(Logging.TAG_MONITOR, "Start monitoring device location [FUSED]");
+            mLocationType = LocationType.FUSED;
             mFusedLocationClient.requestLocationUpdates(
                     new LocationRequest().setInterval(mPreferredTimeInterval).setFastestInterval(mFastestTimeInterval)
                                          .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY),
                     mLocationCallback, null);
-        } else {
-            ULog.i(Logging.TAG_MONITOR, "Start monitoring device location [FUSED system]");
-            mLocationManager.requestLocationUpdates(mPreferredTimeInterval, (float) mMinSpaceInterval, new Criteria(),
-                    mLocationListener, null);
         }
-        mLocationType = LocationType.FUSED;
     }
 
     /**
@@ -400,9 +394,6 @@ public final class SystemLocationCore implements SystemLocation {
                 if (mFusedLocationClient != null) {
                     mFusedLocationClient.removeLocationUpdates(mLocationCallback);
                     ULog.i(Logging.TAG_MONITOR, "Stop monitoring device location [FUSED]");
-                } else {
-                    mLocationManager.removeUpdates(mLocationListener);
-                    ULog.i(Logging.TAG_MONITOR, "Stop monitoring device location [FUSED system]");
                 }
                 break;
         }

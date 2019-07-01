@@ -286,10 +286,6 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     @NonNull
     private final CameraCore mCamera;
 
-    /** Dictionary containing device specific values for the camera, such as settings ranges, supported status. */
-    @Nullable
-    private final PersistentStore.Dictionary mSettingsDict;
-
     /** Zoom no-ack command encoder. */
     @NonNull
     private final ZoomControlEncoder mZoomController;
@@ -444,7 +440,6 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
      */
     CameraController(@NonNull AnafiCameraRouter.CameraInfo info) {
         super(info);
-        mSettingsDict = loadSettings();
         mPresetDict = loadPresets();
 
         mResolutions = new EnumMap<>(CameraRecording.Mode.class);
@@ -919,6 +914,9 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                 state.updateState(CameraPhoto.State.FunctionState.ERROR_INSUFFICIENT_STORAGE);
                 break;
             case ERROR_BAD_STATE:
+                // This occurs when we try to take a photo with remote control while a photo is in progress (or when
+                // camera mode is changing). We ignore it because the camera is still taking the photo normally.
+                break;
             case ERROR:
                 state.updateState(CameraPhoto.State.FunctionState.ERROR_INTERNAL);
                 break;
@@ -964,6 +962,9 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                 state.updateState(CameraRecording.State.FunctionState.ERROR_INSUFFICIENT_STORAGE_SPEED);
                 break;
             case ERROR_BAD_STATE:
+                // This occurs when we try to start recording with application and remote control at the same time, or
+                // when we start recording while camera mode is changing. This is not a real error and can be ignored.
+                break;
             case ERROR:
                 state.updateState(CameraRecording.State.FunctionState.ERROR_INTERNAL);
                 break;

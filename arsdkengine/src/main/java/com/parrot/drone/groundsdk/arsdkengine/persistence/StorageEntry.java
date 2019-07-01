@@ -278,10 +278,12 @@ public abstract class StorageEntry<T> {
      * @return the stored value, if any, or {@code null} if none, or the provided {@code store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
+     *
      * @see #load(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Supplier)
      * @see #load(PersistentStore.Dictionary, Object)
      */
+    @Nullable
     public final T loadOrThrow(@Nullable PersistentStore.Dictionary store) {
         Object serializedObject = store == null ? null : store.getObject(mKey);
         return serializedObject == null ? null : parse(serializedObject);
@@ -338,6 +340,7 @@ public abstract class StorageEntry<T> {
      *         store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
+     *
      * @see #load(PersistentStore.Dictionary, Supplier)
      * @see #loadOrThrow(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Object)
@@ -369,8 +372,8 @@ public abstract class StorageEntry<T> {
      * @param fallback fallback to return case the value is absent, could not be loaded, or the provided {@code store}
      *                 is {@code null}.
      *
-     * @return the stored value, if any, or the result of {@code fallbackSupplier.get()} if none, or the provided {@code
-     *         store} is {@code null}, or parsing failed
+     * @return the stored value, if any, or {@code fallback} if none, or the provided {@code store} is {@code null}, or
+     *         parsing failed
      *
      * @see #loadOrThrow(PersistentStore.Dictionary, Object)
      * @see #load(PersistentStore.Dictionary)
@@ -394,10 +397,10 @@ public abstract class StorageEntry<T> {
      * @param store    storage dictionary to load the value from, may be {@code null}
      * @param fallback fallback to return case the value is absent or the provided {@code store} is {@code null}.
      *
-     * @return the stored value, if any, or the result of {@code fallbackSupplier.get()} if none, or the provided {@code
-     *         store} is {@code null}
+     * @return the stored value, if any, or {@code fallback} if none, or the provided {@code store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
+     *
      * @see #load(PersistentStore.Dictionary, Object)
      * @see #loadOrThrow(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Supplier)

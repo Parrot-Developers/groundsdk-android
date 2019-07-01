@@ -66,6 +66,12 @@ public class ThermalSettingsActivity extends GroundSdkActivityBase {
 
     private MultiChoiceSettingView<ThermalControl.Sensitivity> mSensitivityView;
 
+    private View mCalibrationGroup;
+
+    private MultiChoiceSettingView<ThermalControl.Calibration.Mode> mCalibrationModeView;
+
+    private Button mCalibrationButton;
+
     private CardView mEmissivityCardView;
 
     private RangedSettingView mEmissivityView;
@@ -142,6 +148,10 @@ public class ThermalSettingsActivity extends GroundSdkActivityBase {
 
         mModeView = findViewById(R.id.mode);
         mSensitivityView = findViewById(R.id.sensitivity);
+        mCalibrationGroup = findViewById(R.id.group_calibration);
+        mCalibrationModeView = findViewById(R.id.calibration_mode);
+        mCalibrationButton = findViewById(R.id.btn_calibrate);
+
         mEmissivityCardView = findViewById(R.id.card_emissivity);
         mEmissivityView = findViewById(R.id.emissivity);
         mBackgroundTemperatureCardView = findViewById(R.id.card_background_temperature);
@@ -162,7 +172,6 @@ public class ThermalSettingsActivity extends GroundSdkActivityBase {
         mRenderingModeView = findViewById(R.id.rendering_mode);
         mBlendingRateView = findViewById(R.id.blending);
         mSendRenderingButton = findViewById(R.id.btn_send_rendering);
-
         mEmissivityView.setAvailable(true).setValue(0, 0, 1);
         mBackgroundTemperatureView.setAvailable(true).setValue(200, 255, 674);
 
@@ -357,6 +366,15 @@ public class ThermalSettingsActivity extends GroundSdkActivityBase {
             if (thermal != null) {
                 updateSetting(mModeView, thermal.mode());
                 updateSetting(mSensitivityView, thermal.sensitivity());
+
+                ThermalControl.Calibration calibration = thermal.calibration();
+                if (calibration == null) {
+                    mCalibrationGroup.setVisibility(View.GONE);
+                } else {
+                    updateSetting(mCalibrationModeView, calibration.mode());
+                    mCalibrationGroup.setVisibility(View.VISIBLE);
+                    mCalibrationButton.setOnClickListener(btn -> calibration.calibrate());
+                }
                 mEmissivityView.setListener(thermal::sendEmissivity);
                 mBackgroundTemperatureView.setListener(thermal::sendBackgroundTemperature);
                 mSendPaletteButton.setOnClickListener(v -> thermal.sendPalette(mCurrentPalette));

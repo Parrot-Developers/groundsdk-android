@@ -168,6 +168,9 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
                 case TOO_SLOW:
                     state = RemovableUserStorage.State.MEDIA_TOO_SLOW;
                     break;
+                case USB_MASS_STORAGE:
+                    state = RemovableUserStorage.State.USB_MASS_STORAGE;
+                    break;
                 case AVAILABLE:
                     if (fileSystemState != null) switch (fileSystemState) {
                         case UNKNOWN:

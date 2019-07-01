@@ -30,15 +30,47 @@
  *
  */
 
+package com.parrot.drone.groundsdk.device.peripheral;
+
+import android.support.annotation.NonNull;
+
+import com.parrot.drone.groundsdk.Ref;
+import com.parrot.drone.groundsdk.device.RemoteControl;
+import com.parrot.drone.groundsdk.value.EnumSetting;
+
 /**
- * This package embeds parts of google play_apk_expansion/zip_file library as provided in android framework sources.
- * Google APKExpansionSupport and ZipResourceFile classes are mostly unmodified, safe for visibility modifiers that have
- * been made package instead of public, import/package declarations that have been changed relatively to the current
- * package and {@code @SuppressWarnings("all")} directives that have been added on top level classes.
+ * Copilot peripheral interface for RemoteControl devices.
  * <p>
- * The {@link com.parrot.drone.groundsdk.internal.obb.Obb} class wraps the imported google library and provides a public
- * API for opening files contained in APK expansion files.
+ * Copilot allows to select the source of piloting commands, either the remote control (default) or the application.
+ * Selecting a source prevents the other one from sending any piloting command.<br>
+ * The piloting source is automatically reset to {@link Source#REMOTE_CONTROL remote control} when this one is
+ * disconnected from the phone.
+ * <p>
+ * This peripheral can be obtained from a {@link RemoteControl remote control} using:
+ * <pre>{@code remoteControl.getPeripheral(Copilot.class)}</pre>
+ *
+ * @see RemoteControl#getPeripheral(Class)
+ * @see RemoteControl#getPeripheral(Class, Ref.Observer)
  */
+public interface Copilot extends Peripheral {
 
-package com.parrot.drone.groundsdk.internal.obb;
+    /**
+     * Piloting source.
+     */
+    enum Source {
 
+        /** Remote control joysticks are used to pilot the drone. */
+        REMOTE_CONTROL,
+
+        /** Application controls are used to pilot the drone. */
+        APPLICATION
+    }
+
+    /**
+     * Gives access to the piloting source setting.
+     *
+     * @return piloting source setting
+     */
+    @NonNull
+    EnumSetting<Source> source();
+}

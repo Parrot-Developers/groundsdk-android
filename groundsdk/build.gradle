@@ -33,3 +33,31 @@ dependencies {
     androidTestImplementation hamcrest
     androidTestImplementation mockito
 }
+
+task javadoc(type: Javadoc) {
+    doFirst {
+        if (!JavaVersion.current().isJava11Compatible()) {
+            throw new TaskInstantiationException("Javadoc must be generated using JDK 11+")
+        }
+    }
+
+    exclude '**/internal/**'
+
+    afterEvaluate {
+        source android.sourceSets.main.java.srcDirs
+        classpath = files(android.bootClasspath)
+        destinationDir file("${buildDir}/doc")
+        android.libraryVariants.matching { it.name == 'release' }.all {
+            javaCompileProvider.with {
+                dependsOn it
+                classpath += get().with { files(classpath, destinationDir) }
+            }
+        }
+
+        options {
+            source android.compileOptions.sourceCompatibility.majorVersion
+            linksOffline 'http://d.android.com/reference/', "${android.sdkDirectory}/docs/reference"
+            addBooleanOption '-no-module-directories', true
+        }
+    }
+}

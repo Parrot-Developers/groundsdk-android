@@ -136,7 +136,7 @@ public class EngineBase {
      * Provides an interface to the engines controller.
      * <p>
      * This class is opaque to subclasses, which <strong>MUST</strong> forward the {@code Controller} instance
-     * through {@link #EngineBase(Controller) super} in their own constructor.
+     * through {@link EngineBase#EngineBase(Controller) super} in their own constructor.
      */
     protected static final class Controller {
 

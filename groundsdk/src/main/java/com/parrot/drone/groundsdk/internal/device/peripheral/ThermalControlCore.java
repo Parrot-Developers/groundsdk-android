@@ -34,6 +34,7 @@ package com.parrot.drone.groundsdk.internal.device.peripheral;
 
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.ThermalControl;
@@ -73,6 +74,15 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
         boolean setSensitivity(@NonNull Sensitivity sensitivity);
 
         /**
+         * Sets thermal camera calibration mdoe.
+         *
+         * @param mode calibration mode to set
+         *
+         * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
+         */
+        boolean setCalibrationMode(@NonNull Calibration.Mode mode);
+
+        /**
          * Sends the current emissivity value to the drone.
          *
          * @param value emissivity value to send
@@ -99,6 +109,13 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
          * @param rendering rendering configuration to send
          */
         void sendRendering(@NonNull Rendering rendering);
+
+        /**
+         * Requests thermal camera calibration.
+         *
+         * @return {@code true} if the operation could be initiated, otherwise {@code false}
+         */
+        boolean calibrate();
     }
 
     /** Backend that processes value changes from the user. */
@@ -113,6 +130,14 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
     @NonNull
     private final EnumSettingCore<Sensitivity> mSensitivitySetting;
 
+    /** Thermal camera calibration mode setting. */
+    @NonNull
+    private final EnumSettingCore<Calibration.Mode> mCalibrationModeSetting;
+
+    /** Thermal camera calibration interface, {@code null} if not supported by the drone. */
+    @Nullable
+    private CalibrationCore mCalibration;
+
     /**
      * Constructor.
      *
@@ -126,6 +151,14 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
                 backend::setMode);
         mSensitivitySetting = new EnumSettingCore<>(Sensitivity.HIGH_RANGE,
                 new SettingController(this::onSettingChange), backend::setSensitivity);
+        mCalibrationModeSetting = new EnumSettingCore<>(Calibration.Mode.class,
+                new SettingController(this::onSettingChange), backend::setCalibrationMode);
+    }
+
+    @Override
+    public void unpublish() {
+        super.unpublish();
+        mCalibration = null;
     }
 
     @NonNull
@@ -138,6 +171,12 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
     @Override
     public EnumSettingCore<Sensitivity> sensitivity() {
         return mSensitivitySetting;
+    }
+
+    @Nullable
+    @Override
+    public CalibrationCore calibration() {
+        return mCalibration;
     }
 
     @Override
@@ -168,6 +207,8 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
     @NonNull
     public ThermalControlCore cancelSettingsRollbacks() {
         mModeSetting.cancelRollback();
+        mSensitivitySetting.cancelRollback();
+        mCalibrationModeSetting.cancelRollback();
         return this;
     }
 
@@ -184,5 +225,33 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
         if (fromUser) {
             notifyUpdated();
         }
+    }
+
+    /** Core class for ThermalControl.Calibration. */
+    public final class CalibrationCore implements Calibration {
+
+        @NonNull
+        @Override
+        public EnumSettingCore<Mode> mode() {
+            return mCalibrationModeSetting;
+        }
+
+        @Override
+        public boolean calibrate() {
+            return mBackend.calibrate();
+        }
+    }
+
+    /**
+     * Creates thermal camera calibration interface if it doesn't exist yet and returns it.
+     *
+     * @return thermal camera calibration interface
+     */
+    @NonNull
+    public CalibrationCore createCalibrationIfNeeded() {
+        if (mCalibration == null) {
+            mCalibration = new CalibrationCore();
+        }
+        return mCalibration;
     }
 }

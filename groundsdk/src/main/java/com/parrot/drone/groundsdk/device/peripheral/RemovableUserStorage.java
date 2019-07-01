@@ -65,6 +65,9 @@ public interface RemovableUserStorage extends Peripheral {
         /** Media rejected since it's too slow for operation. */
         MEDIA_TOO_SLOW,
 
+        /** Media cannot be mounted since the drone acts as a USB mass-storage device. */
+        USB_MASS_STORAGE,
+
         /** Media is being mounted. */
         MOUNTING,
 

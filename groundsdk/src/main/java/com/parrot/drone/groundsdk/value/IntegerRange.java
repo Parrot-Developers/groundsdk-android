@@ -103,10 +103,7 @@ public interface IntegerRange {
     /**
      * Scales a value from a given range to this range.
      * <p>
-     * The given range should respect the following condition:
-     * <pre>
-     * src.getLower() < src.getUpper()
-     * </pre>
+     * The given range should respect the following condition: {@code src.getLower() < src.getUpper()}
      *
      * @param value value to scale
      * @param src   range to scale from

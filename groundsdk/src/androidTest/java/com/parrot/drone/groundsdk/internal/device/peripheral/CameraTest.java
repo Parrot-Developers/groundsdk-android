@@ -4760,6 +4760,7 @@ public class CameraTest {
                 CameraRecording.Resolution.RES_1080P,
                 CameraRecording.Resolution.RES_1080P_4_3,
                 CameraRecording.Resolution.RES_720P,
+                CameraRecording.Resolution.RES_720P_4_3,
                 CameraRecording.Resolution.RES_480P));
 
         assertThat(EnumSet.allOf(CameraRecording.Framerate.class), contains(

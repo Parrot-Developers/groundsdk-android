@@ -33,7 +33,6 @@
 package com.parrot.drone.groundsdk.internal.engine.system;
 
 import android.content.Context;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -54,7 +53,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -70,6 +68,8 @@ public class LocationMonitorTests {
 
     private LocationManager mMockLocationManager;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+
     private SystemLocation mSystemLocation;
 
     private SystemLocation.Monitor mMonitor1, mMonitor2;
@@ -84,7 +84,8 @@ public class LocationMonitorTests {
         mMonitor2 = Mockito.mock(SystemLocation.Monitor.class);
         mToken = new Object();
 
-        mSystemLocation = new SystemLocationCore(mMockContext, mMockLocationManager, null,
+        mFusedLocationClient = Mockito.mock(FusedLocationProviderClient.class);
+        mSystemLocation = new SystemLocationCore(mMockContext, mMockLocationManager, mFusedLocationClient,
                 MOCK_PREFERRED_TIME_INTERVAL, MOCK_FASTEST_TIME_INTERVAL, MOCK_MIN_SPACE_INTERVAL);
     }
 
@@ -132,17 +133,13 @@ public class LocationMonitorTests {
 
     @Test
     public void testMonitoringFusedLocation() {
-        FusedLocationProviderClient fusedLocationClient = Mockito.mock(FusedLocationProviderClient.class);
-        SystemLocation systemLocation = new SystemLocationCore(mMockContext, mMockLocationManager, fusedLocationClient,
-                MOCK_PREFERRED_TIME_INTERVAL, MOCK_FASTEST_TIME_INTERVAL, MOCK_MIN_SPACE_INTERVAL);
-
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         ArgumentCaptor<LocationRequest> locationRequestCaptor = ArgumentCaptor.forClass(LocationRequest.class);
         ArgumentCaptor<LocationCallback> locationCallbackCaptor = ArgumentCaptor.forClass(LocationCallback.class);
 
-        systemLocation.monitorWith(mMonitor1);
+        mSystemLocation.monitorWith(mMonitor1);
 
-        verify(fusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
                 locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
         assertThat(locationRequestCaptor.getValue(), notNullValue());
         assertThat(locationRequestCaptor.getValue().getInterval(), is((long) MOCK_PREFERRED_TIME_INTERVAL));
@@ -152,18 +149,19 @@ public class LocationMonitorTests {
     }
 
     @Test
-    public void testMonitoringAllProvidersLocation() {
+    public void testMonitoringGpsLocation() {
+        SystemLocation systemLocation = new SystemLocationCore(mMockContext, mMockLocationManager, null,
+                MOCK_PREFERRED_TIME_INTERVAL, MOCK_FASTEST_TIME_INTERVAL, MOCK_MIN_SPACE_INTERVAL);
+
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
-        ArgumentCaptor<Criteria> criteriaCaptor = ArgumentCaptor.forClass(Criteria.class);
         ArgumentCaptor<LocationListener> locationListenerCaptor = ArgumentCaptor.forClass(LocationListener.class);
 
-        mSystemLocation.monitorWith(mMonitor1);
+        systemLocation.monitorWith(mMonitor1);
 
         verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                criteriaCaptor.capture(), locationListenerCaptor.capture(), eq(null));
-        assertThat(criteriaCaptor.getValue(), notNullValue());
+                eq(LocationManager.GPS_PROVIDER), eq((long) MOCK_PREFERRED_TIME_INTERVAL),
+                eq((float) MOCK_MIN_SPACE_INTERVAL), locationListenerCaptor.capture());
         assertThat(locationListenerCaptor.getValue(), notNullValue());
     }
 
@@ -171,15 +169,16 @@ public class LocationMonitorTests {
     public void testDenyWifiUsage() {
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        ArgumentCaptor<LocationRequest> locationRequestCaptor = ArgumentCaptor.forClass(LocationRequest.class);
+        ArgumentCaptor<LocationCallback> locationCallbackCaptor = ArgumentCaptor.forClass(LocationCallback.class);
         ArgumentCaptor<LocationListener> locationListenerCaptor = ArgumentCaptor.forClass(LocationListener.class);
         Object token2 = new Object();
 
-        // wifi usage is allowed, location monitoring uses all providers
+        // wifi usage is allowed, location monitoring uses fused provider
         mSystemLocation.monitorWith(mMonitor1);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage is disallowed, location monitoring is restarted with GPS provider
         mSystemLocation.denyWifiUsage(mToken);
@@ -195,12 +194,11 @@ public class LocationMonitorTests {
                 eq(LocationManager.GPS_PROVIDER), eq((long) MOCK_PREFERRED_TIME_INTERVAL),
                 eq((float) MOCK_MIN_SPACE_INTERVAL), locationListenerCaptor.capture());
 
-        // wifi usage is forced, location monitoring is restarted with all providers
+        // wifi usage is forced, location monitoring is restarted with fused provider
         mSystemLocation.enforceWifiUsage(mToken);
 
-        verify(mMockLocationManager, Mockito.times(2)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(2)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage not forced anymore, location monitoring is restarted with GPS provider
         mSystemLocation.revokeWifiUsageEnforcement(mToken);
@@ -216,55 +214,51 @@ public class LocationMonitorTests {
                 eq(LocationManager.GPS_PROVIDER), eq((long) MOCK_PREFERRED_TIME_INTERVAL),
                 eq((float) MOCK_MIN_SPACE_INTERVAL), locationListenerCaptor.capture());
 
-        // wifi usage is allowed for all token, location monitoring is restarted with all providers
+        // wifi usage is allowed for all token, location monitoring is restarted with fused provider
         mSystemLocation.revokeWifiUsageDenial(token2);
 
-        verify(mMockLocationManager, Mockito.times(3)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(3)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
     }
 
     @Test
     public void testForceWifiUsage() {
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         Mockito.when(mMockLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        ArgumentCaptor<LocationRequest> locationRequestCaptor = ArgumentCaptor.forClass(LocationRequest.class);
+        ArgumentCaptor<LocationCallback> locationCallbackCaptor = ArgumentCaptor.forClass(LocationCallback.class);
         ArgumentCaptor<LocationListener> locationListenerCaptor = ArgumentCaptor.forClass(LocationListener.class);
         Object token2 = new Object();
 
-        // wifi usage is allowed, location monitoring uses all providers
+        // wifi usage is allowed, location monitoring uses fused provider
         mSystemLocation.monitorWith(mMonitor1);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage is forced, nothing happens
         mSystemLocation.enforceWifiUsage(mToken);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage is forced for a second token, nothing happens
         mSystemLocation.enforceWifiUsage(token2);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage is denied, nothing happens
         mSystemLocation.denyWifiUsage(mToken);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi enforcement is revoked for a token, nothing happens
         mSystemLocation.revokeWifiUsageEnforcement(mToken);
 
-        verify(mMockLocationManager, Mockito.times(1)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(1)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi enforcement is revoked for second token, location monitoring is restarted with GPS provider
         mSystemLocation.revokeWifiUsageEnforcement(token2);
@@ -273,26 +267,23 @@ public class LocationMonitorTests {
                 eq(LocationManager.GPS_PROVIDER), eq((long) MOCK_PREFERRED_TIME_INTERVAL),
                 eq((float) MOCK_MIN_SPACE_INTERVAL), locationListenerCaptor.capture());
 
-        // wifi usage is forced again, location monitoring is restarted with all providers
+        // wifi usage is forced again, location monitoring is restarted with fused provider
         mSystemLocation.enforceWifiUsage(mToken);
 
-        verify(mMockLocationManager, Mockito.times(2)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(2)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi denial is revoked, nothing happens
         mSystemLocation.revokeWifiUsageDenial(mToken);
 
-        verify(mMockLocationManager, Mockito.times(2)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(2)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi enforcement is revoked, nothing happens
         mSystemLocation.revokeWifiUsageEnforcement(mToken);
 
-        verify(mMockLocationManager, Mockito.times(2)).requestLocationUpdates(
-                eq((long) MOCK_PREFERRED_TIME_INTERVAL), eq((float) MOCK_MIN_SPACE_INTERVAL),
-                any(), locationListenerCaptor.capture(), eq(null));
+        verify(mFusedLocationClient, Mockito.times(2)).requestLocationUpdates(
+                locationRequestCaptor.capture(), locationCallbackCaptor.capture(), eq(null));
 
         // wifi usage is denied, location monitoring is restarted with GPS provider
         mSystemLocation.denyWifiUsage(mToken);

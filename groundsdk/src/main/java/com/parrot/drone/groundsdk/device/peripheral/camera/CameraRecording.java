@@ -81,6 +81,9 @@ public final class CameraRecording {
         /** 1280x720 pixels (HD). */
         RES_720P,
 
+        /** 960x720 pixels (HD, 4:3 aspect ratio). */
+        RES_720P_4_3,
+
         /** 856x480 pixels. */
         RES_480P
     }

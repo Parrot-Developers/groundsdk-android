@@ -30,15 +30,43 @@
  *
  */
 
-/**
- * This package embeds parts of google play_apk_expansion/zip_file library as provided in android framework sources.
- * Google APKExpansionSupport and ZipResourceFile classes are mostly unmodified, safe for visibility modifiers that have
- * been made package instead of public, import/package declarations that have been changed relatively to the current
- * package and {@code @SuppressWarnings("all")} directives that have been added on top level classes.
- * <p>
- * The {@link com.parrot.drone.groundsdk.internal.obb.Obb} class wraps the imported google library and provides a public
- * API for opening files contained in APK expansion files.
- */
+package com.parrot.drone.groundsdkdemo.settings;
 
-package com.parrot.drone.groundsdk.internal.obb;
+import android.os.Bundle;
 
+import com.parrot.drone.groundsdk.device.RemoteControl;
+import com.parrot.drone.groundsdk.device.peripheral.Copilot;
+import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
+import com.parrot.drone.groundsdkdemo.R;
+
+import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
+import static com.parrot.drone.groundsdkdemo.settings.SettingViewAdapters.updateSetting;
+
+public class CopilotSettingsActivity extends GroundSdkActivityBase {
+
+    private MultiChoiceSettingView<Copilot.Source> mSourceView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        String deviceUid = getIntent().getStringExtra(EXTRA_DEVICE_UID);
+        RemoteControl rc = groundSdk().getRemoteControl(deviceUid);
+        if (rc == null) {
+            finish();
+            return;
+        }
+
+        setContentView(R.layout.activity_copilot_settings);
+
+        mSourceView = findViewById(R.id.source);
+
+        rc.getPeripheral(Copilot.class, copilot -> {
+            if (copilot != null) {
+                updateSetting(mSourceView, copilot.source());
+            } else {
+                finish();
+            }
+        });
+    }
+}

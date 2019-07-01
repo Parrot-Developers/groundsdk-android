@@ -34,6 +34,7 @@ package com.parrot.drone.groundsdk.device.peripheral;
 
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -286,6 +287,56 @@ public interface ThermalControl extends Peripheral {
      */
     @NonNull
     EnumSetting<Sensitivity> sensitivity();
+
+    /**
+     * Thermal camera calibration interface.
+     * <p>
+     * Allows to setup thermal calibration mode, as well as to trigger manual calibration.
+     */
+    interface Calibration {
+
+        /** Thermal camera calibration mode. */
+        enum Mode {
+
+            /** Calibration is managed automatically by the drone and may occur at any time, when required. */
+            AUTOMATIC,
+
+            /**
+             * Calibration is never triggered automatically by the drone but only upon explicit user request.
+             *
+             * @see #calibrate()
+             */
+            MANUAL
+        }
+
+        /**
+         * Gives access to the thermal camera calibration mode setting.
+         * <p>
+         * This setting allows to change the mode used for thermal camera calibration.
+         * <p>
+         * This setting remains available when the drone is not connected.
+         *
+         * @return calibration mode setting
+         */
+        @NonNull
+        EnumSetting<Mode> mode();
+
+        /**
+         * Triggers thermal camera calibration.
+         *
+         * @return {@code true} if the calibration request was sent to the drone, otherwise {@code false}
+         */
+        boolean calibrate();
+    }
+
+    /**
+     * Gives access to the thermal camera calibration interface.
+     *
+     * @return thermal camera calibration interface, or {@code null} in case the drone does not provide calibration
+     *         control
+     */
+    @Nullable
+    Calibration calibration();
 
     /**
      * Sends the current emissivity value to the drone.

@@ -30,7 +30,7 @@
  *
  */
 
-package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi;
+package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.thermalcontrol;
 
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngineTestBase;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -339,6 +339,121 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
     }
 
     @Test
+    public void testCalibrationMode() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeThermalCapabilities(
+                        ArsdkFeatureThermal.Mode.toBitField(ArsdkFeatureThermal.Mode.values())),
+                ArsdkEncoder.encodeThermalShutterMode(ArsdkFeatureThermal.ShutterTrigger.AUTO)));
+
+        ThermalControl.Calibration calibration = mThermal.calibration();
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(calibration, notNullValue());
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // change to manual mode
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.thermalSetShutterMode(
+                ArsdkFeatureThermal.ShutterTrigger.MANUAL)));
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        assertThat(mChangeCnt, is(2));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpdating()));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeThermalShutterMode(
+                ArsdkFeatureThermal.ShutterTrigger.MANUAL));
+
+        assertThat(mChangeCnt, is(3));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpToDate()));
+
+        // change to automatic mode
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.thermalSetShutterMode(
+                ArsdkFeatureThermal.ShutterTrigger.AUTO)));
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.AUTOMATIC);
+
+        assertThat(mChangeCnt, is(4));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpdating()));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeThermalShutterMode(
+                ArsdkFeatureThermal.ShutterTrigger.AUTO));
+
+        assertThat(mChangeCnt, is(5));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // disconnect
+        disconnectDrone(mDrone, 1);
+        resetEngine();
+
+        calibration = mThermal.calibration();
+        assertThat(calibration, notNullValue());
+
+        // check still in automatic mode
+        assertThat(mChangeCnt, is(0));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
+                settingIsUpToDate()));
+
+        // change calibration mode offline
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        assertThat(mChangeCnt, is(1));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpToDate()));
+
+        // reconnect
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1,
+                        ArsdkEncoder.encodeThermalCapabilities(
+                                ArsdkFeatureThermal.Mode.toBitField(ArsdkFeatureThermal.Mode.values())),
+                        ArsdkEncoder.encodeThermalShutterMode(ArsdkFeatureThermal.ShutterTrigger.AUTO))
+                // manual calibration mode should be sent to drone
+                .expect(new Expectation.Command(1, ExpectedCmd.thermalSetShutterMode(
+                        ArsdkFeatureThermal.ShutterTrigger.MANUAL))));
+
+        mMockArsdkCore.assertNoExpectation();
+        assertThat(mChangeCnt, is(1));
+        assertThat(calibration.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Calibration.Mode.class)),
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpToDate()));
+    }
+
+    @Test
+    public void testCalibrate() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeThermalCapabilities(
+                        ArsdkFeatureThermal.Mode.toBitField(ArsdkFeatureThermal.Mode.values())),
+                ArsdkEncoder.encodeThermalShutterMode(ArsdkFeatureThermal.ShutterTrigger.AUTO)));
+
+        ThermalControl.Calibration calibration = mThermal.calibration();
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(calibration, notNullValue());
+
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.thermalTriggShutter()));
+        calibration.calibrate();
+    }
+
+    @Test
     public void testBackgroundTemperature() {
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeThermalCapabilities(
@@ -529,11 +644,22 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeThermalCapabilities(
                         ArsdkFeatureThermal.Mode.toBitField(ArsdkFeatureThermal.Mode.values())),
-                ArsdkEncoder.encodeThermalMode(ArsdkFeatureThermal.Mode.DISABLED)));
+                ArsdkEncoder.encodeThermalMode(ArsdkFeatureThermal.Mode.DISABLED),
+                ArsdkEncoder.encodeThermalSensitivity(ArsdkFeatureThermal.Range.LOW),
+                ArsdkEncoder.encodeThermalShutterMode(ArsdkFeatureThermal.ShutterTrigger.AUTO)));
+
+        ThermalControl.Calibration calibration = mThermal.calibration();
+        assertThat(calibration, notNullValue());
 
         assertThat(mChangeCnt, is(1));
         assertThat(mThermal.mode(), allOf(
                 enumSettingValueIs(ThermalControl.Mode.DISABLED),
+                settingIsUpToDate()));
+        assertThat(mThermal.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.LOW_RANGE),
+                settingIsUpToDate()));
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.AUTOMATIC),
                 settingIsUpToDate()));
 
         // mock user modifies settings
@@ -546,14 +672,40 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
                 settingIsUpdating()));
 
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.thermalSetSensitivity(
+                ArsdkFeatureThermal.Range.HIGH)));
+        mThermal.sensitivity().setValue(ThermalControl.Sensitivity.HIGH_RANGE);
+
+        assertThat(mChangeCnt, is(3));
+        assertThat(mThermal.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.HIGH_RANGE),
+                settingIsUpdating()));
+
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.thermalSetShutterMode(
+                ArsdkFeatureThermal.ShutterTrigger.MANUAL)));
+        calibration.mode().setValue(ThermalControl.Calibration.Mode.MANUAL);
+
+        assertThat(mChangeCnt, is(4));
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
+                settingIsUpdating()));
+
         // disconnect
         disconnectDrone(mDrone, 1);
 
         // setting should be updated to user value
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(5));
 
         assertThat(mThermal.mode(), allOf(
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
+                settingIsUpToDate()));
+
+        assertThat(mThermal.sensitivity(), allOf(
+                enumSettingValueIs(ThermalControl.Sensitivity.HIGH_RANGE),
+                settingIsUpToDate()));
+
+        assertThat(calibration.mode(), allOf(
+                enumSettingValueIs(ThermalControl.Calibration.Mode.MANUAL),
                 settingIsUpToDate()));
     }
 }

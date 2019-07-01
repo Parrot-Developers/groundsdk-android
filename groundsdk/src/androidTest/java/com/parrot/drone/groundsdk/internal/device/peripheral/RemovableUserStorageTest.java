@@ -104,29 +104,33 @@ public class RemovableUserStorageTest {
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SMALL));
         assertThat(mChangeCnt, is(2));
 
+        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.USB_MASS_STORAGE).notifyUpdated();
+        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.USB_MASS_STORAGE));
+        assertThat(mChangeCnt, is(3));
+
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.MEDIA_TOO_SLOW).notifyUpdated();
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SLOW));
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(4));
 
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.MOUNTING).notifyUpdated();
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MOUNTING));
-        assertThat(mChangeCnt, is(4));
+        assertThat(mChangeCnt, is(5));
 
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.NEED_FORMAT).notifyUpdated();
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
-        assertThat(mChangeCnt, is(5));
+        assertThat(mChangeCnt, is(6));
 
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.READY).notifyUpdated();
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
-        assertThat(mChangeCnt, is(6));
+        assertThat(mChangeCnt, is(7));
 
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.ERROR).notifyUpdated();
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.ERROR));
-        assertThat(mChangeCnt, is(7));
+        assertThat(mChangeCnt, is(8));
 
         // Check same state does not trigger a change
         mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.ERROR).notifyUpdated();
-        assertThat(mChangeCnt, is(7));
+        assertThat(mChangeCnt, is(8));
     }
 
     @Test

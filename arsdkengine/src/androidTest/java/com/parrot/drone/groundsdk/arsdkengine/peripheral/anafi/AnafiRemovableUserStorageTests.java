@@ -152,26 +152,32 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SLOW));
         assertThat(mChangeCnt, is(7));
 
+        // Drone acts as a USB mass-storage device
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.USB_MASS_STORAGE,
+                ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.USB_MASS_STORAGE));
+        assertThat(mChangeCnt, is(8));
+
         // Mounting
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MOUNTING));
-        assertThat(mChangeCnt, is(8));
+        assertThat(mChangeCnt, is(9));
 
         // Need format
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
-        assertThat(mChangeCnt, is(9));
+        assertThat(mChangeCnt, is(10));
 
         // Formatting
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
-        assertThat(mChangeCnt, is(10));
+        assertThat(mChangeCnt, is(11));
 
         // Ready
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
@@ -179,7 +185,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
-        assertThat(mChangeCnt, is(11));
+        assertThat(mChangeCnt, is(12));
 
         // Media error
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStopMonitoring()));
@@ -187,14 +193,14 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.ERROR, 0, 1, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.ERROR));
-        assertThat(mChangeCnt, is(12));
+        assertThat(mChangeCnt, is(13));
 
         // No media detected
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.UNDETECTED,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
-        assertThat(mChangeCnt, is(13));
+        assertThat(mChangeCnt, is(14));
     }
 
     @Test

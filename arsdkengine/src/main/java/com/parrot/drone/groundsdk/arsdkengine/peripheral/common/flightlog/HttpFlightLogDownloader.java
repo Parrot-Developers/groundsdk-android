@@ -127,7 +127,7 @@ public final class HttpFlightLogDownloader extends FlightLogDownloadController {
             String name = record.getName();
             assert url != null && name != null;
 
-            File dest = new File(mStorage.getWorkDir(), name);
+            File dest = new File(mStorage.getWorkDir(), mDeviceController.getUid() + "_" + name);
             mHttpClient.downloadRecord(url, dest, (status, code) -> {
                 if (status == HttpRequest.Status.CANCELED) {
                     onDownloadEnd(false);

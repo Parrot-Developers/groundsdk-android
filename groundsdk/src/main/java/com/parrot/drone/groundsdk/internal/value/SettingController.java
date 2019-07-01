@@ -41,7 +41,7 @@ import com.parrot.drone.groundsdk.internal.tasks.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Delegate for setting implementation that takes charge of change notifications, updating state & timeout/rollback
+ * Delegate for setting implementation that takes charge of change notifications, updating state and timeout/rollback
  * management.
  */
 public final class SettingController {

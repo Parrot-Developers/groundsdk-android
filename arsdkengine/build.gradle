@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation project(':groundsdk')
     implementation project(':sdkcore')
-    implementation supportCoreUtils // used by DeviceCtrlCompat
     implementation gson
 
     implementation retrofit

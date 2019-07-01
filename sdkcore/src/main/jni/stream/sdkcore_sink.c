@@ -60,17 +60,14 @@ struct sdkcore_sink {
 
 /**
  * Called back when a new frame has been pushed in the sink's queue.
- * @param[in] fd: fd of the pomp_evt that triggered this callback
- * @param[in] revents: events that occurred
+ * @param[in] evt: pomp_evt that triggered this callback
  * @param[in] userdata: sdkcore_sink instance
  */
-static void pdraw_queue_push(int fd, uint32_t revents, void *userdata)
+static void pdraw_queue_push(struct pomp_evt *evt, void *userdata)
 {
 	struct sdkcore_sink *self = userdata;
 	RETURN_IF_FAILED(self != NULL, -EINVAL);
 	RETURN_IF_FAILED(self->sink.self != NULL, -EPROTO);
-
-	LOG_IF_ERR(pomp_evt_clear(self->sink.event));
 
 	struct vbuf_buffer *buffer = NULL;
 	int res = vbuf_queue_pop(self->sink.queue, 0, &buffer);
@@ -197,11 +194,7 @@ int sdkcore_sink_start(struct sdkcore_sink *self, struct sdkcore_stream *stream,
 	res = self->sink.event ? 0 : -ENOTSUP;
 	GOTO_IF_ERR(res, err_stop_sink);
 
-	intptr_t fd = pomp_evt_get_fd(self->sink.event);
-	res = fd;
-	GOTO_IF_ERR(res, err_stop_sink);
-
-	res = pomp_loop_add(loop, fd, POMP_FD_EVENT_IN, pdraw_queue_push, self);
+	res = pomp_evt_attach_to_loop(self->sink.event, loop, pdraw_queue_push, self);
 	GOTO_IF_ERR(res, err_stop_sink);
 
 	LOGD("Sink %p START [stream: %p, pdraw: %p]", self, stream,
@@ -249,12 +242,7 @@ int sdkcore_sink_stop(struct sdkcore_sink *self)
 	self->sink.pdraw = NULL;
 	self->sink.self = NULL;
 
-	intptr_t fd = pomp_evt_get_fd(self->sink.event);
-	if (fd >= 0) {
-		LOG_IF_ERR(pomp_loop_remove(self->sink.loop, fd));
-	} else {
-		LOG_ERR(fd);
-	}
+	LOG_IF_ERR(pomp_evt_detach_from_loop(self->sink.event, self->sink.loop));
 
 	self->sink.event = NULL;
 	self->sink.loop = NULL;

@@ -348,8 +348,10 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                         ULog.d(TAG_FLIGHTPLAN, "onAvailabilityStateChanged [state: " + availabilityState + "]");
                     }
                     mFlightPlanAvailable = availabilityState == 1;
-                    mPilotingItf.resetUnavailabilityReasons();
-                    updateMissingFileReason();
+                    if (mFlightPlanAvailable) {
+                        mPilotingItf.resetUnavailabilityReasons();
+                        updateMissingFileReason();
+                    }
                     updateAvailability();
                 }
 
