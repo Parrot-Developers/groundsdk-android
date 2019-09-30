@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.http.HttpClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
@@ -85,7 +85,7 @@ public class HttpFlightPlanClient extends HttpClient {
     @NonNull
     public HttpRequest uploadFlightPlan(@NonNull File flightPlan,
                                         @NonNull HttpRequest.ResultCallback<String> callback) {
-        Call<String> uploadCall = mService.upload(RequestBody.create(null, flightPlan));
+        Call<String> uploadCall = mService.upload(RequestBody.create(flightPlan, null));
         uploadCall.enqueue(new Callback<String>() {
 
             @Override

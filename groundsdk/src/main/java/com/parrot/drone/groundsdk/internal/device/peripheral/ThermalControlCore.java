@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral;
 
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.ThermalControl;
@@ -74,7 +74,7 @@ public final class ThermalControlCore extends SingletonComponentCore implements 
         boolean setSensitivity(@NonNull Sensitivity sensitivity);
 
         /**
-         * Sets thermal camera calibration mdoe.
+         * Sets thermal camera calibration mode.
          *
          * @param mode calibration mode to set
          *

@@ -33,13 +33,14 @@
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.gamepad;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.CallSuper;
-import android.support.annotation.IntRange;
-import android.support.annotation.LongDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.util.SparseArray;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
+import androidx.annotation.LongDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.RCController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.RCPeripheralController;
@@ -360,6 +361,19 @@ abstract class GamepadControllerBase extends RCPeripheralController {
     }
 
     /**
+     * Enables or disables volatile mapping.
+     *
+     * @param enable {@code true} to enable volatile mapping, {@code false} to disable it
+     */
+    final void enableVolatileMapping(boolean enable) {
+        if (enable) {
+            sendCommand(ArsdkFeatureMapper.encodeEnterVolatileMapping());
+        } else {
+            sendCommand(ArsdkFeatureMapper.encodeExitVolatileMapping());
+        }
+    }
+
+    /**
      * Processes a change of the active drone model.
      *
      * @param droneModel new active drone model
@@ -503,6 +517,13 @@ abstract class GamepadControllerBase extends RCPeripheralController {
      * @param value current axis value
      */
     abstract void onAxisEvent(@AxisMask long axis, @IntRange(from = -100, to = 100) int value);
+
+    /**
+     * Notifies reception of volatile mapping state.
+     *
+     * @param enabled {@code true} when volatile mapping is enabled, otherwise {@code false}
+     */
+    abstract void onVolatileMapping(boolean enabled);
 
     /** Backend of VirtualGamepadCore implementation. */
     @SuppressWarnings("FieldCanBeLocal")
@@ -751,6 +772,15 @@ abstract class GamepadControllerBase extends RCPeripheralController {
             } else {
                 processActiveDroneModelChange(droneModel);
             }
+        }
+
+        @Override
+        public void onVolatileMappingState(int active) {
+            if (ULog.d(TAG_GAMEPAD)) {
+                ULog.d(TAG_GAMEPAD, "onVolatileMappingState [active: " + active + "]");
+            }
+
+            onVolatileMapping(active == 1);
         }
     };
 

@@ -34,7 +34,8 @@ package com.parrot.drone.groundsdk.internal.device.peripheral.media;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.test.R;
 
@@ -62,7 +63,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class MediaThumbnailCacheTest {
 
     private static final Bitmap BITMAP = BitmapFactory.decodeResource(
-            InstrumentationRegistry.getContext().getResources(), R.drawable.test_thumbnail);
+            ApplicationProvider.getApplicationContext().getResources(), R.drawable.test_thumbnail);
 
     @Mock
     private MediaItemCore mMedia;

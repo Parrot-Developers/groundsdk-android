@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.utility;
 
 import android.location.Address;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.Monitorable;
 import com.parrot.drone.groundsdk.internal.engine.EngineBase;

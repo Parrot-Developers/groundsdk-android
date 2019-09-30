@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.hud;
 
 import android.content.Context;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class CustomDrawer extends DrawerLayout {
 

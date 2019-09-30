@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 abstract class DeviceRefContent<DEVICE, RT> extends RefContent<RT> {
 

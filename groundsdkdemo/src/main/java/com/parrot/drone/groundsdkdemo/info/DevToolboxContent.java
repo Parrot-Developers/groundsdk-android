@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.DevToolbox;
@@ -57,6 +58,7 @@ class DevToolboxContent extends PeripheralContent<Drone, DevToolbox> {
 
     private static final class ViewHolder extends PeripheralContent.ViewHolder<DevToolboxContent, DevToolbox> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mDebugSettingsButton;
 
@@ -71,6 +73,7 @@ class DevToolboxContent extends PeripheralContent<Drone, DevToolbox> {
 
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

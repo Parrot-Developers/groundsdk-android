@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdkdemo.settings;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.pilotingitf.FlightPlanPilotingItf;

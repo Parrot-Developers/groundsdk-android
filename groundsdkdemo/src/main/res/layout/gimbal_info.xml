@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -31,15 +32,15 @@
   ~
   -->
 
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:contentPadding="@dimen/content_margin"
-    card_view:cardCornerRadius="4dp">
+    card_view:cardCornerRadius="4dp"
+    card_view:contentPadding="@dimen/content_margin">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -51,15 +52,15 @@
                 android:id="@android:id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical|start"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_weight="1"
+                android:text="@string/peripheral_gimbal"
                 android:textAllCaps="true"
-                android:text="@string/peripheral_gimbal"/>
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_edit"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
@@ -69,8 +70,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_supported_axes"/>
+            <TextView android:text="@string/property_gimbal_supported_axes"/>
 
             <TextView
                 android:id="@+id/supported_axes"
@@ -81,8 +81,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_locked_axes"/>
+            <TextView android:text="@string/property_gimbal_locked_axes"/>
 
             <TextView
                 android:id="@+id/locked_axes"
@@ -93,8 +92,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_stabilized_axes"/>
+            <TextView android:text="@string/property_gimbal_stabilized_axes"/>
 
             <TextView
                 android:id="@+id/stabilized_axes"
@@ -105,8 +103,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_bounds"/>
+            <TextView android:text="@string/property_gimbal_bounds"/>
 
             <TextView
                 android:id="@+id/bounds"
@@ -117,8 +114,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_max_speeds"/>
+            <TextView android:text="@string/property_gimbal_max_speeds"/>
 
             <TextView
                 android:id="@+id/max_speeds"
@@ -129,20 +125,29 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_attitude"/>
+            <TextView android:text="@string/property_gimbal_absolute_attitude"/>
 
             <TextView
-                android:id="@+id/attitude"
+                android:id="@+id/absolute_attitude"
                 android:layout_weight="1"
                 android:gravity="center_vertical|end"
-                tools:text="PITCH=1.65, ROLL=2.24"/>
+                tools:text="PITCH=1.65, ROLL=0.00"/>
         </TableRow>
 
         <TableRow>
 
+            <TextView android:text="@string/property_gimbal_relative_attitude"/>
+
             <TextView
-                android:text="@string/property_gimbal_calibrated"/>
+                android:id="@+id/relative_attitude"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="PITCH=23.45, ROLL=2.24"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/property_gimbal_calibrated"/>
 
             <TextView
                 android:id="@+id/calibrated"
@@ -153,8 +158,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_gimbal_errors"/>
+            <TextView android:text="@string/property_gimbal_errors"/>
 
             <TextView
                 android:id="@+id/errors"
@@ -166,25 +170,25 @@
         <LinearLayout>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_offsets_correction"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:text="@string/action_start_offsets_correction"
                 tools:ignore="ContentDescription"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_calibrate"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:text="@string/action_calibrate"
                 tools:ignore="ContentDescription"/>
         </LinearLayout>
 
     </TableLayout>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

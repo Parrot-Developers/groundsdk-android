@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.flightdata;
 
 import android.content.Context;
-import android.support.annotation.RawRes;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.RawRes;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -915,7 +916,7 @@ public class PudAdapterTests {
     }
 
     private static void testRealValidPud(@RawRes int binaryPudRes, @RawRes int jsonPudRes) {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         JsonParser parser = new JsonParser();
         JsonElement expectedJson = parser.parse(new InputStreamReader(context.getResources().openRawResource(

@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.Beeper;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
@@ -68,6 +69,7 @@ class BeeperContent extends PeripheralContent<Peripheral.Provider, Beeper> {
                     R.string.action_stop_alert_sound : R.string.action_start_alert_sound);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

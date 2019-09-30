@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.http.HttpClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
@@ -85,7 +85,7 @@ public class HttpEphemerisClient extends HttpClient {
     @NonNull
     public HttpRequest uploadEphemeris(@NonNull File ephemeris,
                                        @NonNull HttpRequest.StatusCallback callback) {
-        Call<Void> uploadCall = mService.upload(RequestBody.create(null, ephemeris));
+        Call<Void> uploadCall = mService.upload(RequestBody.create(ephemeris, null));
         uploadCall.enqueue(new Callback<Void>() {
 
             @Override

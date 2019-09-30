@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdk.arsdkengine;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MockSharedPreferences;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -106,7 +107,7 @@ public class ArsdkEngineTestBase {
     @CallSuper
     public void setUp() {
         doReturn(new MockSharedPreferences()).when(mContext).getSharedPreferences(any(), anyInt());
-        doReturn(InstrumentationRegistry.getTargetContext().getResources()).when(mContext).getResources();
+        doReturn(ApplicationProvider.getApplicationContext().getResources()).when(mContext).getResources();
         TestExecutor.setup();
         GroundSdkConfig.loadDefaults();
         mDroneStore = new DeviceStoreCore.Drone();

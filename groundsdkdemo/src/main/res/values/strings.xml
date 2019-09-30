@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -51,6 +52,7 @@
     <string name="title_activity_leds_settings">LEDs Settings</string>
     <string name="title_activity_firmware_manager">Firmwares</string>
     <string name="title_activity_drone_finder">Drone Finder</string>
+    <string name="title_activity_sc2_settings">Gamepad settings</string>
     <string name="title_activity_sc2_grab">Inputs grab setup</string>
     <string name="title_activity_sc2_mapping">Mappings</string>
     <string name="title_activity_sc2_axes_setup">Axes setup</string>
@@ -61,6 +63,7 @@
     <string name="title_activity_thermal_settings">Thermal Settings</string>
     <string name="title_activity_user_account">User Account</string>
     <string name="title_activity_facilities">Facilities</string>
+    <string name="title_activity_piloting_control">Piloting Control</string>
     <string name="title_dialog_password">Enter password</string>
     <string name="title_dialog_download_media">Downloading media</string>
     <string name="title_dialog_delete_media">Deleting media</string>
@@ -80,6 +83,7 @@
     <string name="no_value">--</string>
     <string name="no_error">No error</string>
     <string name="action_hud">HUD</string>
+    <string name="action_hmd">HMD</string>
     <string name="action_forget">Forget</string>
     <string name="action_connect">Connect</string>
     <string name="action_disconnect">Disconnect</string>
@@ -104,6 +108,7 @@
     <string name="action_update">Update</string>
     <string name="action_factory_reset">Factory reset</string>
     <string name="action_reset_settings">Reset settings</string>
+    <string name="action_reset">Reset</string>
     <string name="action_start_alert_sound">Start alert</string>
     <string name="action_stop_alert_sound">Stop alert</string>
     <string name="action_edit_axes_setup">Axes setup</string>
@@ -197,6 +202,7 @@
     <string name="property_virtual_gamepad_state">State</string>
     <string name="property_virtual_gamepad_last_event"><u>Last nav. event</u>:</string>
     <string name="property_sc2_gamepad_active_model">Active model</string>
+    <string name="property_sc2_gamepad_volatile_mapping">Volatile mapping</string>
     <string name="property_sc2_gamepad_inputs"><u>Grabbed inputs</u>:</string>
     <string name="property_sc2_gamepad_events"><u>Grabbed events</u>:</string>
     <string name="property_sc2_gamepad_last_event"><u>Last grabbed event</u>:</string>
@@ -305,6 +311,7 @@
     <string name="property_camera_style_saturation">Saturation</string>
     <string name="property_camera_style_contrast">Contrast</string>
     <string name="property_camera_style_sharpness">Sharpness</string>
+    <string name="property_camera_alignment">Alignment</string>
     <string name="property_camera_recording_resolution">Resolution</string>
     <string name="property_camera_recording_framerate">Framerate</string>
     <string name="property_camera_recording_hyperlapse">Hyperlapse</string>
@@ -319,7 +326,8 @@
     <string name="property_gimbal_stabilized_axes">Stabilized axes</string>
     <string name="property_gimbal_bounds">Bounds</string>
     <string name="property_gimbal_max_speeds">Max speeds</string>
-    <string name="property_gimbal_attitude">Attitude</string>
+    <string name="property_gimbal_absolute_attitude">Absolute attitude</string>
+    <string name="property_gimbal_relative_attitude">Relative attitude</string>
     <string name="property_gimbal_calibrated">Calibrated</string>
     <string name="property_gimbal_calibration_state">Calibration state</string>
     <string name="property_gimbal_errors">Errors</string>
@@ -372,6 +380,7 @@
     <string name="property_thermal_rendering">Rendering</string>
     <string name="property_thermal_rendering_mode">Mode</string>
     <string name="property_thermal_blending">Blending rate</string>
+    <string name="property_piloting_control_behavior">Behavior</string>
     <string name="boolean_setting_enabled">On</string>
     <string name="boolean_setting_disabled">Off</string>
     <string name="valid">Valid</string>
@@ -472,6 +481,7 @@
     <string name="white_balance_lock_format">lockable:\u00a0%1$b locked:\u00a0%2$b</string>
     <string name="recording_state_format">%1$s id:\u00a0%2$s date:\u00a0%3$s duration:\u00a0%4$s</string>
     <string name="style_format" tools:ignore="PluralsCandidate">%1$s saturation:\u00a0%2$d contrast:\u00a0%3$d sharpness:\u00a0%4$d</string>
+    <string name="alignment_format" tools:ignore="PluralsCandidate">yaw:\u00a0%1$.2f pitch:\u00a0%2$.2f roll:\u00a0%3$.2f</string>
     <string name="photo_state_format">%1$s id:\u00a0%2$s count:\u00a0%3$d</string>
     <string name="hdr_format">enable:\u00a0%1$b available:\u00a0%2$b active:\u00a0%3$b</string>
     <string name="zoom_info_format">%1$s current: %2$.2f max loss less: %3$.2f max lossy: %4$.2f</string>
@@ -536,6 +546,7 @@
     <string name="peripheral_updater">Updater</string>
     <string name="peripheral_precise_home">Precise Home</string>
     <string name="peripheral_thermal_control">Thermal Control</string>
+    <string name="peripheral_piloting_control">Piloting Control</string>
     <string name="facility_auto_connection">Auto Connection</string>
     <string name="facility_blackbox_reporter">BlackBox Reporter</string>
     <string name="facility_crash_reporter">Crash Reporter</string>

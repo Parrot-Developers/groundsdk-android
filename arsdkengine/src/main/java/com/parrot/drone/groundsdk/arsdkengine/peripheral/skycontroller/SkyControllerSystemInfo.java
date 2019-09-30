@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.RCController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.SystemInfoControllerBase;

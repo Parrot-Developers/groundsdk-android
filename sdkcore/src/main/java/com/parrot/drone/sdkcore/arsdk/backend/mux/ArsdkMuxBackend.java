@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk.backend.mux;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;

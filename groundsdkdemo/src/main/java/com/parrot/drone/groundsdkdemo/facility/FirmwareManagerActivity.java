@@ -33,11 +33,6 @@
 package com.parrot.drone.groundsdkdemo.facility;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.ListAdapter;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -46,6 +41,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.parrot.drone.groundsdk.facility.FirmwareManager;
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareIdentifier;
@@ -136,6 +137,7 @@ public class FirmwareManagerActivity extends GroundSdkActivityBase {
             mProgressBar.setProgress(progress);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final View.OnClickListener mClickListener = new View.OnClickListener() {
 
             @Override

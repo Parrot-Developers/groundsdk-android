@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -45,35 +46,35 @@
         android:orientation="vertical"
         android:padding="@dimen/content_margin">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                 android:id="@+id/mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:title="@string/property_thermal_mode"/>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                 android:id="@+id/sensitivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:title="@string/property_thermal_sensitivity"/>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:id="@+id/group_calibration"
@@ -82,32 +83,32 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                app:contentPaddingLeft="@dimen/content_margin"
-                app:contentPaddingRight="@dimen/content_margin"
+                app:cardBackgroundColor="?android:attr/headerBackground"
                 app:cardCornerRadius="4dp"
-                app:cardBackgroundColor="?android:attr/headerBackground">
+                app:contentPaddingLeft="@dimen/content_margin"
+                app:contentPaddingRight="@dimen/content_margin">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                    android:textStyle="bold"
+                    android:text="@string/property_thermal_calibration"
                     android:textAllCaps="true"
-                    android:text="@string/property_thermal_calibration"/>
+                    android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                    android:textStyle="bold"/>
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
+                app:cardCornerRadius="4dp"
                 app:contentPaddingLeft="@dimen/content_margin"
-                app:contentPaddingRight="@dimen/content_margin"
-                app:cardCornerRadius="4dp">
+                app:contentPaddingRight="@dimen/content_margin">
 
                 <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                     android:id="@+id/calibration_mode"
@@ -115,79 +116,79 @@
                     android:layout_height="wrap_content"
                     app:title="@string/property_thermal_calibration_mode"/>
 
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/btn_calibrate"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                style="?android:attr/buttonBarButtonStyle"
                 android:text="@string/action_calibrate"/>
 
         </LinearLayout>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/card_emissivity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPadding="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:cardCornerRadius="4dp"
+            app:contentPadding="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                 android:id="@+id/emissivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:title="@string/property_thermal_emissivity"
-                app:format="double_format"/>
-        </android.support.v7.widget.CardView>
+                app:format="double_format"
+                app:title="@string/property_thermal_emissivity"/>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/card_background_temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPadding="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:cardCornerRadius="4dp"
+            app:contentPadding="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                 android:id="@+id/background_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:title="@string/property_thermal_background_temperature"
-                app:format="double_format"/>
+                app:format="double_format"
+                app:title="@string/property_thermal_background_temperature"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/title_palette"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_thermal_palette"
                 android:textAllCaps="true"
-                android:text="@string/property_thermal_palette"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/card_palette"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -232,7 +233,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/action_add_color"/>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/colors"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -243,16 +244,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_thermal_lowest_temperature"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_thermal_lowest_temperature"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                     android:id="@+id/highest_temperature"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_thermal_highest_temperature"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_thermal_highest_temperature"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                     android:id="@+id/colorization_mode"
@@ -277,8 +278,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_thermal_threshold"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_thermal_threshold"/>
 
                 <Button
                     android:id="@+id/btn_send_palette"
@@ -289,36 +290,36 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/title_rendering"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_thermal_rendering"
                 android:textAllCaps="true"
-                android:text="@string/property_thermal_rendering"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/card_rendering"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -336,8 +337,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_thermal_blending"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_thermal_blending"/>
 
                 <Button
                     android:id="@+id/btn_send_rendering"
@@ -348,7 +349,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

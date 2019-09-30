@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.Ref;

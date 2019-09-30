@@ -39,11 +39,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.OnNmeaMessageListener;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -57,6 +59,8 @@ import com.parrot.drone.sdkcore.ulog.ULog;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -185,6 +189,12 @@ public final class SystemLocationCore implements SystemLocation {
     /** Latest known geographical location. */
     @Nullable
     private Location mLocation;
+
+    /** Latest known altitude above mean sea level. */
+    private double mLatestAltitude;
+
+    /** Difference between the WGS-84 earth ellipsoid and mean sea level (geoid). */
+    private double mGeoidalSeparation;
 
     /** {@code true} when system location is enabled and permission is granted. */
     private boolean mAuthorized;
@@ -357,6 +367,7 @@ public final class SystemLocationCore implements SystemLocation {
             mLocationType = LocationType.GPS_ONLY;
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, mPreferredTimeInterval,
                     (float) mMinSpaceInterval, mLocationListener);
+            mLocationManager.addNmeaListener(mNmeaListener);
         } else {
             ULog.w(Logging.TAG_MONITOR, "Could not start location monitoring: no GPS provider");
         }
@@ -376,6 +387,7 @@ public final class SystemLocationCore implements SystemLocation {
                     new LocationRequest().setInterval(mPreferredTimeInterval).setFastestInterval(mFastestTimeInterval)
                                          .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY),
                     mLocationCallback, null);
+            mLocationManager.addNmeaListener(mNmeaListener);
         }
     }
 
@@ -388,11 +400,13 @@ public final class SystemLocationCore implements SystemLocation {
                 break;
             case GPS_ONLY:
                 mLocationManager.removeUpdates(mLocationListener);
+                mLocationManager.removeNmeaListener(mNmeaListener);
                 ULog.i(Logging.TAG_MONITOR, "Stop monitoring device location [GPS]");
                 break;
             case FUSED:
                 if (mFusedLocationClient != null) {
                     mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+                    mLocationManager.removeNmeaListener(mNmeaListener);
                     ULog.i(Logging.TAG_MONITOR, "Stop monitoring device location [FUSED]");
                 }
                 break;
@@ -422,6 +436,14 @@ public final class SystemLocationCore implements SystemLocation {
             ULog.d(Logging.TAG_MONITOR, "New location detected: " + location);
         }
         mLocation = location;
+        if (mLocation != null) {
+            // Sometimes location retrieved has no altitude, in this case we return latest altitude retrieved, adjusted
+            // with geoidal separation in order to get altitude above mean sea level
+            if (mLocation.hasAltitude()) {
+                mLatestAltitude = mLocation.getAltitude() - mGeoidalSeparation;
+            }
+            mLocation.setAltitude(mLatestAltitude);
+        }
         dispatchNotification();
         if (mActiveMonitors == 0) {
             stopMonitoring();
@@ -458,6 +480,31 @@ public final class SystemLocationCore implements SystemLocation {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             onNewLocation(locationResult.getLastLocation());
+        }
+    };
+
+    /** Listens to NMEA messages. */
+    private final OnNmeaMessageListener mNmeaListener = new OnNmeaMessageListener() {
+
+        /** Pattern used to retrieve geoidal separation from NMEA messages. */
+        private final Pattern mPattern = Pattern.compile("^\\$..(GGA|GNS),([^,]*,){10}([^,]+)");
+
+        @Override
+        public void onNmeaMessage(String message, long timestamp) {
+            if (mLocation != null) {
+                Matcher matcher = mPattern.matcher(message);
+                if (matcher.find()) {
+                    String separationField = matcher.group(3);
+                    if (separationField != null) {
+                        try {
+                            // Geoidal separation is very stable and allows to calculate altitude above mean sea level
+                            mGeoidalSeparation = Double.parseDouble(separationField);
+                        } catch (NumberFormatException e) {
+                            ULog.w(Logging.TAG_MONITOR, "Invalid geoidal separation format: " + separationField);
+                        }
+                    }
+                }
+            }
         }
     };
 }

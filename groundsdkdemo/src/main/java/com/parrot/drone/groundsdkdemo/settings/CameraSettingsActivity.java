@@ -35,14 +35,17 @@ package com.parrot.drone.groundsdkdemo.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
+import com.parrot.drone.groundsdk.device.peripheral.camera.CameraAlignment;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraEvCompensation;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposure;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposureLock;
@@ -52,6 +55,7 @@ import com.parrot.drone.groundsdk.device.peripheral.camera.CameraStyle;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalance;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalanceLock;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraZoom;
+import com.parrot.drone.groundsdk.value.DoubleRange;
 import com.parrot.drone.groundsdkdemo.Extras;
 import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.R;
@@ -138,6 +142,18 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
 
     private RangedSettingView mStyleSharpnessView;
 
+    private CardView mAlignmentTitleView;
+
+    private CardView mAlignmentCardView;
+
+    private RangedSettingView mAlignmentYawView;
+
+    private RangedSettingView mAlignmentPitchView;
+
+    private RangedSettingView mAlignmentRollView;
+
+    private Button mAlignmentResetButton;
+
     private CardView mZoomTitleView;
 
     private CardView mZoomCardView;
@@ -208,6 +224,13 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
         mStyleSaturationView = findViewById(R.id.saturation);
         mStyleContrastView = findViewById(R.id.contrast);
         mStyleSharpnessView = findViewById(R.id.sharpness);
+
+        mAlignmentTitleView = findViewById(R.id.alignment_title);
+        mAlignmentCardView = findViewById(R.id.alignment_card);
+        mAlignmentYawView = findViewById(R.id.alignment_yaw);
+        mAlignmentPitchView = findViewById(R.id.alignment_pitch);
+        mAlignmentRollView = findViewById(R.id.alignment_roll);
+        mAlignmentResetButton = findViewById(R.id.btn_alignment_reset);
 
         mZoomTitleView = findViewById(R.id.zoom_title);
         mZoomCardView = findViewById(R.id.zoom_card);
@@ -319,6 +342,32 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
         updateStyleSetting(mStyleSaturationView, style.saturation(), style.isUpdating());
         updateStyleSetting(mStyleContrastView, style.contrast(), style.isUpdating());
         updateStyleSetting(mStyleSharpnessView, style.sharpness(), style.isUpdating());
+
+        CameraAlignment.Setting alignment = camera.alignment();
+        if (alignment != null) {
+            mAlignmentTitleView.setVisibility(View.VISIBLE);
+            mAlignmentCardView.setVisibility(View.VISIBLE);
+            boolean updating = alignment.isUpdating();
+            DoubleRange yawRange = alignment.supportedYawRange();
+            DoubleRange pitchRange = alignment.supportedPitchRange();
+            DoubleRange rollRange = alignment.supportedRollRange();
+            mAlignmentYawView.setAvailable(true)
+                             .setValue(yawRange.getLower(), alignment.yaw(), yawRange.getUpper())
+                             .setUpdating(updating)
+                             .setListener(alignment::setYaw);
+            mAlignmentPitchView.setAvailable(true)
+                               .setValue(pitchRange.getLower(), alignment.pitch(), pitchRange.getUpper())
+                               .setUpdating(updating)
+                               .setListener(alignment::setPitch);
+            mAlignmentRollView.setAvailable(true)
+                              .setValue(rollRange.getLower(), alignment.roll(), rollRange.getUpper())
+                              .setUpdating(updating)
+                              .setListener(alignment::setRoll);
+            mAlignmentResetButton.setOnClickListener(v -> alignment.reset());
+        } else {
+            mAlignmentTitleView.setVisibility(View.GONE);
+            mAlignmentCardView.setVisibility(View.GONE);
+        }
 
         CameraZoom zoom = camera.zoom();
 

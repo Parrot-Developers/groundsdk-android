@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.pilotingitf.animation;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Flip animation interface.

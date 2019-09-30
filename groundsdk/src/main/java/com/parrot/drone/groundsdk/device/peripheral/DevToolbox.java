@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.peripheral;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

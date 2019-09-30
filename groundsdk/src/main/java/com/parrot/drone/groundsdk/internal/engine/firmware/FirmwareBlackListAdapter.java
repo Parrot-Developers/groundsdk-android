@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.engine.firmware;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonParseException;
 import com.parrot.drone.groundsdk.device.DeviceModel;

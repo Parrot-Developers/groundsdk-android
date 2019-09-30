@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.facility.FirmwareManager;
@@ -91,6 +92,7 @@ class FirmwareManagerContent extends FacilityContent<FirmwareManager> {
             mBrowseBtn.setEnabled(allCount > 0);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

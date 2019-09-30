@@ -32,15 +32,17 @@
 
 package com.parrot.drone.groundsdk.internal.engine.blackbox;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.internal.ApplicationStorageProvider;
+import com.parrot.drone.groundsdk.internal.GroundSdkConfig;
 import com.parrot.drone.groundsdk.internal.engine.EngineBase;
 import com.parrot.drone.groundsdk.internal.facility.BlackBoxReporterCore;
 import com.parrot.drone.groundsdk.internal.http.HttpBlackBoxClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
+import com.parrot.drone.groundsdk.internal.io.Files;
 import com.parrot.drone.groundsdk.internal.tasks.Task;
 import com.parrot.drone.groundsdk.internal.tasks.TaskGroup;
 import com.parrot.drone.groundsdk.internal.utility.BlackBoxStorage;
@@ -49,6 +51,7 @@ import com.parrot.drone.groundsdk.internal.utility.UserAccountInfo;
 import com.parrot.drone.sdkcore.ulog.ULog;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -92,6 +95,10 @@ public class BlackBoxEngine extends EngineBase {
     @NonNull
     private final File mEngineDir;
 
+    /** Public directory where blackboxes are copied, {@code null} if copy is disabled. */
+    @Nullable
+    private final File mPublicDir;
+
     /** Current work directory where new blackbox are archived to. */
     @Nullable
     private File mWorkDir;
@@ -114,6 +121,8 @@ public class BlackBoxEngine extends EngineBase {
         super(controller);
         mBlackBoxReporter = new BlackBoxReporterCore(getFacilityPublisher());
         mEngineDir = new File(ApplicationStorageProvider.getInstance().getInternalAppFileCache(), "blackbox");
+        String folder = GroundSdkConfig.get(getContext()).getBlackBoxPublicFolder();
+        mPublicDir = folder == null ? null : new File(getContext().getExternalFilesDir(null), folder);
         mPendingBlackBoxes = new LinkedList<>();
         mTasks = new TaskGroup();
         publishUtility(BlackBoxStorage.class, new BlackBoxStorageCore(this));
@@ -182,6 +191,23 @@ public class BlackBoxEngine extends EngineBase {
      */
     void archiveBlackBox(@NonNull BlackBoxStorage.BlackBox data) {
         mTasks.add(launchArchiveJob(data));
+    }
+
+    /**
+     * Copies the given black box file to the public folder if it is configured.
+     *
+     * @param blackbox black box file to copy
+     *
+     * @throws InterruptedException if the current thread is interrupted while this method executes
+     */
+    void copyToPublicFolder(@NonNull File blackbox) throws InterruptedException {
+        if (mPublicDir != null) {
+            try {
+                Files.copyFile(blackbox, new File(mPublicDir, blackbox.getName()));
+            } catch (IOException e) {
+                ULog.w(TAG_BLACKBOX, "Could not copy blackbox to public folder: " + blackbox, e);
+            }
+        }
     }
 
     /**

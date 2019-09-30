@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdkdemo.settings;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.value.BooleanSetting;
 import com.parrot.drone.groundsdk.value.DoubleSetting;
@@ -42,7 +42,7 @@ import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
 import com.parrot.drone.groundsdk.value.OptionalDoubleSetting;
 import com.parrot.drone.groundsdk.value.StringSetting;
 
-final class SettingViewAdapters {
+public final class SettingViewAdapters {
 
     public static void updateSetting(@NonNull ToggleSettingView view, @NonNull OptionalBooleanSetting setting) {
         view.setListener(setting::toggle)

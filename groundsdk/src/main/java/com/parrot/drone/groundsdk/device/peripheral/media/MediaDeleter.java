@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.media;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 /**
  * Provides progress and status of a media/resource deletion task.

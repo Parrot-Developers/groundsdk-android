@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -47,6 +47,7 @@ import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.AxisM
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.ButtonEvent;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.ButtonsMappingEntry;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.MappingEntry;
+import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
 
 import java.util.Map;
 import java.util.Set;
@@ -467,4 +468,21 @@ public interface SkyController3Gamepad extends Peripheral {
      */
     @Nullable
     Set<Axis> getReversedAxes(@NonNull Drone.Model droneModel);
+
+    /**
+     * Gives access to the volatile mapping setting.
+     * <p>
+     * All mapping entries registered with volatile mapping enabled will be removed when it is disabled or when
+     * remote control is disconnected. Disabling volatile mapping also cancels any ongoing action.
+     * <p>
+     * Volatile mapping may be unsupported depending on the firmware version. Hence, clients of this API should call
+     * {@link OptionalBooleanSetting#isAvailable() isAvailable} method on the returned value to check whether it can be
+     * considered valid before use.
+     * <p>
+     * <strong>Note:</strong> this setting is not persistent.
+     *
+     * @return volatile mapping setting
+     */
+    @NonNull
+    OptionalBooleanSetting volatileMapping();
 }

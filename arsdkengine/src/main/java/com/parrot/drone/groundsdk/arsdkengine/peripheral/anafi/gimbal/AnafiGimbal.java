@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.gimbal;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DeviceController;
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DroneController;
@@ -186,7 +186,8 @@ public final class AnafiGimbal extends DronePeripheralController {
 
         for (Axis axis : EnumSet.allOf(Axis.class)) {
             mGimbal.updateAttitudeBounds(axis, null)
-                   .updateAttitude(axis, 0);
+                   .updateAbsoluteAttitude(axis, 0)
+                   .updateRelativeAttitude(axis, 0);
         }
 
         mPendingStabilizationChanges.clear();
@@ -378,13 +379,11 @@ public final class AnafiGimbal extends DronePeripheralController {
             mStabilizedAxes.remove(axis);
         }
 
-        // Update the attitude to take the correct frame of reference and bounds according to the new stab
+        // Update the attitude bounds to take the correct frame of reference according to the new stab
         mGimbal.updateStabilization(mStabilizedAxes)
                .updateAttitudeBounds(axis, stabilized ? mAbsoluteAttitudeBounds.get(axis)
                        : mRelativeAttitudeBounds.get(axis));
-        if (attitude != null) {
-            mGimbal.updateAttitude(axis, attitude);
-        }
+
         return updating;
     }
 
@@ -602,12 +601,12 @@ public final class AnafiGimbal extends DronePeripheralController {
                     settingChanged = true;
                 }
 
-                // Update the current attitude and bounds according to the frame of reference that has been requested
-                boolean axisStabilized = mStabilizedAxes.contains(axis);
+                // Update the attitude bounds according to the frame of reference that has been requested
                 //noinspection ConstantConditions: validated by mStabilizedAxes.contains
-                mGimbal.updateAttitude(axis, axisStabilized ? mAbsoluteAttitude.get(axis) : mRelativeAttitude.get(axis))
-                       .updateAttitudeBounds(axis,
-                               axisStabilized ? mAbsoluteAttitudeBounds.get(axis) : mRelativeAttitudeBounds.get(axis));
+                mGimbal.updateAbsoluteAttitude(axis, mAbsoluteAttitude.get(axis))
+                       .updateRelativeAttitude(axis, mRelativeAttitude.get(axis))
+                       .updateAttitudeBounds(axis, mStabilizedAxes.contains(axis) ?
+                               mAbsoluteAttitudeBounds.get(axis) : mRelativeAttitudeBounds.get(axis));
             }
 
             if (settingChanged && isConnected()) {

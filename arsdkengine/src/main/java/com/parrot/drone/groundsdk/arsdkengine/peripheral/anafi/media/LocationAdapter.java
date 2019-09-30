@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.media;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaItem;
 

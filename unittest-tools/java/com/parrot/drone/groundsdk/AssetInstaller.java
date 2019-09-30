@@ -34,9 +34,10 @@ package com.parrot.drone.groundsdk;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import java.io.Closeable;
 import java.io.File;
@@ -76,7 +77,7 @@ public final class AssetInstaller {
      */
     @NonNull
     public static File installAsset(@NonNull String sourceAssetPath) {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         AssetManager assetManager = context.getAssets();
         Queue<String> copyQueue = new LinkedList<>(Collections.singletonList(sourceAssetPath));
         File destRoot = new File(context.getFilesDir(), LOCAL_ASSET_DIR);
@@ -155,7 +156,7 @@ public final class AssetInstaller {
      */
     @NonNull
     private static File localAsset(@NonNull String sourceAssetPath) {
-        return new File(InstrumentationRegistry.getContext().getFilesDir(),
+        return new File(ApplicationProvider.getApplicationContext().getFilesDir(),
                 LOCAL_ASSET_DIR + File.separator + sourceAssetPath);
     }
 

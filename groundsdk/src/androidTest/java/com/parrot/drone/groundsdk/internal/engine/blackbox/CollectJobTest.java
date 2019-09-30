@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.engine.blackbox;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.AssetInstaller;
 import com.parrot.drone.groundsdk.internal.io.Files;
@@ -110,7 +110,7 @@ public class CollectJobTest {
 
     @Test
     public void testNonExistentEngineDir() {
-        File nonExistentDir = new File(InstrumentationRegistry.getContext().getFilesDir(),
+        File nonExistentDir = new File(ApplicationProvider.getApplicationContext().getFilesDir(),
                 "non_existent_dir");
         Files.deleteDirectoryTree(nonExistentDir);
 

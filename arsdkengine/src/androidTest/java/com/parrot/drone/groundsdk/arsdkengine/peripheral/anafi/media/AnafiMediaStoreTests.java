@@ -35,8 +35,9 @@ package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.media;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.DateParser;
 import com.parrot.drone.groundsdk.MediaStoreWiperMatcher;
@@ -525,7 +526,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         verify(mMockHttpClient).fetch(eq("/data/media/media1_thumb.jpg"), any(), mFetchCb.capture());
 
         Bitmap thumbnailBitmap = BitmapFactory.decodeResource(
-                InstrumentationRegistry.getContext().getResources(), R.drawable.test_thumbnail);
+                ApplicationProvider.getApplicationContext().getResources(), R.drawable.test_thumbnail);
 
         mFetchCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, thumbnailBitmap);
 
@@ -579,7 +580,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         verify(mMockHttpClient).fetch(eq("/data/media/media1_res1_thumb.jpg"), any(), mFetchCb.capture());
 
         Bitmap thumbnailBitmap = BitmapFactory.decodeResource(
-                InstrumentationRegistry.getContext().getResources(), R.drawable.test_thumbnail);
+                ApplicationProvider.getApplicationContext().getResources(), R.drawable.test_thumbnail);
 
         mFetchCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, thumbnailBitmap);
 

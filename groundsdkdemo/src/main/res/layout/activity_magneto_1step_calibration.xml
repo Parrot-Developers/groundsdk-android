@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -37,18 +38,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.parrot.drone.groundsdkdemo.peripheral.Magnetometer3StepCalibrationActivity">
 
     <TextView
+        android:id="@+id/current_axis"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/current_axis"
-        android:textAlignment="center"
         android:text="@string/calibrate_all_axes"
+        android:textAlignment="center"
         tools:text="Axis to calibrate: Roll"/>
 
     <TextView
@@ -68,11 +69,11 @@
             android:text="@string/roll_axis"/>
 
         <ProgressBar
+            android:id="@+id/roll_status"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:id="@+id/roll_status"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:layout_weight="0.7"/>
     </LinearLayout>
 
     <LinearLayout
@@ -87,11 +88,11 @@
             android:text="@string/pitch_axis"/>
 
         <ProgressBar
+            android:id="@+id/pitch_status"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:id="@+id/pitch_status"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:layout_weight="0.7"/>
     </LinearLayout>
 
     <LinearLayout
@@ -106,11 +107,11 @@
             android:text="@string/yaw_axis"/>
 
         <ProgressBar
+            android:id="@+id/yaw_status"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:id="@+id/yaw_status"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:layout_weight="0.7"/>
     </LinearLayout>
 
     <LinearLayout
@@ -119,9 +120,9 @@
         android:gravity="center">
 
         <Button
+            android:id="@+id/cancel_calibration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/cancel_calibration"
             android:text="@string/cancel_calibration"/>
     </LinearLayout>
 

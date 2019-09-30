@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.parrot.drone.groundsdk.DateParser;
@@ -144,7 +145,7 @@ public class HttpFdrClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/json"), new Gson().toJson(RECORD_LIST))));
+                .body(ResponseBody.create(new Gson().toJson(RECORD_LIST), MediaType.parse("application/json"))));
 
         mFgLock.block();
 
@@ -208,7 +209,7 @@ public class HttpFdrClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"), RECORD_DATA)));
+                .body(ResponseBody.create(RECORD_DATA, MediaType.parse("application/octet-stream"))));
 
         mFgLock.block();
 

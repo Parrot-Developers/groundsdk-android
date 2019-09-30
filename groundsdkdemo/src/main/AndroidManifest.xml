@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -31,17 +32,20 @@
   ~
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.parrot.drone.groundsdkdemo">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.parrot.drone.groundsdkdemo">
+
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="false"
+        android:extractNativeLibs="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat"
-        android:extractNativeLibs="false"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="23">
         <activity
@@ -54,9 +58,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".info.FacilitiesInfoActivity"
-                  android:label="@string/title_activity_facilities"
-                  android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".info.FacilitiesInfoActivity"
+            android:label="@string/title_activity_facilities"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".info.DroneInfoActivity"
             android:theme="@style/AppTheme"/>
@@ -94,6 +99,10 @@
             android:name=".peripheral.ThermalStreamActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".peripheral.gamepad.GamepadSettingsActivity"
+            android:label="@string/title_activity_sc2_settings"
+            android:theme="@style/AppTheme"/>
+        <activity
             android:name=".peripheral.gamepad.GamepadGrabActivity"
             android:label="@string/title_activity_sc2_grab"
             android:theme="@style/AppTheme"/>
@@ -111,6 +120,10 @@
         <activity
             android:name=".settings.CopilotSettingsActivity"
             android:label="@string/title_activity_copilot"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".settings.PilotingControlSettingsActivity"
+            android:label="@string/title_activity_piloting_control"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".peripheral.MediaStoreBrowserActivity"
@@ -197,8 +210,13 @@
             android:label="@string/title_activity_user_account"
             android:theme="@style/AppTheme"/>
 
-        <activity android:name=".peripheral.MediaReplayActivity"
-                  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".peripheral.MediaReplayActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".hud.HmdActivity"
+            android:theme="@style/AppTheme.FullScreen"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

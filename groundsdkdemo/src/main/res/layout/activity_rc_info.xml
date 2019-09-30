@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -44,18 +45,18 @@
         android:id="@+id/model"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textAllCaps="true"
-        tools:text="Anafi"
-        tools:ignore="RtlSymmetry"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlSymmetry"
+        tools:text="Anafi"/>
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="DISCONNECTED NOT VISIBLE"/>
 
     <LinearLayout
@@ -65,23 +66,23 @@
         android:orientation="horizontal">
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_forget"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/action_forget"/>
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_connect"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             tools:text="@string/action_connect"/>
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/info_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

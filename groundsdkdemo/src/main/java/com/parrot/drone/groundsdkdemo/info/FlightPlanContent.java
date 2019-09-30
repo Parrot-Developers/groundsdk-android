@@ -33,12 +33,13 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;
@@ -64,6 +65,7 @@ class FlightPlanContent extends PilotingItfContent<Drone, FlightPlanPilotingItf>
     private static final class ViewHolder
             extends PilotingItfContent.ViewHolder<FlightPlanContent, FlightPlanPilotingItf> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditSettingsButton;
 
@@ -91,6 +93,7 @@ class FlightPlanContent extends PilotingItfContent<Drone, FlightPlanPilotingItf>
         @NonNull
         private final TextView mReturnHomeOnDisconnectText;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mUploadButton;
 
@@ -137,6 +140,7 @@ class FlightPlanContent extends PilotingItfContent<Drone, FlightPlanPilotingItf>
             mRestartButton.setEnabled(state == Activable.State.IDLE);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

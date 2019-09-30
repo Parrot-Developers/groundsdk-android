@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -48,27 +49,27 @@
 
         <TextView
             android:layout_marginBottom="8dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/user_account_note"/>
+            android:text="@string/user_account_note"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         <TableRow>
 
             <TextView
                 android:layout_gravity="center_vertical|start"
                 android:labelFor="@+id/provider_edit"
+                android:text="@string/user_account_provider"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:text="@string/user_account_provider"/>
+                android:textStyle="bold"/>
 
             <EditText
                 android:id="@+id/provider_edit"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_gravity="center_vertical|end"
+                android:inputType="text"
                 android:minWidth="150dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:inputType="text"/>
+                android:textStyle="bold"/>
         </TableRow>
 
         <TableRow>
@@ -76,37 +77,37 @@
             <TextView
                 android:layout_gravity="center_vertical|start"
                 android:labelFor="@+id/account_id_edit"
+                android:text="@string/user_account_id"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:text="@string/user_account_id"/>
+                android:textStyle="bold"/>
 
             <EditText
                 android:id="@+id/account_id_edit"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_gravity="center_vertical|end"
+                android:inputType="text"
                 android:minWidth="150dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:inputType="text"/>
+                android:textStyle="bold"/>
         </TableRow>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginTop="@dimen/content_margin"
                 android:layout_marginBottom="@dimen/content_margin"
+                android:layout_weight="1"
+                android:text="@string/allow_accountless_data"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:text="@string/allow_accountless_data"/>
+                android:textStyle="bold"/>
 
             <Switch
                 android:id="@+id/enable_accountless_data"
@@ -120,40 +121,40 @@
             android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_set_user_account"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:text="@string/action_set_user_account"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_clear"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:text="@string/action_clear"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginTop="@dimen/content_margin"
                 android:layout_marginBottom="@dimen/content_margin"
+                android:layout_weight="1"
+                android:text="@string/allow_anonymous_data"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:text="@string/allow_anonymous_data"/>
+                android:textStyle="bold"/>
 
             <Switch
                 android:id="@+id/enable_anonymous_data"

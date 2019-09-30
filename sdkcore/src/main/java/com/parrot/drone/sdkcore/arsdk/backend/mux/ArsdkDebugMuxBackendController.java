@@ -37,9 +37,10 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.sdkcore.R;
 import com.parrot.drone.sdkcore.arsdk.backend.ArsdkBackendController;

@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.http;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -115,7 +115,7 @@ public final class ProgressCaptor {
             return new ForwardingRequestBody(mDelegate) {
 
                 @Override
-                public void writeTo(BufferedSink sink) throws IOException {
+                public void writeTo(@NonNull BufferedSink sink) throws IOException {
                     long contentLength = contentLength();
                     sink = Okio.buffer(new ForwardingSink(sink) {
 
@@ -126,7 +126,7 @@ public final class ProgressCaptor {
                         private int mLastProgress;
 
                         @Override
-                        public void write(Buffer source, long byteCount) throws IOException {
+                        public void write(@NonNull Buffer source, long byteCount) throws IOException {
                             super.write(source, byteCount);
                             mCurrentLength += byteCount;
                             int progress = Math.round(mCurrentLength * 100f / contentLength);
@@ -180,6 +180,7 @@ public final class ProgressCaptor {
         }
 
         @Override
+        @NonNull
         public BufferedSource source() {
             long contentLength = contentLength();
             if (mSource == null) {
@@ -192,7 +193,7 @@ public final class ProgressCaptor {
                     private int mLastProgress;
 
                     @Override
-                    public long read(Buffer sink, long byteCount) throws IOException {
+                    public long read(@NonNull Buffer sink, long byteCount) throws IOException {
                         long readLength = super.read(sink, byteCount);
                         if (readLength > 0) {
                             mCurrentLength += readLength;
@@ -232,7 +233,7 @@ public final class ProgressCaptor {
         }
 
         @Override
-        public void writeTo(BufferedSink sink) throws IOException {
+        public void writeTo(@NonNull BufferedSink sink) throws IOException {
             mDelegate.writeTo(sink);
         }
     }

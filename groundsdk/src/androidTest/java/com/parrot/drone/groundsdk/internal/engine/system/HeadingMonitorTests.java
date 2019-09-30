@@ -38,8 +38,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.test.InstrumentationRegistry;
 import android.view.WindowManager;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.utility.SystemHeading;
 
@@ -79,8 +80,8 @@ public class HeadingMonitorTests {
         mMockWindowManager = Mockito.mock(WindowManager.class);
         // unfortunately we cannot mock sensor easily on android 28+ (internal API restricted to dark greylist)
         // so we use a real sensor from the device, which must support such sensor
-        mRotationSensor = InstrumentationRegistry.getContext().getSystemService(SensorManager.class)
-                                                 .getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mRotationSensor = ApplicationProvider.getApplicationContext().getSystemService(SensorManager.class)
+                                             .getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         mMonitor1 = Mockito.mock(SystemHeading.Monitor.class);
         mMonitor2 = Mockito.mock(SystemHeading.Monitor.class);
 

@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.facility;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Facility that allows the application to register some user account identifier.

@@ -37,7 +37,8 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.Logging;
 import com.parrot.drone.groundsdk.internal.tasks.Executor;

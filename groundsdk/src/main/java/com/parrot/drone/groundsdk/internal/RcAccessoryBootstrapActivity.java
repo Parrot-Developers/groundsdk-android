@@ -37,7 +37,8 @@ import android.content.Intent;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.device.RemoteControl;

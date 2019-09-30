@@ -34,15 +34,16 @@ package com.parrot.drone.groundsdkdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.parrot.drone.groundsdkdemo.info.DroneInfoActivity;
 import com.parrot.drone.groundsdkdemo.info.FacilitiesInfoActivity;
 import com.parrot.drone.groundsdkdemo.info.RCInfoActivity;

@@ -35,10 +35,11 @@ package com.parrot.drone.groundsdk.internal;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.BuildConfig;
 import com.parrot.drone.groundsdk.R;
@@ -170,6 +171,10 @@ public final class GroundSdkConfig {
     /** {@code true} if black box synchronization is enabled. */
     private boolean mBlackBoxEnabled;
 
+    /** Black box public folder. Empty to disable copy to public folder. */
+    @NonNull
+    private String mBlackBoxPublicFolder;
+
     /** {@code true} if GPS ephemerides sync is enabled. */
     private boolean mEphemeridesEnabled;
 
@@ -226,7 +231,7 @@ public final class GroundSdkConfig {
 
     /** Media thumbnail max cache size, in bytes. */
     @IntRange(from = 0)
-    private long mThumbnailCacheSize;
+    private final long mThumbnailCacheSize;
 
     /** True if the config has been locked and cannot be change anymore. */
     private boolean mLocked;
@@ -304,6 +309,7 @@ public final class GroundSdkConfig {
         mFirmwareEnabled = resources.getBoolean(R.bool.gsdk_firmware_enabled);
         mAlternateFirmwareServer = resources.getString(R.string.gsdk_firmware_server);
         mBlackBoxEnabled = resources.getBoolean(R.bool.gsdk_blackbox_enabled);
+        mBlackBoxPublicFolder = resources.getString(R.string.gsdk_blackbox_public_folder);
         mEphemeridesEnabled = resources.getBoolean(R.bool.gsdk_ephemeris_sync_enabled);
         mFlightDataEnabled = resources.getBoolean(R.bool.gsdk_flight_data_enabled);
         mAutoConnectionAtStartup = resources.getBoolean(R.bool.gsdk_auto_connection_at_startup);
@@ -364,6 +370,7 @@ public final class GroundSdkConfig {
         mFirmwareEnabled = false;
         mAlternateFirmwareServer = "";
         mBlackBoxEnabled = false;
+        mBlackBoxPublicFolder = "";
         mEphemeridesEnabled = false;
         mFlightDataEnabled = false;
         mAutoConnectionAtStartup = false;
@@ -531,6 +538,20 @@ public final class GroundSdkConfig {
     }
 
     /**
+     * Gets the folder in the application directory on external storage where black boxes are copied. The path to this
+     * folder can be retrieved with {@link Context#getExternalFilesDir(String) getExternalFilesDir(null)}.
+     *
+     * @return black box public folder, {@code null} if copy is disabled
+     */
+    @Nullable
+    public String getBlackBoxPublicFolder() {
+        if (!mBlackBoxPublicFolder.isEmpty()) {
+            return mBlackBoxPublicFolder;
+        }
+        return null;
+    }
+
+    /**
      * Tells whether GPS ephemerides synchronization is enabled.
      *
      * @return {@code true} if GPS ephemerides synchronization is enabled, {@code false} otherwise
@@ -642,7 +663,7 @@ public final class GroundSdkConfig {
      */
     @NonNull
     public static String getSdkPackage() {
-        return BuildConfig.APPLICATION_ID;
+        return BuildConfig.LIBRARY_PACKAGE_NAME;
     }
 
     /**
@@ -803,13 +824,15 @@ public final class GroundSdkConfig {
      * If enabled, {@link BlackBoxReporter} public facility and {@link BlackBoxStorage} internal utility will be
      * published.
      *
-     * @param enable {@code true} to enable the black box synchronization, {@code false} to disable it.
-     * @param quota  black box storage space quota, in bytes
+     * @param enable       {@code true} to enable the black box synchronization, {@code false} to disable it.
+     * @param quota        black box storage space quota, in bytes
+     * @param publicFolder black box public folder
      */
-    public void enableBlackBoxSupport(boolean enable, @IntRange(from = 0) long quota) {
+    public void enableBlackBoxSupport(boolean enable, @IntRange(from = 0) long quota, @NonNull String publicFolder) {
         checkLocked();
         mBlackBoxEnabled = enable;
         mBlackboxQuota = quota;
+        mBlackBoxPublicFolder = publicFolder;
     }
 
     /**

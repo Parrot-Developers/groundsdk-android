@@ -41,8 +41,9 @@ import android.content.pm.PackageManager;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.sdkcore.arsdk.backend.ArsdkBackendController;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;

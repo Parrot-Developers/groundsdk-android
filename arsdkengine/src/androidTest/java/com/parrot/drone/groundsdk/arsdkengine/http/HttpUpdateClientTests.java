@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.MockHttpService;

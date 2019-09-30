@@ -33,8 +33,9 @@
 package com.parrot.drone.sdkcore;
 
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Singleton object providing system time info.

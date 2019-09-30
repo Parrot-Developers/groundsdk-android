@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk.blackbox;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkRequest;

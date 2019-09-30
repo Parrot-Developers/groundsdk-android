@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.media;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Provides status of a media store wipe task.

@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.persistence;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.MockSharedPreferences;
 import com.parrot.drone.groundsdk.device.DeviceModel;

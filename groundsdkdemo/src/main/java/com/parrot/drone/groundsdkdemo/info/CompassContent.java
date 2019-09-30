@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.instrument.Compass;
 import com.parrot.drone.groundsdk.device.instrument.Instrument;

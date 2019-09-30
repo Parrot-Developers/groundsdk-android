@@ -35,8 +35,9 @@ package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.media;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaItem;
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem;

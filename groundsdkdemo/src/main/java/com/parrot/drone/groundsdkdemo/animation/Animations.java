@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdkdemo.animation;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Animation;
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Candle;

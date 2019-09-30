@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    defaultConfig.testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    defaultConfig.testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
     sourceSets.androidTest.java.srcDirs += '../unittest-tools/java'
 
@@ -11,10 +11,8 @@ android {
 dependencies {
     implementation project(':sdkcore')
 
-    implementation supportCoreUtils
-    // we need to explicitly add support v4 (which Play Services Location depends on) to force same version as other
-    // support libraries
-    implementation supportV4
+    implementation androidXLocalBroadcastManager
+
     implementation googlePlayServicesLocation
 
     implementation retrofit
@@ -22,14 +20,14 @@ dependencies {
     implementation retrofitScalarsConverter
     implementation retrofitLoggingInterceptor
 
-    compileOnly supportAnnotations
+    implementation androidXAnnotations
 
-    androidTestImplementation(testRunner) {
+    androidTestImplementation androidXTestCore
+    androidTestImplementation(androidXTestRunner) {
         // android test runner comes with its own hamcrest-core library, but an older version that
         // what we wish to use, so exclude it to avoid conflict with our own
         exclude module: 'hamcrest-core'
     }
-
     androidTestImplementation hamcrest
     androidTestImplementation mockito
 }
@@ -42,11 +40,11 @@ task javadoc(type: Javadoc) {
     }
 
     exclude '**/internal/**'
+    destinationDir file("${buildDir}/doc")
 
     afterEvaluate {
         source android.sourceSets.main.java.srcDirs
         classpath = files(android.bootClasspath)
-        destinationDir file("${buildDir}/doc")
         android.libraryVariants.matching { it.name == 'release' }.all {
             javaCompileProvider.with {
                 dependsOn it

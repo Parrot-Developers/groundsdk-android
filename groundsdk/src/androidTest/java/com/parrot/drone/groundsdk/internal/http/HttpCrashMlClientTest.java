@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.tasks.TestExecutor;
 
@@ -65,7 +66,7 @@ public class HttpCrashMlClientTest {
     public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private static final File UPLOAD_FILE =
-            new File(InstrumentationRegistry.getContext().getCacheDir(), "report_001.tar.gz");
+            new File(ApplicationProvider.getApplicationContext().getCacheDir(), "report_001.tar.gz");
 
     private static final String ACCOUNT = "mock-account";
 
@@ -116,7 +117,7 @@ public class HttpCrashMlClientTest {
 
         mMockService.assertPendingRequest(it -> it
                 .header(HttpHeader.ACCOUNT, ACCOUNT)
-                .post(RequestBody.create(MediaType.parse("application/gzip"), mUploadFile))
+                .post(RequestBody.create(mUploadFile, MediaType.parse("application/gzip")))
                 .url("http://test/apiv1/crashml"));
 
         mMockService.mockResponse(it -> it.code(500));
@@ -135,7 +136,7 @@ public class HttpCrashMlClientTest {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .post(RequestBody.create(MediaType.parse("application/gzip"), mUploadFile))
+                .post(RequestBody.create(mUploadFile, MediaType.parse("application/gzip")))
                 .url("http://test/apiv1/crashml"));
 
         request.cancel();
@@ -156,7 +157,7 @@ public class HttpCrashMlClientTest {
 
         mMockService.assertPendingRequest(it -> it
                 .header(HttpHeader.ACCOUNT, ACCOUNT)
-                .post(RequestBody.create(MediaType.parse("application/gzip"), mUploadFile))
+                .post(RequestBody.create(mUploadFile, MediaType.parse("application/gzip")))
                 .url("http://test/apiv1/crashml"));
 
         mMockService.mockResponse(it -> it.code(200));

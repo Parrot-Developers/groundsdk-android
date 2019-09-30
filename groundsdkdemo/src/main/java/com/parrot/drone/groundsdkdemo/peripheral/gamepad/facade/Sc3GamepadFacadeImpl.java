@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdkdemo.peripheral.gamepad.facade;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.SkyController3Gamepad;
@@ -45,6 +45,7 @@ import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.AxisM
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.ButtonEvent;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.ButtonsMappingEntry;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.MappingEntry;
+import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
 
 import java.util.Collection;
 import java.util.List;
@@ -303,5 +304,11 @@ final class Sc3GamepadFacadeImpl extends GamepadFacade {
     public Set<Axis> getReversedAxes(@NonNull Drone.Model droneModel) {
         Set<SkyController3Gamepad.Axis> impls = mImpl.getReversedAxes(droneModel);
         return impls == null ? null : AXIS_ADAPTER.fromImpl(impls);
+    }
+
+    @NonNull
+    @Override
+    public OptionalBooleanSetting getVolatileMapping() {
+        return mImpl.volatileMapping();
     }
 }

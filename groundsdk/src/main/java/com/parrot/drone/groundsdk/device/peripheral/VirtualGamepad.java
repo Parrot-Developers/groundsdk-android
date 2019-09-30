@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.device.peripheral;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.RemoteControl;

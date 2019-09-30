@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.LookAtPilotingItf;
 import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;

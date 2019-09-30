@@ -34,9 +34,10 @@ package com.parrot.drone.groundsdk.internal.stream;
 
 import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.stream.Overlayer;
 import com.parrot.drone.groundsdk.stream.Stream;
@@ -252,7 +253,8 @@ public interface GlRenderSink extends Stream.Sink {
          *
          * @param renderer video stream renderer
          */
-        void onFrameReady(@NonNull Renderer renderer);
+        default void onFrameReady(@NonNull Renderer renderer) {
+        }
 
         /**
          * Notifies that the video stream content zone has changed.
@@ -262,7 +264,8 @@ public interface GlRenderSink extends Stream.Sink {
          *
          * @param contentZone new content zone
          */
-        void onContentZoneChange(@NonNull Rect contentZone);
+        default void onContentZoneChange(@NonNull Rect contentZone) {
+        }
     }
 
     /**

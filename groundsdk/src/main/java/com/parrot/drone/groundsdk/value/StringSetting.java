@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.value;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Represents a setting with a string value.

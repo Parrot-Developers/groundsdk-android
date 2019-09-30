@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.engine.firmware;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -55,7 +56,7 @@ import static org.hamcrest.Matchers.is;
 
 public class FirmwareBlackListTest {
 
-    private final Context mContext = InstrumentationRegistry.getTargetContext();
+    private final Context mContext = ApplicationProvider.getApplicationContext();
 
     private FirmwareBlackListCore mFirmwareBlackList;
 

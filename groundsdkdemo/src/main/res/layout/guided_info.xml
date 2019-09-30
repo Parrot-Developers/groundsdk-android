@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -31,34 +32,34 @@
   ~
   -->
 
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:contentPadding="@dimen/content_margin"
-    card_view:cardCornerRadius="4dp">
+    card_view:cardCornerRadius="4dp"
+    card_view:contentPadding="@dimen/content_margin">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="0"
-        android:shrinkColumns="1">
+        android:shrinkColumns="1"
+        android:stretchColumns="0">
 
         <TableRow>
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_gravity="center_vertical|start"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/piloting_itf_guided"
                 android:textAllCaps="true"
-                android:text="@string/piloting_itf_guided"/>
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@android:id/edit"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_gravity="center_vertical|end"
                 android:text="@string/action_edit"
                 tools:ignore="ContentDescription"/>
@@ -66,8 +67,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_piloting_itf_state"/>
+            <TextView android:text="@string/property_piloting_itf_state"/>
 
             <TextView
                 android:id="@+id/state"
@@ -78,8 +78,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_current_directive"/>
+            <TextView android:text="@string/property_current_directive"/>
 
             <TextView
                 android:id="@+id/current_directive"
@@ -90,8 +89,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_latest_finished_flight"/>
+            <TextView android:text="@string/property_latest_finished_flight"/>
 
             <TextView
                 android:id="@+id/latest_finished_flight"
@@ -101,12 +99,12 @@
         </TableRow>
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/activate"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_gravity="center"
-            tools:text="@string/action_stop_current_move"
-            tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription"
+            tools:text="@string/action_stop_current_move"/>
 
     </TableLayout>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

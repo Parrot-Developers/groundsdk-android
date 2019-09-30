@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A reference to an object that may change.

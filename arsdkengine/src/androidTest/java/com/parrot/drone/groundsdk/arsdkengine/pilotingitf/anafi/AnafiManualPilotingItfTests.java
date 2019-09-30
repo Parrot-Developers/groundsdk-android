@@ -277,8 +277,22 @@ public class AnafiManualPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.USERTAKEOFF));
         assertThat(mPilotingItf.getSmartTakeOffLandAction(), is(SmartTakeOffLandAction.LAND));
 
-        // cancel user take off with landing command
+        // move to hovering
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.HOVERING));
+        assertThat(mPilotingItf.getSmartTakeOffLandAction(), is(SmartTakeOffLandAction.LAND));
+
+        // land
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.ardrone3PilotingLanding()));
+        mPilotingItf.smartTakeOffLand();
+
+        // move to landing
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.LANDING));
+        assertThat(mPilotingItf.getSmartTakeOffLandAction(), is(SmartTakeOffLandAction.TAKE_OFF));
+
+        // cancel landing with take off command
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.ardrone3PilotingTakeOff()));
         mPilotingItf.smartTakeOffLand();
     }
 

@@ -38,9 +38,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 
 import com.parrot.drone.groundsdk.device.peripheral.WifiAccessPoint;
 import com.parrot.drone.groundsdkdemo.R;

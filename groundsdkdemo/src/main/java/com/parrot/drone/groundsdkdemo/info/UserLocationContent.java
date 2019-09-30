@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.facility.UserLocation;

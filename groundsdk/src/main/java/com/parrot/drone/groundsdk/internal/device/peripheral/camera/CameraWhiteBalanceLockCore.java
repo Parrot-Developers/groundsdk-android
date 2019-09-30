@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.camera;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalanceLock;
 import com.parrot.drone.groundsdk.internal.value.SettingController;

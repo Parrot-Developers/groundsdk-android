@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.value;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.value.DoubleRange;
 import com.parrot.drone.groundsdk.value.DoubleSetting;
@@ -102,6 +102,16 @@ public final class DoubleSettingCore extends DoubleSetting {
         return mBounds.getUpper();
     }
 
+    /**
+     * Gets setting bounds.
+     *
+     * @return the setting bounds
+     */
+    @NonNull
+    public DoubleRange getBounds() {
+        return mBounds;
+    }
+
     @Override
     public double getValue() {
         return mValue;
@@ -121,7 +131,6 @@ public final class DoubleSettingCore extends DoubleSetting {
             mController.postRollback(() -> mValue = rollbackValue);
         }
     }
-
 
     /**
      * Update setting bounds.

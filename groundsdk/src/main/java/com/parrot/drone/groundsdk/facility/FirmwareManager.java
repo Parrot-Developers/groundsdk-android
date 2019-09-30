@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.facility;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.DeviceModel;
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareInfo;
@@ -137,9 +137,9 @@ public interface FirmwareManager extends Facility {
          * Tells whether any local file for this firmware update can be deleted from device's storage.
          * <p>
          * Note that this is only meaningful when {@link #state() state} is {@link State#DOWNLOADED downloaded},
-         * otherwise this method returns {@code 0}. <br/>
+         * otherwise this method returns {@code false}. <br/>
          * Moreover, note that application preset firmwares cannot usually be deleted from device's storage, i.e.
-         * there state reports 'downloaded' since they are locally available, but this method returns {@code false}.
+         * their state reports 'downloaded' since they are locally available, but this method returns {@code false}.
          *
          * @return {@code true} if this firmware update file can be deleted from device's storage, otherwise
          *         {@code false}

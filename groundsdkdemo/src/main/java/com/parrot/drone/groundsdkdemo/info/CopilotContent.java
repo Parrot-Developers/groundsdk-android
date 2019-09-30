@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.RemoteControl;
 import com.parrot.drone.groundsdk.device.peripheral.Copilot;
@@ -59,6 +60,7 @@ class CopilotContent extends PeripheralContent<RemoteControl, Copilot> {
     private static final class ViewHolder
             extends PeripheralContent.ViewHolder<CopilotContent, Copilot> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -77,6 +79,7 @@ class CopilotContent extends PeripheralContent<RemoteControl, Copilot> {
             mSourceText.setText(copilot.source().getValue().toString());
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

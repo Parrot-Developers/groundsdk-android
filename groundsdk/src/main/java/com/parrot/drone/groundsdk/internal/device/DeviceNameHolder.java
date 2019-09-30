@@ -32,8 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.device;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;

@@ -378,7 +378,7 @@ public class ReplayTest {
         doReturn(mStream).when(mReplay).openStream(mStreamClient.capture());
         mReplay.pause();
 
-        // give initial playstate: 0x (PAUSED)
+        // give initial play state: 0x (PAUSED)
         doReturn(0.0).when(mPlaybackState).speed();
         doReturn(10L).when(mPlaybackState).duration();
         doReturn(1L).when(mPlaybackState).position();

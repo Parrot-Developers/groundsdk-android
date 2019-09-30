@@ -45,7 +45,8 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 import com.parrot.drone.sdkcore.arsdk.backend.ArsdkDiscovery;

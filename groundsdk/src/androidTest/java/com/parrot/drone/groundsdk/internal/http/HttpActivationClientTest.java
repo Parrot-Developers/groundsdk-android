@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.tasks.TestExecutor;
 
@@ -109,7 +110,7 @@ public class HttpActivationClientTest {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .post(RequestBody.create(MediaType.parse("application/json"), EXPECTED_BODY_JSON))
+                .post(RequestBody.create(EXPECTED_BODY_JSON, MediaType.parse("application/json")))
                 .url("http://test/apiv1/activation"));
 
         mMockService.mockResponse(it -> it.code(500));
@@ -128,7 +129,7 @@ public class HttpActivationClientTest {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .post(RequestBody.create(MediaType.parse("application/json"), EXPECTED_BODY_JSON))
+                .post(RequestBody.create(EXPECTED_BODY_JSON, MediaType.parse("application/json")))
                 .url("http://test/apiv1/activation"));
 
         request.cancel();
@@ -148,7 +149,7 @@ public class HttpActivationClientTest {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .post(RequestBody.create(MediaType.parse("application/json"), EXPECTED_BODY_JSON))
+                .post(RequestBody.create(EXPECTED_BODY_JSON, MediaType.parse("application/json")))
                 .url("http://test/apiv1/activation"));
 
         mMockService.mockResponse(it -> it.code(200));

@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.MockHttpService;
@@ -75,7 +76,7 @@ public class HttpEphemerisClientTests {
     }
 
     private static final File UPLOAD_FILE = new File(
-            InstrumentationRegistry.getContext().getCacheDir(), "ephemeris.test");
+            ApplicationProvider.getApplicationContext().getCacheDir(), "ephemeris.test");
 
     private MockHttpService mMockService;
 
@@ -123,7 +124,7 @@ public class HttpEphemerisClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/ephemeris"));
 
         mMockService.mockResponse(it -> it.code(200));
@@ -141,7 +142,7 @@ public class HttpEphemerisClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/ephemeris"));
 
         mMockService.mockResponse(it -> it.code(500));
@@ -159,7 +160,7 @@ public class HttpEphemerisClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/ephemeris"));
 
         request.cancel();
@@ -178,7 +179,7 @@ public class HttpEphemerisClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/ephemeris"));
 
         BlockingBufferSink sink = mMockService.receiveFromPut(new BlockingBufferSink()

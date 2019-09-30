@@ -40,9 +40,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.sdkcore.arsdk.backend.ArsdkBackendController;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;
@@ -75,7 +76,7 @@ public final class ArsdkBleBackendController extends ArsdkBackendController {
         BluetoothAdapter btAdapter = btManager == null ? null : btManager.getAdapter();
         // some android ROMs report having Bluetooth/BLE system feature, yet its false
         if (appContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
-            && btManager != null && btAdapter != null) {
+            && btManager != null && btAdapter != null && discoverableModels.length > 0) {
             controller = new ArsdkBleBackendController(appContext, btManager, discoverableModels);
         }
         return controller;

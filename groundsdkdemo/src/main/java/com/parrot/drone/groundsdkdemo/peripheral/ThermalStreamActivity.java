@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdkdemo.peripheral;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.MainCamera;

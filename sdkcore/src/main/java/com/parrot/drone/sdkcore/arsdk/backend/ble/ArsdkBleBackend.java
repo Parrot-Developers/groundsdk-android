@@ -34,7 +34,8 @@ package com.parrot.drone.sdkcore.arsdk.backend.ble;
 
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;

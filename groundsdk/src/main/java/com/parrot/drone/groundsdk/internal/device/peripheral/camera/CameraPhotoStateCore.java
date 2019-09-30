@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.camera;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraPhoto;
 import com.parrot.drone.groundsdk.internal.component.ComponentCore;

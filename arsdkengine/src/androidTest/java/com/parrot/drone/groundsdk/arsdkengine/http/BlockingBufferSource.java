@@ -32,6 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import okio.Buffer;
@@ -71,7 +73,7 @@ final class BlockingBufferSource extends ForwardingSource {
     }
 
     @Override
-    public long read(Buffer sink, long byteCount) throws IOException {
+    public long read(@NonNull Buffer sink, long byteCount) throws IOException {
         synchronized (this) {
             while (mNextBytes == 0) {
                 try {

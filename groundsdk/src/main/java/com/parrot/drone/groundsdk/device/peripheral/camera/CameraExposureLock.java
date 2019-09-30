@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.camera;
 
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
 
 /**
  * Camera exposure lock.

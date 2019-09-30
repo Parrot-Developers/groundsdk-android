@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.engine;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.facility.Facility;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;

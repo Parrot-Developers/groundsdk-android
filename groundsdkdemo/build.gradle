@@ -18,14 +18,8 @@ dependencies {
     implementation project(':groundsdk')
     implementation project(':sdkcore')
 
-    implementation supportCoreUtils
-    // we need to explicitly add support v4 (which Play Services Location depends on) to force same version as other
-    // support libraries
-    implementation supportV4
     implementation googlePlayServicesLocation
-    implementation 'com.google.android.gms:play-services-maps:16.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation "com.android.support:design:${supportLibVersion}"
-    implementation "com.android.support:cardview-v7:${supportLibVersion}"
-    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
 }

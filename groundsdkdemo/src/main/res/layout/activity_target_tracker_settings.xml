@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -38,10 +39,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.parrot.drone.groundsdkdemo.settings.TargetTrackerSettingsActivity">
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
@@ -49,15 +50,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_target_tracker_horizontal_framing"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_target_tracker_horizontal_framing"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/vertical_framing_position"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_target_tracker_vertical_framing"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_target_tracker_vertical_framing"/>
 
 </LinearLayout>

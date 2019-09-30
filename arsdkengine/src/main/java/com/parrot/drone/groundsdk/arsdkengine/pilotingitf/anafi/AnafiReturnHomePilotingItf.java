@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.persistence.PersistentStore;
@@ -448,11 +448,10 @@ public class AnafiReturnHomePilotingItf extends ActivablePilotingItfController {
             @NonNull ArsdkFeatureArdrone3.GpsstateHometypechosenchangedType type) {
         switch (type) {
             case TAKEOFF:
+            case FIRST_FIX:
                 return ReturnHomePilotingItf.Target.TAKE_OFF_POSITION;
             case PILOT:
                 return ReturnHomePilotingItf.Target.CONTROLLER_POSITION;
-            case FIRST_FIX:
-                return ReturnHomePilotingItf.Target.TAKE_OFF_POSITION;
             case FOLLOWEE:
                 return ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION;
         }

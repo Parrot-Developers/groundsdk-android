@@ -32,8 +32,8 @@
 
 package com.parrot.drone.sdkcore.pomp;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.sdkcore.SdkCore;
 

@@ -168,7 +168,7 @@ def gen_expected_cmd(ctx, out):
     out.write("/** Generated, do not edit ! */\n")
     out.write("package %s;\n\n", package)
     out.write("import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;\n")
-    out.write("import android.support.annotation.NonNull;\n")
+    out.write("import androidx.annotation.NonNull;\n")
     out.write("import org.hamcrest.Description;\n")
     out.write("import java.util.List;\n")
     out.write("@SuppressWarnings(\"All\")\n")

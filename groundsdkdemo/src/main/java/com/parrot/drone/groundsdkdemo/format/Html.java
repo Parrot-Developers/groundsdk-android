@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdkdemo.format;
 
-import android.support.annotation.NonNull;
-import android.support.v4.text.HtmlCompat;
 import android.text.Spanned;
+
+import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 
 public final class Html {
 

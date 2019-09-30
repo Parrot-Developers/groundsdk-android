@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.http.HttpClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
@@ -260,8 +260,7 @@ public class HttpFdrClient extends HttpClient {
         /**
          * Downloads a lite record.
          *
-         * @param url url of the lite record, as returned by {@link #getLiteRecords()} in field {@link
-         *            HttpFdrInfo#mUrl}
+         * @param url url of the lite record, as returned by {@link #getLiteRecords()}; see {@link HttpFdrInfo#getUrl()}
          *
          * @return a retrofit call with a response body containing record file
          */
@@ -272,8 +271,8 @@ public class HttpFdrClient extends HttpClient {
         /**
          * Deletes a lite record.
          *
-         * @param name name of the lite record, as returned by {@link #getLiteRecords()} in field {@link
-         *             HttpFdrInfo#mName}
+         * @param name name of the lite record, as returned by {@link #getLiteRecords()}; see
+         *             {@link HttpFdrInfo#getName()}
          *
          * @return a retrofit call for the request
          */

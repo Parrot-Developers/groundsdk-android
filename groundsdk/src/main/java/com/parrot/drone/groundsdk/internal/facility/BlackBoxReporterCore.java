@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.facility;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.facility.BlackBoxReporter;
 import com.parrot.drone.groundsdk.facility.Facility;

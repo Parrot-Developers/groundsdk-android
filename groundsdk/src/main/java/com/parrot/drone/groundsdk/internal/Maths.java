@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal;
 
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 
 import java.math.BigInteger;
 

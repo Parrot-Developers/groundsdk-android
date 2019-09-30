@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.RemoteControl;
@@ -62,6 +63,7 @@ class MagnetometerContent extends PeripheralContent<Peripheral.Provider, Magneto
 
     private static final class ViewHolder extends PeripheralContent.ViewHolder<MagnetometerContent, Magnetometer> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mCalibrationButton;
 
@@ -81,6 +83,7 @@ class MagnetometerContent extends PeripheralContent<Peripheral.Provider, Magneto
                     ? R.string.property_magnetometer_calibrated : R.string.property_magnetometer_not_calibrated);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mCalibrationClickListener = new OnClickListener() {
 
             @Override

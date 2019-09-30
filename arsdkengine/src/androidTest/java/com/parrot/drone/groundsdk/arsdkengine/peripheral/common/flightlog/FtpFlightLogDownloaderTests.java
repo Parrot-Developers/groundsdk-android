@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.common.flightlog;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngineTestBase;

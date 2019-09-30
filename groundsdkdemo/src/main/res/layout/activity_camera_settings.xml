@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -37,7 +38,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.parrot.drone.groundsdkdemo.settings.CameraSettingsActivity">
+    tools:context="com.parrot.drone.groundsdkdemo.settings.CameraSettingsActivity"
+    tools:ignore="TooManyViews">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,13 +47,13 @@
         android:orientation="vertical"
         android:padding="@dimen/content_margin">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                 android:id="@+id/mode"
@@ -59,15 +61,15 @@
                 android:layout_height="wrap_content"
                 app:title="@string/property_camera_mode"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,35 +85,35 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_exposure"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_exposure"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -144,37 +146,37 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/exposure_lock_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_exposure_lock"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_exposure_lock"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/exposure_lock_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -192,28 +194,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_exposure_lock_center_x"
-                    app:format="integer_format"/>
+                    app:format="integer_format"
+                    app:title="@string/property_camera_exposure_lock_center_x"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                     android:id="@+id/exposure_lock_region_center_y"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_exposure_lock_center_y"
-                    app:format="integer_format"/>
+                    app:format="integer_format"
+                    app:title="@string/property_camera_exposure_lock_center_y"/>
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
                 android:id="@+id/ev_compensation"
@@ -221,35 +223,35 @@
                 android:layout_height="wrap_content"
                 app:title="@string/property_camera_ev_compensation"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_white_balance"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_white_balance"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -270,36 +272,36 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/white_balance_lock_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_white_balance_lock"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_white_balance_lock"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/white_balance_lock_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -315,35 +317,35 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_photo"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_photo"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -386,8 +388,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/content_margin"
                     android:layout_marginBottom="@dimen/content_margin"
-                    app:title="@string/property_camera_photo_timelapse_interval"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_camera_photo_timelapse_interval"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                     android:id="@+id/photo_gpslapse_interval"
@@ -395,40 +397,40 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/content_margin"
                     android:layout_marginBottom="@dimen/content_margin"
-                    app:title="@string/property_camera_photo_gpslapse_interval"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_camera_photo_gpslapse_interval"/>
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_recording"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_recording"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -461,35 +463,35 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_hdr"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_hdr"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -505,35 +507,35 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_style"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_style"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -551,60 +553,130 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_style_saturation"
-                    app:format="integer_format"/>
+                    app:format="integer_format"
+                    app:title="@string/property_camera_style_saturation"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                     android:id="@+id/contrast"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_style_contrast"
-                    app:format="integer_format"/>
+                    app:format="integer_format"
+                    app:title="@string/property_camera_style_contrast"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
                     android:id="@+id/sharpness"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_style_sharpness"
-                    app:format="integer_format"/>
+                    app:format="integer_format"
+                    app:title="@string/property_camera_style_sharpness"/>
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/zoom_title"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/alignment_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp"
             app:cardBackgroundColor="?android:attr/headerBackground"
-            android:visibility="gone">
+            app:cardCornerRadius="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_camera_alignment"
                 android:textAllCaps="true"
-                android:text="@string/property_camera_zoom"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
+            android:id="@+id/alignment_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/alignment_yaw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:format="double_format"
+                    app:title="@string/yaw_axis"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/alignment_pitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:format="double_format"
+                    app:title="@string/pitch_axis"/>
+
+                <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
+                    android:id="@+id/alignment_roll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    app:format="double_format"
+                    app:title="@string/roll_axis"/>
+
+                <Button
+                    android:id="@+id/btn_alignment_reset"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_reset"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/zoom_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?android:attr/headerBackground"
+            app:cardCornerRadius="4dp"
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/property_camera_zoom"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/zoom_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            android:visibility="gone"
             app:cardCornerRadius="4dp"
-            android:visibility="gone">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -616,8 +688,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:title="@string/property_camera_zoom_max_speed"
-                    app:format="double_format"/>
+                    app:format="double_format"
+                    app:title="@string/property_camera_zoom_max_speed"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.ToggleSettingView
                     android:id="@+id/zoom_quality_degradation"
@@ -628,7 +700,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

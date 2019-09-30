@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.engine.blackbox;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.io.Files;
 import com.parrot.drone.groundsdk.internal.tasks.Job;
@@ -75,7 +75,7 @@ class ArchiveJob extends Job<File> {
 
     @Nullable
     @Override
-    protected File doInBackground() throws IOException {
+    protected File doInBackground() throws IOException, InterruptedException {
         File workDir = mEngine.getWorkDirectory();
 
         Files.makeDirectories(workDir);
@@ -98,6 +98,8 @@ class ArchiveJob extends Job<File> {
             if (!tmpFile.renameTo(blackBoxFile)) {
                 throw new IOException("Could not rename black box report " + tmpFile + " to " + blackBoxFile);
             }
+
+            mEngine.copyToPublicFolder(blackBoxFile);
 
             return blackBoxFile;
         } finally {

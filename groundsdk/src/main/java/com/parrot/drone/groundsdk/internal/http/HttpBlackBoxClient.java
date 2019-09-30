@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.http;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.internal.tasks.Executor;
 import com.parrot.drone.groundsdk.internal.tasks.Task;
@@ -129,7 +130,7 @@ public class HttpBlackBoxClient extends HttpClient {
     @NonNull
     public HttpRequest upload(@NonNull File blackbox, @NonNull String account,
                               @NonNull UploadCallback callback) {
-        Call<Void> uploadCall = mService.upload(RequestBody.create(MEDIA_TYPE_APPLICATION_GZIP, blackbox), account);
+        Call<Void> uploadCall = mService.upload(RequestBody.create(blackbox, MEDIA_TYPE_APPLICATION_GZIP), account);
         Task<Void> uploadTask = Executor.runInBackground((Callable<Void>) () -> {
             // check file existence to prevent infinite retry in okhttp
             // this could be removed when okhttp > 3.12.0 is used

@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.facility.UserAccount;
@@ -56,6 +57,7 @@ class UserAccountContent extends FacilityContent<UserAccount> {
     private static final class ViewHolder
             extends FacilityContent.ViewHolder<UserAccountContent, UserAccount> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -69,6 +71,7 @@ class UserAccountContent extends FacilityContent<UserAccount> {
         void onBind(@NonNull UserAccountContent content, @NonNull UserAccount userAccount) {
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

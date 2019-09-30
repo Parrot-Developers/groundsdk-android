@@ -33,7 +33,8 @@
 package com.parrot.drone.sdkcore.arsdk;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 

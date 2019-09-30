@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.facility;
 
-import android.support.annotation.FloatRange;
+import androidx.annotation.FloatRange;
 
 /**
  * Facility that informs about the user (phone) heading.

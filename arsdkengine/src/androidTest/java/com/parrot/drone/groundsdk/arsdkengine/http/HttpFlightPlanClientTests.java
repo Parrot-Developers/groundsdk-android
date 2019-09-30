@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.MockHttpService;
@@ -80,7 +81,7 @@ public class HttpFlightPlanClientTests {
     }
 
     private static final File UPLOAD_FILE = new File(
-            InstrumentationRegistry.getContext().getCacheDir(), "flightplan.test");
+            ApplicationProvider.getApplicationContext().getCacheDir(), "flightplan.test");
 
     private static final String FLIGHT_PLAN_UID = "flightPlanUid";
 
@@ -131,14 +132,14 @@ public class HttpFlightPlanClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/flightplan"));
 
         Buffer sink = mMockService.receiveFromPut(new Buffer());
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("text/strings"), FLIGHT_PLAN_UID)));
+                .body(ResponseBody.create(FLIGHT_PLAN_UID, MediaType.parse("text/strings"))));
 
         mFgLock.block();
 
@@ -155,7 +156,7 @@ public class HttpFlightPlanClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/flightplan"));
 
         mMockService.mockResponse(it -> it.code(500));
@@ -173,7 +174,7 @@ public class HttpFlightPlanClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/flightplan"));
 
         request.cancel();
@@ -193,7 +194,7 @@ public class HttpFlightPlanClientTests {
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
-                .put(RequestBody.create(null, UPLOAD_FILE))
+                .put(RequestBody.create(UPLOAD_FILE, null))
                 .url("http://test/api/v1/upload/flightplan"));
 
         BlockingBufferSink sink = mMockService.receiveFromPut(new BlockingBufferSink()

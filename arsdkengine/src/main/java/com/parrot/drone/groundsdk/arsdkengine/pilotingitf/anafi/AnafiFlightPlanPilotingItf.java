@@ -32,9 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpFlightPlanClient;
@@ -384,7 +383,7 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                                 error = ActivationError.WAYPOINT_BEYOND_GEOFENCE;
                                 break;
                             case CAMERAAVAILABLE:
-                                // TODO: add this unavailability reason in the API
+                                reason = UnavailabilityReason.CAMERA_UNAVAILABLE;
                                 break;
                         }
                         if (reason != null) {
@@ -454,7 +453,6 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                                 // upload pending flight plan if any
                                 if (mFlightPlanToUpload != null) {
                                     uploadFlightPlan(mFlightPlanToUpload);
-                                    mFlightPlanToUpload = null;
                                 }
                                 break;
                             case PAUSED:
@@ -469,7 +467,6 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                                 // upload pending flight plan if any
                                 if (mFlightPlanToUpload != null) {
                                     uploadFlightPlan(mFlightPlanToUpload);
-                                    mFlightPlanToUpload = null;
                                 }
                                 break;
                             case LOADED:
@@ -485,7 +482,9 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                         ULog.d(TAG_FLIGHTPLAN, "onMissionItemExecuted [idx: " + idx + "]");
                     }
 
-                    mPilotingItf.updateMissionItemExecuted((int) idx).notifyUpdated();
+                    if (mPilotingItf.getLatestUploadState() != UploadState.UPLOADING) {
+                        mPilotingItf.updateMissionItemExecuted((int) idx).notifyUpdated();
+                    }
                 }
             };
 
@@ -495,12 +494,11 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
      * @param flightPlan flight plan file to upload
      */
     private void uploadFlightPlan(@NonNull File flightPlan) {
-        mPilotingItf.updateUploadState(UploadState.UPLOADING).notifyUpdated();
-        // if currently active, deactivate first before uploading the new file
-        if (canDeactivate()) {
-            mFlightPlanToUpload = flightPlan;
-            requestDeactivation();
-        } else {
+        mPilotingItf.updateUploadState(UploadState.UPLOADING)
+                    .updateMissionItemExecuted(-1)
+                    .notifyUpdated();
+        if (mStopped) {
+            mFlightPlanToUpload = null;
             HttpFlightPlanClient client = mDeviceController.getHttpClient(HttpFlightPlanClient.class);
             if (client == null) {
                 // Invalid state, drone not connected
@@ -512,19 +510,22 @@ public class AnafiFlightPlanPilotingItf extends ActivablePilotingItfController {
                     ULog.d(TAG_FLIGHTPLAN, "uploadFlightPlan complete [success: " + success
                                            + ", uid: " + flightPlanUid + "]");
                 }
-                boolean sameUid = success && TextUtils.equals(mFlightPlanUid, flightPlanUid);
                 mFlightPlanUid = success ? flightPlanUid : null;
                 mPilotingItf.updateUploadState(success ? UploadState.UPLOADED : UploadState.FAILED)
                             .updateFlightPlanKnown(mFlightPlanUid != null)
-                            .updatePaused(sameUid);
+                            .updatePaused(false);
                 updateMissingFileReason();
-                if (canDeactivate()) { // stop any previously playing flight plan first
+                if (canDeactivate()) { // pause flight plan if necessary
                     requestDeactivation();
                 } else {
                     updateAvailability();
                 }
                 mPilotingItf.notifyUpdated();
             });
+        } else {
+            // stop current flight plan, if any, before uploading the file
+            mFlightPlanToUpload = flightPlan;
+            sendCommand(ArsdkFeatureCommon.Mavlink.encodeStop());
         }
     }
 

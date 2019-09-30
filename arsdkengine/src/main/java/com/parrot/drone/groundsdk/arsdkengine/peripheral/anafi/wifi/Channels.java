@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.wifi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.wifi.Channel;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureWifi;

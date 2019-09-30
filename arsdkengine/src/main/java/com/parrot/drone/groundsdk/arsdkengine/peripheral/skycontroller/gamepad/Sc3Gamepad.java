@@ -33,12 +33,13 @@
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.gamepad;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.RCController;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -284,6 +285,14 @@ public final class Sc3Gamepad extends GamepadControllerBase {
     }
 
     @Override
+    void onVolatileMapping(boolean enabled) {
+        mGamepad.volatileMapping()
+                .updateSupportedFlag(true)
+                .updateValue(enabled);
+        mGamepad.notifyUpdated();
+    }
+
+    @Override
     void processActiveDroneModelChange(@NonNull Drone.Model droneModel) {
         mGamepad.updateActiveDroneModel(droneModel).notifyUpdated();
     }
@@ -340,6 +349,12 @@ public final class Sc3Gamepad extends GamepadControllerBase {
                                      @NonNull Set<SkyController3Gamepad.Axis> axes) {
             InputMasks info = InputMasks.collect(buttons, axes);
             grab(info.mButtons, info.mAxes);
+        }
+
+        @Override
+        public boolean setVolatileMapping(boolean enable) {
+            enableVolatileMapping(enable);
+            return true;
         }
     };
 

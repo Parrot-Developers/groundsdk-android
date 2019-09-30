@@ -34,14 +34,15 @@ package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.parrot.drone.groundsdk.device.DeviceConnector;
 import com.parrot.drone.groundsdk.device.DeviceState;
@@ -59,6 +60,7 @@ import com.parrot.drone.groundsdkdemo.animation.Animations;
 import com.parrot.drone.groundsdkdemo.animation.PickAnimationDialog;
 import com.parrot.drone.groundsdkdemo.animation.PickFlipDirectionDialog;
 import com.parrot.drone.groundsdkdemo.hud.CopterHudActivity;
+import com.parrot.drone.groundsdkdemo.hud.HmdActivity;
 
 import java.util.EnumSet;
 
@@ -70,6 +72,8 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                    PickFlipDirectionDialog.Listener, RemovableUserStorageContent.OnUserStorageFormatRequestListener {
 
     private Button mHudButton;
+
+    private Button mFpvButton;
 
     @SuppressWarnings("FieldCanBeLocal")
     private TextView mModelText;
@@ -114,6 +118,8 @@ public class DroneInfoActivity extends GroundSdkActivityBase
         mHudIntent.putExtra(EXTRA_DEVICE_UID, mDrone.getUid());
 
         mHudButton = findViewById(R.id.btn_hud);
+        mFpvButton = findViewById(R.id.btn_fpv);
+
         mModelText = findViewById(R.id.model);
         mStatusText = findViewById(R.id.status);
         mForgetButton = findViewById(R.id.btn_forget);
@@ -131,10 +137,13 @@ public class DroneInfoActivity extends GroundSdkActivityBase
             mConnectButton.setText(connectionState == DeviceState.ConnectionState.DISCONNECTED
                     ? R.string.action_connect : R.string.action_disconnect);
             mHudButton.setEnabled(connectionState == DeviceState.ConnectionState.CONNECTED);
+            mFpvButton.setEnabled(connectionState == DeviceState.ConnectionState.CONNECTED);
             mForgetButton.setEnabled(state.canBeForgotten());
         });
 
         mHudButton.setOnClickListener(v -> startActivity(mHudIntent));
+        mFpvButton.setOnClickListener(v -> startActivity(
+                new Intent(this, HmdActivity.class).putExtra(EXTRA_DEVICE_UID, mDrone.getUid())));
 
         mForgetButton.setOnClickListener(v -> mDrone.forget());
 
@@ -195,6 +204,7 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                 new PointOfInterestContent(mDrone),
                 new AnimationContent(mDrone),
                 new HeaderContent(getString(R.string.header_peripherals)),
+                new PilotingControlContent(mDrone),
                 new PreciseHomeContent(mDrone),
                 new ThermalContent(mDrone),
                 new TargetTrackerContent(mDrone),

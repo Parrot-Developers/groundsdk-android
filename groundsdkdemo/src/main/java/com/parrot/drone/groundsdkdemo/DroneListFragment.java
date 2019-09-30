@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdkdemo;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.DroneListEntry;

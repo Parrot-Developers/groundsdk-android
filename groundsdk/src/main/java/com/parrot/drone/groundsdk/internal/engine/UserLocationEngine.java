@@ -35,8 +35,9 @@ package com.parrot.drone.groundsdk.internal.engine;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.engine.system.SystemLocationCore;
 import com.parrot.drone.groundsdk.internal.facility.UserHeadingCore;

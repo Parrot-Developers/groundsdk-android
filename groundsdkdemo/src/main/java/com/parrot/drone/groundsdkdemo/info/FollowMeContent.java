@@ -33,11 +33,12 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;
@@ -64,6 +65,7 @@ class FollowMeContent extends ActivablePilotingItfContent<Drone, FollowMePilotin
     private static final class ViewHolder
             extends ActivablePilotingItfContent.ViewHolder<FollowMeContent, FollowMePilotingItf> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditSettingsButton;
 
@@ -96,6 +98,7 @@ class FollowMeContent extends ActivablePilotingItfContent<Drone, FollowMePilotin
             mTrackingIssuesText.setText(TextUtils.join("\n", issues));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

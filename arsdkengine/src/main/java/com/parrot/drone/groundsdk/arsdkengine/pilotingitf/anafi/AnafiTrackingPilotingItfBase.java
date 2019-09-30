@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.ActivablePilotingItfController;
@@ -47,6 +47,7 @@ import com.parrot.drone.sdkcore.ulog.ULog;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_TRACKING_PITF;
@@ -241,15 +242,17 @@ abstract class AnafiTrackingPilotingItfBase extends ActivablePilotingItfControll
                                           + ", improvable inputs: " + improvableInputs + "]");
             }
 
+            Supplier<EnumSet<TrackingIssue>> trackingIssueSetFactory = () -> EnumSet.noneOf(TrackingIssue.class);
+
             mAvailabilityIssues.put(mode, missingInputs
                     .stream()
                     .map(AnafiTrackingPilotingItfBase::convert)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(TrackingIssue.class))));
+                    .collect(Collectors.toCollection(trackingIssueSetFactory)));
 
             mQualityIssues.put(mode, improvableInputs
                     .stream()
                     .map(AnafiTrackingPilotingItfBase::convert)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(TrackingIssue.class))));
+                    .collect(Collectors.toCollection(trackingIssueSetFactory)));
 
             updateState();
         }

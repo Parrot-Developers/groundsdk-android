@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -46,9 +47,9 @@
         android:layout_weight="1">
 
         <com.parrot.drone.groundsdk.stream.GsdkStreamView
+            android:id="@+id/video_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/video_view"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:layout_width="1dp"
@@ -69,23 +70,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_gimbal_offset_yaw"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_gimbal_offset_yaw"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/offset_pitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_gimbal_offset_pitch"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_gimbal_offset_pitch"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/offset_roll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_gimbal_offset_roll"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_gimbal_offset_roll"/>
 
 </LinearLayout>

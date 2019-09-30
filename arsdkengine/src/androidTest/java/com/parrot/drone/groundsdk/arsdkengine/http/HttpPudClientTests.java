@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.parrot.drone.groundsdk.internal.Cancelable;
@@ -143,7 +144,7 @@ public class HttpPudClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/json"), new Gson().toJson(PUD_LIST))));
+                .body(ResponseBody.create(new Gson().toJson(PUD_LIST), MediaType.parse("application/json"))));
 
         mFgLock.block();
 
@@ -207,7 +208,7 @@ public class HttpPudClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"), PUD_DATA)));
+                .body(ResponseBody.create(PUD_DATA, MediaType.parse("application/octet-stream"))));
 
         mFgLock.block();
 

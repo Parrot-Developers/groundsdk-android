@@ -14,7 +14,7 @@ dependencies {
     implementation project(path: ':sdkcore')
     implementation hamcrest
 
-    compileOnly supportAnnotations
+    implementation androidXAnnotations
 }
 
 /* Task to generate testing arsdk commands java code */

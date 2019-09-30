@@ -124,7 +124,7 @@ public class SkyControllerCopilotTests extends ArsdkEngineTestBase {
 
         // change value from api
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.skyctrlCoPilotingSetPilotingSource(
-                        ArsdkFeatureSkyctrl.CopilotingSetpilotingsourceSource.CONTROLLER)));
+                ArsdkFeatureSkyctrl.CopilotingSetpilotingsourceSource.CONTROLLER)));
         mCopilot.source().setValue(Copilot.Source.APPLICATION);
         assertThat(mChangeCnt, is(2));
         assertThat(mCopilot.source(), enumSettingIsUpdatingTo(Copilot.Source.APPLICATION));

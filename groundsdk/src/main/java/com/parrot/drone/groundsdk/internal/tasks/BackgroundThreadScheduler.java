@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.tasks;
 
 import android.os.Process;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.ulog.ULog;
 

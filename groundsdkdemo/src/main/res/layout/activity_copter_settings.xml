@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -38,10 +39,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.parrot.drone.groundsdkdemo.settings.ManualCopterSettingsActivity">
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
@@ -49,32 +50,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_max_pitch_roll"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_max_pitch_roll"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/max_pitch_roll_velocity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_max_pitch_roll_velocity"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_max_pitch_roll_velocity"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/max_vertical_speed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_max_vertical_speed"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_max_vertical_speed"/>
 
     <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
         android:id="@+id/max_yaw_speed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:title="@string/property_max_yaw_speed"
-        app:format="double_format"/>
+        app:format="double_format"
+        app:title="@string/property_max_yaw_speed"/>
 
     <com.parrot.drone.groundsdkdemo.settings.ToggleSettingView
         android:id="@+id/banked_turn_mode"

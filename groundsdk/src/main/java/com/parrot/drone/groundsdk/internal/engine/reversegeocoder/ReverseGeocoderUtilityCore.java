@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdk.internal.engine.reversegeocoder;
 
 import android.location.Address;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.internal.utility.ReverseGeocoderUtility;
 

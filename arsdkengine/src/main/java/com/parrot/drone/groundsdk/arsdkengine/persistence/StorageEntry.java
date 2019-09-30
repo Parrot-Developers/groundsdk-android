@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.persistence;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.value.DoubleRange;
 import com.parrot.drone.groundsdk.value.IntegerRange;
@@ -278,7 +278,6 @@ public abstract class StorageEntry<T> {
      * @return the stored value, if any, or {@code null} if none, or the provided {@code store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
-     *
      * @see #load(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Supplier)
      * @see #load(PersistentStore.Dictionary, Object)
@@ -340,7 +339,6 @@ public abstract class StorageEntry<T> {
      *         store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
-     *
      * @see #load(PersistentStore.Dictionary, Supplier)
      * @see #loadOrThrow(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Object)
@@ -400,7 +398,6 @@ public abstract class StorageEntry<T> {
      * @return the stored value, if any, or {@code fallback} if none, or the provided {@code store} is {@code null}
      *
      * @throws IllegalArgumentException in case a value is stored but could not be parsed successfully
-     *
      * @see #load(PersistentStore.Dictionary, Object)
      * @see #loadOrThrow(PersistentStore.Dictionary)
      * @see #loadOrThrow(PersistentStore.Dictionary, Supplier)

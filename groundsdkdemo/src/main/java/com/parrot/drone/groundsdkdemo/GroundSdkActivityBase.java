@@ -39,16 +39,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.parrot.drone.groundsdk.GroundSdk;
 import com.parrot.drone.groundsdk.ManagedGroundSdk;
 import com.parrot.drone.groundsdk.device.peripheral.VirtualGamepad;
@@ -72,6 +73,7 @@ public abstract class GroundSdkActivityBase extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE, /* for ULog Recorder. */
             Manifest.permission.ACCESS_COARSE_LOCATION, /* to access BLE discovery results. */
             Manifest.permission.ACCESS_FINE_LOCATION,   /* for GPS location updates. */
+            Manifest.permission.CAMERA, /* For HMD see-through. */
     };
 
     /** Code for permission request result handling. */
@@ -93,6 +95,7 @@ public abstract class GroundSdkActivityBase extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mGroundSdk = ManagedGroundSdk.obtainSession(this);
 
         Set<String> permissionsToRequest = new HashSet<>();

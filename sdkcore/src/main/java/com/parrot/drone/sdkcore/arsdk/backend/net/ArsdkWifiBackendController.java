@@ -40,8 +40,9 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.wifi.WifiManager;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.sdkcore.arsdk.backend.ArsdkBackendController;
 import com.parrot.drone.sdkcore.arsdk.backend.net.mdnssdmin.MdnsSdMin;

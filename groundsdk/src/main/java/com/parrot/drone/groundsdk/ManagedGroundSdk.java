@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * An GroundSdk session automatically managed according to an android {@link Activity} lifecycle.
@@ -42,18 +43,18 @@ import android.support.annotation.NonNull;
  * correlation with a given {@code Activity}'s own lifecycle.This is the recommended way to use GroundSdk API in an
  * android Activity.
  * <p>
- * The application should obtain such a session in the {@link Activity#onCreate} method. None of the session's
- * lifecycle management methods, as described in {@link GroundSdk} documentation, need to be called.
+ * The application should obtain such a session in the activity {@code onCreate} method. None of the session's lifecycle
+ * management methods, as described in {@link GroundSdk} documentation, need to be called.
  * <ul>
  * <li>The session is automatically retained and restored upon configuration changes.</li>
- * <li>The session is resumed when the activity calls through {@link Activity#onStart super.onStart()} method
- * (by default, but the application may chose to have it resumed in when the activity calls through
- * {@link Activity#onResume super.onResume()} method instead).</li>
- * <li>The session is suspended when the activity calls through {@link Activity#onStop super.onStop()} method
- * (by default, but the application may chose to have it suspended in when the activity calls through
- * {@link Activity#onPause super.onPause()} method instead).</li>
- * <li>The session is automatically closed when the activity calls through {@link Activity#onDestroy}. The
- * application <strong>MUST NOT</strong> use the session past this point.</li>
+ * <li>The session is resumed when the activity calls through {@code super.onStart()} method (by default, but the
+ * application may chose to have it resumed in when the activity calls through {@code super.onResume()} method
+ * instead).</li>
+ * <li>The session is suspended when the activity calls through {@code super.onStop()} method (by default, but the
+ * application may chose to have it suspended in when the activity calls through {@code super.onPause()} method
+ * instead).</li>
+ * <li>The session is automatically closed when the activity calls through {@code super.onDestroy()}. The application
+ * <strong>MUST NOT</strong> use the session past this point.</li>
  * </ul>
  * <p>
  * For example:
@@ -83,14 +84,14 @@ public final class ManagedGroundSdk extends GroundSdk {
     public enum ObserverBehavior {
 
         /**
-         * All session's observers are resumed at {@link Activity#onStart()} time and suspended at
-         * {@link Activity#onStop()} time.
+         * All session's observers are resumed at activity {@code onStart()} time and suspended at activity
+         * {@code onStop()} time.
          */
         NOTIFY_ON_START,
 
         /**
-         * All session's observers are resumed at {@link Activity#onResume()} time and suspended at
-         * {@link Activity#onPause()} time.
+         * All session's observers are resumed at activity {@code onResume()} time and suspended at activity
+         * {@code onPause()} time.
          */
         NOTIFY_ON_RESUME
     }
@@ -115,8 +116,8 @@ public final class ManagedGroundSdk extends GroundSdk {
     /**
      * Obtains a GroundSdk session automatically managed according to the provided activity's lifecycle.
      * <p>
-     * All observers registered through this session are resumed in {@link Activity#onStart()} and suspended in
-     * {@link Activity#onStop()}. <br>
+     * All observers registered through this session are resumed in activity {@code onStart()} and suspended in activity
+     * {@code onStop()}. <br>
      * Use {@link #obtainSession(Activity, ObserverBehavior)} to customize this behavior if unsuitable to the
      * application needs.
      *

@@ -33,9 +33,6 @@
 package com.parrot.drone.groundsdkdemo.peripheral.debugsettings;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,6 +45,10 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.parrot.drone.groundsdk.device.peripheral.DevToolbox;
 import com.parrot.drone.groundsdkdemo.R;
@@ -262,6 +263,7 @@ public class DebugSettingsRecyclerView extends RecyclerView {
             }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -290,6 +292,7 @@ public class DebugSettingsRecyclerView extends RecyclerView {
             view.setText(itemView.getContext().getString(R.string.double_value_format, value));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final TextView.OnEditorActionListener mEditorActionListener = new TextView.OnEditorActionListener() {
 
             @Override
@@ -358,6 +361,7 @@ public class DebugSettingsRecyclerView extends RecyclerView {
             }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final TextView.OnEditorActionListener mEditorActionListener = new TextView.OnEditorActionListener() {
 
             @Override

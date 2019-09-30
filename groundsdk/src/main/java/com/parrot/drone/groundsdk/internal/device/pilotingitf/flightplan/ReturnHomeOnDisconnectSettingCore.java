@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf.flightplan;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.FlightPlanPilotingItf;
 import com.parrot.drone.groundsdk.internal.value.SettingController;

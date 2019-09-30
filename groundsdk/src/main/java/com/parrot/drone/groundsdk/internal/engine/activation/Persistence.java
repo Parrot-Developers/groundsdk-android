@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.internal.engine.activation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.PrintWriter;
 import java.util.HashSet;

@@ -34,7 +34,8 @@ package com.parrot.drone.groundsdk.facility;
 
 import android.Manifest;
 import android.location.Location;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Facility that informs about the user (phone) location.
@@ -43,6 +44,8 @@ public interface UserLocation extends Facility {
 
     /**
      * Gets the last known user location.
+     * <p>
+     * Note: the location altitude returned by {@link Location#getAltitude()} is the altitude above mean sea level.
      *
      * @return last known user location if available, otherwise {@code null}
      */

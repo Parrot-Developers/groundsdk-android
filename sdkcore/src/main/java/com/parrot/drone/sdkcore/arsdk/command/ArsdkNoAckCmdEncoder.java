@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk.command;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Interface for a non-acknowledged command encoder.

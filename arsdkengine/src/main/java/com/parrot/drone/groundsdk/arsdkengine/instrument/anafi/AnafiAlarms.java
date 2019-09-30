@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.instrument.anafi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DroneController;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.DroneInstrumentController;
@@ -240,6 +240,26 @@ public class AnafiAlarms extends DroneInstrumentController {
                                 break;
                         }
                         mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.STRONG_WIND, level).notifyUpdated();
+                    }
+                }
+
+                @Override
+                public void onVibrationLevelChanged(
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateVibrationlevelchangedState state) {
+                    if (state != null) {
+                        Alarms.Alarm.Level level = null;
+                        switch (state) {
+                            case OK:
+                                level = Alarms.Alarm.Level.OFF;
+                                break;
+                            case WARNING:
+                                level = Alarms.Alarm.Level.WARNING;
+                                break;
+                            case CRITICAL:
+                                level = Alarms.Alarm.Level.CRITICAL;
+                                break;
+                        }
+                        mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.STRONG_VIBRATIONS, level).notifyUpdated();
                     }
                 }
             };

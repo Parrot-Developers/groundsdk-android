@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngineTestBase;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.MockPilotingCommandSeqNrGenerator;

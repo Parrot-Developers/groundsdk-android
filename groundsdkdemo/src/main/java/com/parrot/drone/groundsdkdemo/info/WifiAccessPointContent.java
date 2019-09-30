@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.RemoteControl;
@@ -75,6 +76,7 @@ class WifiAccessPointContent extends PeripheralContent<Peripheral.Provider, Wifi
     private static final class ViewHolder
             extends PeripheralContent.ViewHolder<WifiAccessPointContent, WifiAccessPoint> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -124,6 +126,7 @@ class WifiAccessPointContent extends PeripheralContent<Peripheral.Provider, Wifi
             mSecurityText.setText(wifiAp.security().getMode().toString());
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

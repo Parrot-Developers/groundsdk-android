@@ -32,12 +32,13 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.MainCamera;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
+import com.parrot.drone.groundsdk.device.peripheral.camera.CameraAlignment;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraEvCompensation;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposure;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposureLock;
@@ -48,6 +49,7 @@ import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalance;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalanceLock;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraZoom;
 import com.parrot.drone.groundsdk.internal.MockComponentStore;
+import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraAlignmentSettingCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraPhotoSettingCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraRecordingSettingCore;
@@ -68,6 +70,9 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingPitchIs;
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingRollIs;
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingYawIs;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabling;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabled;
@@ -2028,6 +2033,126 @@ public class CameraTest {
         assertThat(mCamera.style(), allOf(
                 styleSettingSharpnessIs(0, -4, 4),
                 settingIsUpToDate()));
+    }
+
+    @Test
+    public void testAlignment() {
+        // we need the camera to be active to have alignment
+        mCameraImpl.updateActiveFlag(true).publish();
+
+        // test initial value
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mCamera.alignment(), is(nullValue()));
+
+        // create alignment
+        mCameraImpl.createAlignmentIfNeeded();
+        mCameraImpl.notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+        CameraAlignment.Setting alignment = mCamera.alignment();
+        assertThat(alignment, is(notNullValue()));
+        CameraAlignmentSettingCore alignmentImpl = mCameraImpl.alignment();
+        assertThat(alignmentImpl, is(notNullValue()));
+
+        // test backend change notification
+        alignmentImpl.updateSupportedYawRange(DoubleRange.of(-2.0, 2.0)).updateYaw(1);
+        alignmentImpl.updateSupportedPitchRange(DoubleRange.of(-4.0, 4.0)).updatePitch(2);
+        alignmentImpl.updateSupportedRollRange(DoubleRange.of(-6.0, 6.0)).updateRoll(3);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+
+        // change yaw
+        alignment.setYaw(-1.0);
+
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mBackend.mYawAlignment, is(-1.0));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpdating()));
+
+
+        alignmentImpl.updateYaw(-1.0);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(5));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+
+        // change pitch
+        alignment.setPitch(3.5);
+
+        assertThat(mComponentChangeCnt, is(6));
+        assertThat(mBackend.mPitchAlignment, is(3.5));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpdating()));
+
+        alignmentImpl.updatePitch(3.5);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(7));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+
+        // change roll
+        alignment.setRoll(-2.6);
+
+        assertThat(mComponentChangeCnt, is(8));
+        assertThat(mBackend.mRollAlignment, is(-2.6));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 3.5, 4.0),
+                alignmentSettingRollIs(-6.0, -2.6, 6.0),
+                settingIsUpdating()));
+
+        alignmentImpl.updateRoll(-2.6);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(9));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, -1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 3.5, 4.0),
+                alignmentSettingRollIs(-6.0, -2.6, 6.0),
+                settingIsUpToDate()));
+
+        // reset alignment
+        alignment.reset();
+
+        assertThat(mComponentChangeCnt, is(9));
+        assertThat(mBackend.mAlignmentReset, is(true));
+
+        alignmentImpl.updateYaw(0.0);
+        alignmentImpl.updatePitch(0.0);
+        alignmentImpl.updateRoll(0.0);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(10));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 0.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 0.0, 4.0),
+                alignmentSettingRollIs(-6.0, 0.0, 6.0),
+                settingIsUpToDate()));
+
+        // deactivate camera
+        mCameraImpl.updateActiveFlag(false).notifyUpdated();
+
+        assertThat(mCamera.alignment(), is(nullValue()));
+        assertThat(mComponentChangeCnt, is(11));
     }
 
     @Test
@@ -4621,7 +4746,12 @@ public class CameraTest {
         mCameraImpl.autoRecord().updateSupportedFlag(true).updateValue(false);
         mCameraImpl.createZoomIfNeeded().maxSpeed().updateBounds(DoubleRange.of(0, 1)).updateValue(0);
 
-        mCameraImpl.publish();
+        CameraAlignmentSettingCore alignmentImpl = mCameraImpl.createAlignmentIfNeeded();
+        alignmentImpl.updateSupportedYawRange(DoubleRange.of(-2.0, 2.0)).updateYaw(1.0);
+        alignmentImpl.updateSupportedPitchRange(DoubleRange.of(-4.0, 4.0)).updatePitch(2.0);
+        alignmentImpl.updateSupportedRollRange(DoubleRange.of(-6.0, 6.0)).updateRoll(3.0);
+
+        mCameraImpl.updateActiveFlag(true).publish();
 
         assertThat(mCamera.mode(), allOf(
                 enumSettingValueIs(Camera.Mode.RECORDING),
@@ -4651,6 +4781,14 @@ public class CameraTest {
                 optionalBooleanSettingValueIs(false),
                 settingIsUpToDate()));
 
+        CameraAlignment.Setting alignment = mCamera.alignment();
+        assertThat(alignment, is(notNullValue()));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+
         CameraZoom zoom = mCamera.zoom();
         assertThat(zoom, notNullValue());
         assertThat(zoom.maxSpeed(), allOf(
@@ -4670,6 +4808,9 @@ public class CameraTest {
         mCamera.photo().setMode(CameraPhoto.Mode.BURST);
         mCamera.recording().setMode(CameraRecording.Mode.HYPERLAPSE);
         mCamera.autoRecord().setEnabled(true);
+        alignment.setYaw(1.5);
+        alignment.setPitch(2.5);
+        alignment.setRoll(3.5);
         zoom.maxSpeed().setValue(1);
         zoom.velocityQualityDegradationAllowance().setEnabled(true);
 
@@ -4703,6 +4844,11 @@ public class CameraTest {
                 settingIsUpToDate()));
         assertThat(mCamera.autoHdr(), allOf(
                 optionalBooleanSettingValueIs(true),
+                settingIsUpToDate()));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.5, 6.0),
                 settingIsUpToDate()));
         assertThat(zoom.maxSpeed(), allOf(
                 doubleSettingValueIs(0, 1, 1),
@@ -4741,6 +4887,11 @@ public class CameraTest {
                 settingIsUpToDate()));
         assertThat(mCamera.autoHdr(), allOf(
                 optionalBooleanSettingValueIs(true),
+                settingIsUpToDate()));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.5, 6.0),
                 settingIsUpToDate()));
         assertThat(zoom.maxSpeed(), allOf(
                 doubleSettingValueIs(0, 1, 1),
@@ -4853,6 +5004,14 @@ public class CameraTest {
 
         private int mSharpness;
 
+        private double mYawAlignment;
+
+        private double mPitchAlignment;
+
+        private double mRollAlignment;
+
+        private boolean mAlignmentReset;
+
         private double mMaxZoomSpeed;
 
         private boolean mQualityDegradationAllowance;
@@ -4942,6 +5101,20 @@ public class CameraTest {
             mSaturation = saturation;
             mContrast = contrast;
             mSharpness = sharpness;
+            return true;
+        }
+
+        @Override
+        public boolean setAlignment(double yaw, double pitch, double roll) {
+            mYawAlignment = yaw;
+            mPitchAlignment = pitch;
+            mRollAlignment = roll;
+            return true;
+        }
+
+        @Override
+        public boolean resetAlignment() {
+            mAlignmentReset = true;
             return true;
         }
 

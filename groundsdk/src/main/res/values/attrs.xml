@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -92,6 +93,34 @@
         <!-- Configures overexposure zebras threshold. Default value is 0%.
              See com.parrot.drone.groundsdk.stream.GsdkStreamView#setZebraThreshold. -->
         <attr name="gsdk_zebraThreshold"/>
+
+    </declare-styleable>
+
+    <!-- GsdkHmdView configuration attributes.
+       See com.parrot.drone.groundsdk.stream.GsdkHmdView. -->
+    <declare-styleable name="GsdkHmdView">
+
+        <!-- Defines UI layout to overlay on top of video.
+             @null to disable UI overlay. Default value is null.
+             See com.parrot.drone.groundsdk.stream.GsdkHmdView#setOverlay. -->
+        <attr name="gsdk_overlay" format="reference"/>
+
+        <!-- Defines how to horizontally offset left lens projection center from the center of the HMD view.
+             Value in linear range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported
+             by the VR glasses model. Default value is 0.
+             See com.parrot.drone.groundsdk.hmd.GsdkHmdView#setLeftLensOffset.-->
+        <attr name="gsdk_leftLensOffset" format="fraction"/>
+
+        <!-- Defines how to horizontally offset right lens projection center from the center of the HMD view.
+             Value in linear range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported
+             by the VR glasses model. Default value is 0.
+             See com.parrot.drone.groundsdk.hmd.GsdkHmdView#setRightLensOffset.-->
+        <attr name="gsdk_rightLensOffset" format="fraction"/>
+
+        <!-- Defines how to vertically offset both lenses projection centers from the center of the HMD view.
+             Value in millimeters. Default value is 0.
+             See com.parrot.drone.groundsdk.hmd.GsdkHmdView#setLensesVerticalOffset.-->
+        <attr name="gsdk_lensesVerticalOffset" format="float"/>
 
     </declare-styleable>
 

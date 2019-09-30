@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.stream;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.session.Session;
 import com.parrot.drone.groundsdk.stream.FileReplay;

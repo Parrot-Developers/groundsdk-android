@@ -32,14 +32,15 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.Updater;
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareInfo;
@@ -178,6 +179,7 @@ class UpdaterContent extends PeripheralContent<Peripheral.Provider, Updater> {
             }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

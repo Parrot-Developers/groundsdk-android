@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Interface for an object capable of being monitored.

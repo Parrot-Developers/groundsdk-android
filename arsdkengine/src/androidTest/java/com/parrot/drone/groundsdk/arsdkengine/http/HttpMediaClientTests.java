@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.arsdkengine.http;
 
 import android.os.ConditionVariable;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -94,7 +95,7 @@ public class HttpMediaClientTests {
     private static final String MEDIA_URL = "/data/media/" + MEDIA_ID;
 
     private static final File DOWNLOADED_MEDIA = new File(
-            InstrumentationRegistry.getContext().getCacheDir(), "media.test");
+            ApplicationProvider.getApplicationContext().getCacheDir(), "media.test");
 
     // 100 / 99 => mocks 99% progress, then 100% progress
     private static final byte[] MEDIA_DATA = new byte[Math.round(100f * HttpMediaClient.CHUNK_SIZE / 99)];
@@ -252,7 +253,7 @@ public class HttpMediaClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/json"), GSON.toJson(MOCK_LIST))));
+                .body(ResponseBody.create(GSON.toJson(MOCK_LIST), MediaType.parse("application/json"))));
 
         mFgLock.block();
 
@@ -485,7 +486,7 @@ public class HttpMediaClientTests {
 
         mMockService.mockResponse(response -> response
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"), MEDIA_DATA)));
+                .body(ResponseBody.create(MEDIA_DATA, MediaType.parse("application/octet-stream"))));
 
         mFgLock.block();
 
@@ -543,7 +544,7 @@ public class HttpMediaClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"), MEDIA_DATA)));
+                .body(ResponseBody.create(MEDIA_DATA, MediaType.parse("application/octet-stream"))));
 
         mFgLock.block();
 
@@ -598,9 +599,10 @@ public class HttpMediaClientTests {
 
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"),
-                        MEDIA_DATA.length * 2, // mock twice longer than what is actually sent
-                        new Buffer().write(MEDIA_DATA))));
+                .body(ResponseBody.create(new Buffer().write(MEDIA_DATA),
+                        MediaType.parse("application/octet-stream"),
+                        MEDIA_DATA.length * 2 // mock twice longer than what is actually sent
+                )));
 
         mFgLock.block();
 
@@ -644,8 +646,8 @@ public class HttpMediaClientTests {
         BlockingBufferSource blockingData = new BlockingBufferSource(MEDIA_DATA);
         mMockService.mockResponse(it -> it
                 .code(200)
-                .body(ResponseBody.create(MediaType.parse("application/octet-stream"), blockingData.size(),
-                        Okio.buffer(blockingData))));
+                .body(ResponseBody.create(Okio.buffer(blockingData),
+                        MediaType.parse("application/octet-stream"), blockingData.size())));
 
         // send as much as 99% progress
         openLockWhen(mProgressCb, mFgLock).onRequestProgress(anyInt());

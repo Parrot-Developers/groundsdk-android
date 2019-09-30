@@ -4,8 +4,8 @@
 
 package com.parrot.drone.sdkcore;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.sdkcore.BuildConfig;
 import com.parrot.drone.sdkcore.ulog.ULog;

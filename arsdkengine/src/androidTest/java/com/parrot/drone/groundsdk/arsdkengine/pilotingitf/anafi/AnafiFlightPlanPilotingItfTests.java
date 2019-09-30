@@ -171,9 +171,12 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testActivation() {
-        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
                 // mock setting reception so that piloting itf is persisted
-                ArsdkEncoder.encodeCommonFlightPlanSettingsStateReturnHomeOnDisconnectChanged(0, 0)));
+                .commandReceived(1, ArsdkEncoder.encodeCommonFlightPlanSettingsStateReturnHomeOnDisconnectChanged(0, 0))
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // should be unavailable
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
@@ -261,19 +264,36 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(8));
 
         // re-upload file
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop(), true));
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
-        verify(mMockUploadClient, times(2)).uploadFlightPlan(eq(MOCK_FLIGHTPLAN), mStatusCallbackCaptor.capture());
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
         assertThat(mChangeCnt, is(9));
-        mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, FLIGHT_PLAN_UID);
+
+
+        // notify flightplan stop
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "/tmp/another.fp",
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         // now should be idle again
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
+                FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
+        assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
+        assertThat(mPilotingItf.isFlightPlanFileKnown(), is(false));
+        assertThat(mPilotingItf.isPaused(), is(false));
+        assertThat(mChangeCnt, is(10));
+
+        verify(mMockUploadClient, times(2)).uploadFlightPlan(eq(MOCK_FLIGHTPLAN), mStatusCallbackCaptor.capture());
+        mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, FLIGHT_PLAN_UID);
+
+        // upload end
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADED));
         assertThat(mPilotingItf.isFlightPlanFileKnown(), is(true));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(10));
+        assertThat(mChangeCnt, is(11));
 
         // activate interface
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStart(FLIGHT_PLAN_UID,
@@ -286,7 +306,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(11));
+        assertThat(mChangeCnt, is(12));
 
         // notify flightplan paused
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
@@ -294,7 +314,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.isPaused(), is(true));
-        assertThat(mChangeCnt, is(12));
+        assertThat(mChangeCnt, is(13));
 
         // activate interface to restart flightplan
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop(), true));
@@ -308,7 +328,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(13));
+        assertThat(mChangeCnt, is(14));
 
         // notify flightplan started
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
@@ -316,7 +336,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(14));
+        assertThat(mChangeCnt, is(15));
 
         // notify flightplan paused
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
@@ -324,7 +344,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.isPaused(), is(true));
-        assertThat(mChangeCnt, is(15));
+        assertThat(mChangeCnt, is(16));
 
         // values are reset when disconnected
         disconnectDrone(mDrone, 1);
@@ -333,7 +353,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
         assertThat(mPilotingItf.isFlightPlanFileKnown(), is(false));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(16));
+        assertThat(mChangeCnt, is(17));
 
         // connecting to drone playing unknown flightplan
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
@@ -348,7 +368,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.NONE));
         assertThat(mPilotingItf.isFlightPlanFileKnown(), is(false));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(18)); // 2 commands received
+        assertThat(mChangeCnt, is(19)); // 2 commands received
 
         // notify flightplan paused
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
@@ -359,12 +379,15 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
         assertThat(mPilotingItf.isFlightPlanFileKnown(), is(false));
         assertThat(mPilotingItf.isPaused(), is(false));
-        assertThat(mChangeCnt, is(19));
+        assertThat(mChangeCnt, is(20));
     }
 
     @Test
     public void testState() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // interface should be unavailable by default
         assertThat(mChangeCnt, is(1));
@@ -457,7 +480,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testUploadState() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // upload state should be none by default
         assertThat(mChangeCnt, is(1));
@@ -559,7 +585,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testUnavailabilityReasons() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // unavailability reasons should be MISSING_FLIGHT_PLAN_FILE by default
         assertThat(mChangeCnt, is(1));
@@ -602,17 +631,32 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
                 FlightPlanPilotingItf.UnavailabilityReason.CANNOT_TAKE_OFF));
 
-        // mock drone sends take-off OK
+        // mock drone sends camera unavailable
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonFlightPlanStateComponentStateListChanged(
-                        ArsdkFeatureCommon.FlightplanstateComponentstatelistchangedComponent.TAKEOFF, 1));
+                        ArsdkFeatureCommon.FlightplanstateComponentstatelistchangedComponent.CAMERAAVAILABLE, 0));
 
         // unavailability reasons should update accordingly
         assertThat(mChangeCnt, is(5));
         assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE,
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
-                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE));
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                FlightPlanPilotingItf.UnavailabilityReason.CANNOT_TAKE_OFF,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
+
+        // mock drone sends take-off OK
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeCommonFlightPlanStateComponentStateListChanged(
+                        ArsdkFeatureCommon.FlightplanstateComponentstatelistchangedComponent.TAKEOFF, 1));
+
+        // unavailability reasons should update accordingly
+        assertThat(mChangeCnt, is(6));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
+                FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE,
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
 
         // mock user uploads flight plan
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
@@ -620,22 +664,24 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         verify(mMockUploadClient).uploadFlightPlan(isNotNull(), mUploadCallbackCaptor.capture());
 
         // state should change to uploading, unavailability reasons should not change until upload succeeds
-        assertThat(mChangeCnt, is(6));
+        assertThat(mChangeCnt, is(7));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
         assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE,
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
-                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE));
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
 
         // mock upload complete
         mUploadCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, PLAN_UID_1);
 
         // unavailability reasons should not contain MISSING_FLIGHT_PLAN_FILE anymore
-        assertThat(mChangeCnt, is(7));
+        assertThat(mChangeCnt, is(8));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADED));
         assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
-                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE));
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
 
         // mock user uploads flight plan again
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
@@ -643,28 +689,30 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         verify(mMockUploadClient, times(2)).uploadFlightPlan(isNotNull(), mUploadCallbackCaptor.capture());
 
         // state should change to uploading, unavailability reasons should not change until upload fails
-        assertThat(mChangeCnt, is(8));
+        assertThat(mChangeCnt, is(9));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
         assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
-                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE));
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
 
         // mock upload error
         mUploadCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.FAILED, 400, null);
 
         // unavailability reasons should contain MISSING_FLIGHT_PLAN_FILE again
-        assertThat(mChangeCnt, is(9));
+        assertThat(mChangeCnt, is(10));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.FAILED));
         assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE,
                 FlightPlanPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
-                FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED));
+                FlightPlanPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
+                FlightPlanPilotingItf.UnavailabilityReason.CAMERA_UNAVAILABLE));
 
         // mock drone sends flightplan available state
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonFlightPlanStateAvailabilityStateChanged(1));
 
         // all reasons other than MISSING_FLIGHT_PLAN_FILE should be cleared
-        assertThat(mChangeCnt, is(10));
+        assertThat(mChangeCnt, is(11));
         assertThat(mPilotingItf.getUnavailabilityReasons(), contains(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
 
@@ -674,17 +722,17 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         // all reasons should be cleared
-        assertThat(mChangeCnt, is(11));
+        assertThat(mChangeCnt, is(12));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
 
-        // mock drone sends flight plan pause
+        // mock drone sends flight plan stop
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
-                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.PAUSED, PLAN_UID_1,
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, PLAN_UID_1,
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         // unavailability reasons should contain MISSING_FLIGHT_PLAN_FILE again
-        assertThat(mChangeCnt, is(12));
+        assertThat(mChangeCnt, is(13));
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
         assertThat(mPilotingItf.getUnavailabilityReasons(), contains(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
@@ -695,7 +743,7 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         verify(mMockUploadClient, times(3)).uploadFlightPlan(isNotNull(), mUploadCallbackCaptor.capture());
 
         // state should change to uploading, unavailability reasons should not change until upload succeeds
-        assertThat(mChangeCnt, is(13));
+        assertThat(mChangeCnt, is(14));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
         assertThat(mPilotingItf.getUnavailabilityReasons(), contains(
                 FlightPlanPilotingItf.UnavailabilityReason.MISSING_FLIGHT_PLAN_FILE));
@@ -704,13 +752,16 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         mUploadCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, PLAN_UID_1);
 
         // all reasons should be cleared
-        assertThat(mChangeCnt, is(14));
+        assertThat(mChangeCnt, is(15));
         assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
     }
 
     @Test
     public void testLatestActivationError() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // latest activation error should be NONE by default
         assertThat(mChangeCnt, is(1));
@@ -810,7 +861,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testFlightPlanFileIsKnown() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // flight plan file should be unknown by default
         assertThat(mChangeCnt, is(1));
@@ -884,7 +938,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testPauseResumeRestart() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // paused should be false by default
         assertThat(mChangeCnt, is(1));
@@ -1070,7 +1127,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testIsPausedAfterUpload() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // paused should be false by default
         assertThat(mChangeCnt, is(1));
@@ -1130,7 +1190,14 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.isPaused(), is(true));
 
         // mock user uploads another flight plan
+        // expect a stop since a previous plan is not stopped
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop()));
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
+
+        // mock drone sends flight plan stop
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, PLAN_UID_1,
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         verify(mMockUploadClient, times(2)).uploadFlightPlan(isNotNull(), mUploadCallbackCaptor.capture());
 
@@ -1170,11 +1237,11 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.isPaused(), is(false));
 
         // mock user uploads another flight plan
-        // expect a pause since a previous plan is currently playing
-        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkPause()));
+        // expect a stop since a previous plan is not stopped
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop()));
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
 
-        // upload should not start until drone sends pause state
+        // upload should not start until drone sends stop state
         verifyNoMoreInteractions(mMockUploadClient);
 
         // state should change to uploading, interface should remain active, pause should remain false
@@ -1183,9 +1250,9 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
         assertThat(mPilotingItf.isPaused(), is(false));
 
-        // mock drone sends flight plan pause
+        // mock drone sends flight plan stop
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
-                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.PAUSED, PLAN_UID_2,
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, PLAN_UID_2,
                 ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         // upload should start
@@ -1209,7 +1276,10 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
 
     @Test
     public void testUploadSameFlightPlan() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // paused should be false by default
         assertThat(mChangeCnt, is(1));
@@ -1269,7 +1339,18 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.isPaused(), is(true));
 
         // mock user uploads same flight plan again
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop()));
         mPilotingItf.uploadFlightPlan(MOCK_FLIGHTPLAN);
+
+        // state should change to uploading, pause should remain true
+        assertThat(mChangeCnt, is(6));
+        assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADING));
+        assertThat(mPilotingItf.isPaused(), is(true));
+
+        // mock drone sends flight plan stop
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, PLAN_UID_1,
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
         verify(mMockUploadClient, times(2)).uploadFlightPlan(isNotNull(), mUploadCallbackCaptor.capture());
 
@@ -1281,39 +1362,40 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         // mock upload complete
         mUploadCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, PLAN_UID_1);
 
-        // state should change to uploaded, pause should remain true
+        // state should change to uploaded, pause should be false
         assertThat(mChangeCnt, is(7));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.getLatestUploadState(), is(FlightPlanPilotingItf.UploadState.UPLOADED));
-        assertThat(mPilotingItf.isPaused(), is(true));
+        assertThat(mPilotingItf.isPaused(), is(false));
 
         // mock user activates interface, requiring restart
-        // since the flight plan is paused, expect a stop first
-        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStop()));
+        // since the flight plan is stopped, expect a direct start
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStart(PLAN_UID_1,
+                ArsdkFeatureCommon.MavlinkStartType.FLIGHTPLAN)));
         assertThat(mPilotingItf.activate(true), is(true));
 
         // nothing should change until answer from drone
         assertThat(mChangeCnt, is(7));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
-        assertThat(mPilotingItf.isPaused(), is(true));
+        assertThat(mPilotingItf.isPaused(), is(false));
 
-        // mock drone sends flight plan stop
-        // since a restart was required, expect a start to follow immediately
-        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonMavlinkStart(PLAN_UID_1,
-                ArsdkFeatureCommon.MavlinkStartType.FLIGHTPLAN)))
-                      .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
-                              ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, PLAN_UID_1,
-                              ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
+        // mock drone sends flight plan playing
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.PLAYING, PLAN_UID_1,
+                ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN));
 
-        // interface should still be idle, but pause should be false
+        // interface should still be active
         assertThat(mChangeCnt, is(8));
-        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         assertThat(mPilotingItf.isPaused(), is(false));
     }
 
     @Test
     public void testUploadError() {
-        connectDrone(mDrone, 1);
+        connectDrone(mDrone, 1, () -> mMockArsdkCore
+                .commandReceived(1, ArsdkEncoder.encodeCommonMavlinkStateMavlinkFilePlayingStateChanged(
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedState.STOPPED, "",
+                        ArsdkFeatureCommon.MavlinkstateMavlinkfileplayingstatechangedType.FLIGHTPLAN)));
 
         // should be unavailable
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));

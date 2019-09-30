@@ -32,10 +32,10 @@
 
 package com.parrot.drone.sdkcore.stream;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -204,6 +204,11 @@ public class SdkCoreMediaInfo {
 
             //region Testing
 
+            /**
+             * Constructor.
+             *
+             * @param mediaId media unique identifier
+             */
             @VisibleForTesting(otherwise = VisibleForTesting.NONE)
             public H264(long mediaId) {
                 this(mediaId, SOURCE_FRONT_CAMERA, 0, 0, new byte[0], new byte[0]);
@@ -236,6 +241,11 @@ public class SdkCoreMediaInfo {
 
             //region Testing
 
+            /**
+             * Constructor.
+             *
+             * @param mediaId media unique identifier
+             */
             @VisibleForTesting(otherwise = VisibleForTesting.NONE)
             public Yuv(long mediaId) {
                 this(mediaId, SOURCE_FRONT_CAMERA, 0, 0);
@@ -248,8 +258,8 @@ public class SdkCoreMediaInfo {
     /**
      * Initializes native SdkCoreMediaInfo concrete classes cache.
      * <p>
-     * Called from {@link SdkCoreStream#nativeClassInit()} since instance(s) of those class will be created from native
-     * stream code.
+     * Called from {@link SdkCoreStream} {@code nativeClassInit()} since instance(s) of those class will be created from
+     * native stream code.
      */
     static void nativeClassesInit() {
         Video.H264.nativeClassInit();

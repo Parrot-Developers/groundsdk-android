@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.device.peripheral.media;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.device.peripheral.media.MediaItemCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.media.MediaResourceCore;

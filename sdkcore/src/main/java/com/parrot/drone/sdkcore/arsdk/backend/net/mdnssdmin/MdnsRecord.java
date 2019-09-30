@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk.backend.net.mdnssdmin;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A Mdns Record identified by a name and a type.

@@ -36,7 +36,8 @@ import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * {@link PompLoop} implementation that runs the pomp loop on a dedicated background thread.

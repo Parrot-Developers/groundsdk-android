@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdkdemo.format;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 public final class LocationFormatter {
 

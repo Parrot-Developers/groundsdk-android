@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.media;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaItem;
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem;

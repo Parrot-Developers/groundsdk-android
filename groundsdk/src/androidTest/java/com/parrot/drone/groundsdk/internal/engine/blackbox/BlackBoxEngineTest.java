@@ -34,10 +34,13 @@ package com.parrot.drone.groundsdk.internal.engine.blackbox;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
 import com.parrot.drone.groundsdk.facility.BlackBoxReporter;
 import com.parrot.drone.groundsdk.facility.Facility;
 import com.parrot.drone.groundsdk.internal.ApplicationStorageProvider;
+import com.parrot.drone.groundsdk.internal.GroundSdkConfig;
 import com.parrot.drone.groundsdk.internal.MockComponentStore;
 import com.parrot.drone.groundsdk.internal.engine.MockEngineController;
 import com.parrot.drone.groundsdk.internal.http.HttpBlackBoxClient;
@@ -54,10 +57,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,6 +94,11 @@ public class BlackBoxEngineTest {
             BLACKBOX_B = new File("/tmp/blackbox/workdir", "blackbox_b");
 
     private static final String MOCK_ACCOUNT = "mock-account";
+
+    @Rule
+    public final TemporaryFolder mTemporaryFolder = new TemporaryFolder();
+
+    private final Context mContext = ApplicationProvider.getApplicationContext();
 
     private BlackBoxEngine mEngine;
 
@@ -122,6 +134,8 @@ public class BlackBoxEngineTest {
 
     @Before
     public void setUp() {
+        GroundSdkConfig.loadDefaults();
+        GroundSdkConfig.get().enableBlackBoxSupport(true, 0, "blackbox");
         mMockConnectivity = mock(SystemConnectivity.class);
         mMockUserAccountInfo = mock(UserAccountInfo.class);
         doReturn(MOCK_ACCOUNT).when(mMockUserAccountInfo).getAccountIdentifier();
@@ -139,7 +153,7 @@ public class BlackBoxEngineTest {
 
         UtilityRegistry utilities = new UtilityRegistry();
         mEngine = mock(BlackBoxEngine.class, withSettings()
-                .useConstructor(MockEngineController.create(mock(Context.class),
+                .useConstructor(MockEngineController.create(mContext,
                         utilities.registerUtility(SystemConnectivity.class, mMockConnectivity)
                                  .registerUtility(UserAccountInfo.class, mMockUserAccountInfo), mFacilityStore))
                 .defaultAnswer(CALLS_REAL_METHODS));
@@ -213,6 +227,28 @@ public class BlackBoxEngineTest {
         verify(mMockCollectTask).cancel();
         verify(mMockArchiveTask).cancel();
         verify(mMockHttpClient).dispose();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void testCopyToPublicFolder() {
+        File srcFile = new File(mTemporaryFolder.getRoot(), "blackbox_a");
+        File dstDir = new File(mContext.getExternalFilesDir(null), "blackbox");
+        File dstFile = new File(dstDir, "blackbox_a");
+        try {
+            // create blackbox file
+            new FileOutputStream(srcFile).close();
+
+            // copy to public folder
+            mEngine.copyToPublicFolder(srcFile);
+
+            // check that file has been copied
+            assertThat(dstFile.exists(), is(true));
+        } catch (IOException | InterruptedException ignored) {
+        } finally {
+            dstFile.delete();
+            dstDir.delete();
+        }
     }
 
     @Test

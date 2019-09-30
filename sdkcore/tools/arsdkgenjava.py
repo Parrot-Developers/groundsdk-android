@@ -377,8 +377,8 @@ def gen_java(feature, out):
 
     # add enum specific imports
     if feature.enums:
-        out.write("import android.support.annotation.NonNull;\n");
-        out.write("import android.support.annotation.Nullable;\n");
+        out.write("import androidx.annotation.NonNull;\n");
+        out.write("import androidx.annotation.Nullable;\n");
         out.write("import android.util.SparseArray;\n\n")
         out.write("import com.parrot.drone.sdkcore.ulog.ULog;\n\n")
         out.write("import static com.parrot.drone.sdkcore.arsdk.Logging.TAG;\n\n")

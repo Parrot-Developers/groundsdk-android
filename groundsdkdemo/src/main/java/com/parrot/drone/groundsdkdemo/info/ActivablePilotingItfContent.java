@@ -32,11 +32,12 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;
 import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;

@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera;
 
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.persistence.PersistentStore;
 import com.parrot.drone.groundsdk.arsdkengine.persistence.StorageEntry;
@@ -47,6 +47,7 @@ import com.parrot.drone.groundsdk.device.peripheral.camera.CameraRecording;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraStyle;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalance;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraZoom;
+import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraAlignmentSettingCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraExposureLockCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraExposureSettingCore;
@@ -839,9 +840,18 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
             setting.saturation().updateValue(saturation);
             setting.contrast().updateValue(contrast);
             setting.sharpness().updateValue(sharpness);
-
         }
 
+        mCamera.notifyUpdated();
+    }
+
+    @Override
+    void onAlignment(@NonNull DoubleRange yawRange, @NonNull DoubleRange pitchRange, @NonNull DoubleRange rollRange,
+                     double yaw, double pitch, double roll) {
+        CameraAlignmentSettingCore setting = mCamera.createAlignmentIfNeeded();
+        setting.updateSupportedYawRange(yawRange).updateYaw(yaw);
+        setting.updateSupportedPitchRange(pitchRange).updatePitch(pitch);
+        setting.updateSupportedRollRange(rollRange).updateRoll(roll);
         mCamera.notifyUpdated();
     }
 
@@ -2464,6 +2474,16 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
             }
 
             return updating;
+        }
+
+        @Override
+        public boolean setAlignment(double yaw, double pitch, double roll) {
+            return mActive && sendAlignment(yaw, pitch, roll);
+        }
+
+        @Override
+        public boolean resetAlignment() {
+            return mActive && sendAlignmentReset();
         }
 
         @Override

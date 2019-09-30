@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.ulog;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.SdkCore;
 

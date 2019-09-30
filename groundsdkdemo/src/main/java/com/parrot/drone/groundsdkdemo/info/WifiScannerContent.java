@@ -32,11 +32,12 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.WifiScanner;
@@ -87,6 +88,7 @@ class WifiScannerContent extends PeripheralContent<Peripheral.Provider, WifiScan
             mOccupationText.setText(Html.fromHtml(TextUtils.join(", ", rates)));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

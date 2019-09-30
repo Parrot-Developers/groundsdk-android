@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +70,7 @@ final class InputStreamRequestBody {
             }
 
             @Override
-            public void writeTo(BufferedSink sink) throws IOException {
+            public void writeTo(@NonNull BufferedSink sink) throws IOException {
                 try (Source source = Okio.source(input)) {
                     sink.writeAll(source);
                 }

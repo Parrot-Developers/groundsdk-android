@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Leds;
@@ -58,6 +59,7 @@ class LedsContent extends PeripheralContent<Drone, Leds> {
 
     private static final class ViewHolder extends PeripheralContent.ViewHolder<LedsContent, Leds> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -77,6 +79,7 @@ class LedsContent extends PeripheralContent<Drone, Leds> {
                     R.string.boolean_setting_enabled : R.string.boolean_setting_disabled);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

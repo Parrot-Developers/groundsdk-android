@@ -34,10 +34,11 @@ package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
 import android.location.Location;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Geofence;
@@ -61,6 +62,7 @@ class GeofenceContent extends PeripheralContent<Drone, Geofence> {
 
     private static final class ViewHolder extends PeripheralContent.ViewHolder<GeofenceContent, Geofence> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -100,6 +102,7 @@ class GeofenceContent extends PeripheralContent<Drone, Geofence> {
                     setting.getMin(), setting.getValue(), setting.getMax())));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

@@ -32,8 +32,8 @@
 
 package com.parrot.drone.sdkcore.arsdk.flightlog;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;

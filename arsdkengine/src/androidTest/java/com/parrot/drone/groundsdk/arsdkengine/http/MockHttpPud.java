@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 public final class MockHttpPud {
 

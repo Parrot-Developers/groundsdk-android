@@ -33,13 +33,14 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Context;
-import android.support.annotation.ColorInt;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
 
 import com.parrot.drone.groundsdkdemo.R;
 

@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.blackbox;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.Event;
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.RemoteControlInfo;

@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk.backend.net.mdnssdmin;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Store mdns SRV data.

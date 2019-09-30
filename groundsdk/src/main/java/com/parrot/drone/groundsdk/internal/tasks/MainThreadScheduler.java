@@ -35,7 +35,8 @@ package com.parrot.drone.groundsdk.internal.tasks;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.ulog.ULog;
 

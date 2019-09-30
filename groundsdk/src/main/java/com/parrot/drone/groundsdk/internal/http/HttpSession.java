@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdk.internal.http;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.BuildConfig;
 import com.parrot.drone.groundsdk.internal.tasks.Executor;
@@ -176,7 +177,7 @@ public class HttpSession {
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(
                     (message -> ULog.d(TAG_HTTP, message)));
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            loggingInterceptor.level(HttpLoggingInterceptor.Level.HEADERS);
             builder.addInterceptor(loggingInterceptor);
         }
 
@@ -222,7 +223,7 @@ public class HttpSession {
                 new WebSocketListener() {
 
                     @Override
-                    public void onMessage(WebSocket webSocket, String text) {
+                    public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
                         listener.onMessage(text);
                     }
                 })::cancel;
@@ -325,19 +326,12 @@ public class HttpSession {
         @NonNull
         @Override
         public <H extends HttpClient> H create(@NonNull HttpSession session, @NonNull Class<H> clientType) {
-            Exception ex;
             try {
                 return clientType.getConstructor(HttpSession.class).newInstance(session);
-            } catch (NoSuchMethodException e) {
-                ex = e;
-            } catch (IllegalAccessException e) {
-                ex = e;
-            } catch (InstantiationException e) {
-                ex = e;
-            } catch (InvocationTargetException e) {
-                ex = e;
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException
+                    | InvocationTargetException e) {
+                throw new IllegalArgumentException("Unsupported HTTP client type: " + clientType.getCanonicalName(), e);
             }
-            throw new IllegalArgumentException("Unsupported HTTP client type: " + clientType.getCanonicalName(), ex);
         }
     };
 

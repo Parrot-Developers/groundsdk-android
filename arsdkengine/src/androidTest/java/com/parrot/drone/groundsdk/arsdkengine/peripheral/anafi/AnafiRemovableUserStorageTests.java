@@ -153,8 +153,9 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(7));
 
         // Drone acts as a USB mass-storage device
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.USB_MASS_STORAGE,
-                ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.USB_MASS_STORAGE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
         assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.USB_MASS_STORAGE));
         assertThat(mChangeCnt, is(8));
 

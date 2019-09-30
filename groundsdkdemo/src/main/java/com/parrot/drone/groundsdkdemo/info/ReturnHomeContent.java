@@ -35,10 +35,11 @@ package com.parrot.drone.groundsdkdemo.info;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Location;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;
@@ -92,6 +93,7 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
         @NonNull
         private final TextView mWarningTriggerDelayText;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditSettingsButton;
 
@@ -140,6 +142,7 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
                     setting.getMin(), setting.getValue(), setting.getMax())));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

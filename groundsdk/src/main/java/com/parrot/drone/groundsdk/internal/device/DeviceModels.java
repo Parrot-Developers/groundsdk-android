@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdk.internal.device;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.DeviceConnector;
 import com.parrot.drone.groundsdk.device.DeviceModel;

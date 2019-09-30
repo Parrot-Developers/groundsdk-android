@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.StreamServer;
@@ -82,6 +83,7 @@ class LiveStreamContent extends PeripheralContent<Drone, StreamServer> {
             mEnableButton.setText(Boolean.toString(streamServer.streamingEnabled()));
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.AntiFlicker;
@@ -59,6 +60,7 @@ class AntiFlickerContent extends PeripheralContent<Drone, AntiFlicker> {
     private static final class ViewHolder
             extends PeripheralContent.ViewHolder<AntiFlickerContent, AntiFlicker> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -82,6 +84,7 @@ class AntiFlickerContent extends PeripheralContent<Drone, AntiFlicker> {
             mValueText.setText(antiFlicker.value().name());
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

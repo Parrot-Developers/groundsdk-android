@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.pomp;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Pomp loop.

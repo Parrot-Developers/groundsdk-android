@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.engine.activation;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -127,7 +128,7 @@ public class ActivationEngineTest {
 
     @Before
     public void setUp() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         context.deleteSharedPreferences(Persistence.PREF_FILE);
 
         mMockConnectivity = mock(SystemConnectivity.class);

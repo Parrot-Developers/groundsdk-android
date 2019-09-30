@@ -227,7 +227,7 @@ public class CameraLiveTest {
         // pause stream to open it
         mCameraLive.pause();
 
-        // give initial playstate: 0x (PAUSED)
+        // give initial play state: 0x (PAUSED)
         doReturn(0.0).when(mPlaybackState).speed();
 
         mStreamClient.getValue().onPlaybackStateChanged(mStream, mPlaybackState);

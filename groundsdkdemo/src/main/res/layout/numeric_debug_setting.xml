@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -36,12 +37,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/content_margin"
     android:layout_marginStart="@dimen/content_margin"
-    android:layout_marginRight="@dimen/content_margin"
-    android:layout_marginEnd="@dimen/content_margin"
-    android:layout_marginBottom="@dimen/cell_vertical_margin"
+    android:layout_marginLeft="@dimen/content_margin"
     android:layout_marginTop="@dimen/cell_vertical_margin"
+    android:layout_marginEnd="@dimen/content_margin"
+    android:layout_marginRight="@dimen/content_margin"
+    android:layout_marginBottom="@dimen/cell_vertical_margin"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     tools:ignore="Autofill, LabelFor">
@@ -50,8 +51,8 @@
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:gravity="center_vertical|start"
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -62,9 +63,9 @@
         android:id="@android:id/summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@android:id/title"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignBaseline="@android:id/title"
         android:layout_toEndOf="@android:id/title"
         android:gravity="center_vertical|end"
         android:textStyle="bold"
@@ -74,43 +75,43 @@
         android:id="@+id/edit_no_bounds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@android:id/title"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignBaseline="@android:id/title"
         android:layout_toEndOf="@android:id/title"
         android:gravity="center_vertical|end"
-        android:textStyle="bold"
-        android:inputType="numberDecimal"
         android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:textStyle="bold"
         tools:text="45.6"/>
 
     <TextView
         android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@android:id/title"
+        android:layout_alignParentStart="true"
         android:gravity="center_vertical|start"
         tools:text="12.3"/>
 
     <SeekBar
-        style="?android:attr/progressBarStyleHorizontal"
         android:id="@android:id/edit"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@android:id/title"
         android:layout_toStartOf="@android:id/text2"
         android:layout_toEndOf="@android:id/text1"
-        android:layout_below="@android:id/title"
-        android:paddingTop="2dp"
         android:max="100"
+        android:paddingTop="2dp"
         tools:progress="51"/>
 
     <TextView
         android:id="@android:id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_below="@android:id/title"
+        android:layout_alignParentEnd="true"
         android:gravity="center_vertical|end"
         tools:text="78.9"/>
 

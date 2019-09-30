@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdkdemo;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public final class Extras {
 

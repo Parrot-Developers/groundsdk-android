@@ -279,9 +279,9 @@ public class AnafiGimbalTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeGimbalAbsoluteAttitudeBounds(0, -10, 10, -10, 10, -10, 10),
                 ArsdkEncoder.encodeGimbalRelativeAttitudeBounds(0, -10, 10, -10, 10, -10, 10)));
 
-        // 4 commands received while gimbal is already published, but only 3 change the component as all supported axes
+        // 4 commands received while gimbal is already published, but only 2 change the component as all supported axes
         // are currently stabilized
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(2));
         assertThat(mGimbal.getStabilization(Gimbal.Axis.YAW), booleanSettingIsDisabled());
         assertThat(mGimbal.getStabilization(Gimbal.Axis.PITCH), booleanSettingIsEnabled());
 
@@ -469,6 +469,10 @@ public class AnafiGimbalTests extends ArsdkEngineTestBase {
         assertThat(mGimbal.getSupportedAxes(), containsInAnyOrder(Gimbal.Axis.PITCH, Gimbal.Axis.ROLL));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(0.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.RELATIVE), is(0.0));
 
         // change attitude from backend
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeGimbalAttitude(0,
@@ -478,6 +482,10 @@ public class AnafiGimbalTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(2.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL), is(30.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(20.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.ABSOLUTE), is(30.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(2.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.RELATIVE), is(3.0));
 
         // if a stabilization change is requested, attitude should automatically match the asked frame of reference
         mGimbal.getStabilization(Gimbal.Axis.ROLL).toggle();

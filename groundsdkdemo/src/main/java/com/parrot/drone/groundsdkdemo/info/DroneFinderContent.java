@@ -33,10 +33,11 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.RemoteControl;
 import com.parrot.drone.groundsdk.device.peripheral.DroneFinder;
@@ -61,6 +62,7 @@ class DroneFinderContent extends PeripheralContent<RemoteControl, DroneFinder> {
         @NonNull
         private final TextView mStateText;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mScanButton;
 
@@ -76,6 +78,7 @@ class DroneFinderContent extends PeripheralContent<RemoteControl, DroneFinder> {
             mStateText.setText(droneFinder.getState().toString());
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mScanClickListener = new OnClickListener() {
 
             @Override

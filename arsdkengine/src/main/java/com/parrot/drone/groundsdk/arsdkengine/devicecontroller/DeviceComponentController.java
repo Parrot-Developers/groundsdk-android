@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.devicecontroller;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.GroundSdkConfig;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;

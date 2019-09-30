@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.internal.utility;
 
 import android.Manifest;
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.Monitorable;
 import com.parrot.drone.groundsdk.internal.engine.EngineBase;
@@ -77,6 +78,8 @@ public interface SystemLocation extends Monitorable<SystemLocation.Monitor>, Uti
 
         /**
          * Called back when the system geographical location changes.
+         * <p>
+         * Note: the location altitude returned by {@link Location#getAltitude()} is the altitude above mean sea level.
          *
          * @param location up-to-date device geographical location
          */
@@ -94,6 +97,8 @@ public interface SystemLocation extends Monitorable<SystemLocation.Monitor>, Uti
 
     /**
      * Gets the last known system geographical location.
+     * <p>
+     * Note: the location altitude returned by {@link Location#getAltitude()} is the altitude above mean sea level.
      *
      * @return last known system location if available, otherwise {@code null}
      */

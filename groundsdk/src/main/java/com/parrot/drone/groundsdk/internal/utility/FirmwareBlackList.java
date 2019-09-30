@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.utility;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareIdentifier;
 import com.parrot.drone.groundsdk.internal.GroundSdkConfig;

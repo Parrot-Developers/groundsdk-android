@@ -33,13 +33,14 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.RemoteControl;
@@ -48,6 +49,7 @@ import com.parrot.drone.groundsdkdemo.format.Html;
 import com.parrot.drone.groundsdkdemo.peripheral.gamepad.GamepadAxesSetupActivity;
 import com.parrot.drone.groundsdkdemo.peripheral.gamepad.GamepadGrabActivity;
 import com.parrot.drone.groundsdkdemo.peripheral.gamepad.GamepadMappingsActivity;
+import com.parrot.drone.groundsdkdemo.peripheral.gamepad.GamepadSettingsActivity;
 import com.parrot.drone.groundsdkdemo.peripheral.gamepad.facade.GamepadFacade;
 import com.parrot.drone.groundsdkdemo.peripheral.gamepad.facade.GamepadFacadeProvider;
 
@@ -126,11 +128,15 @@ class GamepadContent extends PeripheralContent<GamepadFacadeProvider, GamepadFac
     private static final class ViewHolder
             extends PeripheralContent.ViewHolder<GamepadContent, GamepadFacade> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
-        private final Button mGrabButton;
+        private final Button mEditButton;
 
         @NonNull
         private final TextView mActiveModelText;
+
+        @NonNull
+        private final TextView mVolatileMappingText;
 
         @NonNull
         private final TextView mInputsText;
@@ -141,20 +147,29 @@ class GamepadContent extends PeripheralContent<GamepadFacadeProvider, GamepadFac
         @NonNull
         private final TextView mLastEventText;
 
+        @SuppressWarnings("FieldCanBeLocal")
+        @NonNull
+        private final Button mGrabButton;
+
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mMappingButton;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mAxesSetupButton;
 
         ViewHolder(@NonNull View rootView) {
             super(rootView);
-            mGrabButton = findViewById(R.id.btn_grab);
-            mGrabButton.setOnClickListener(mClickListener);
+            mEditButton = findViewById(R.id.btn_edit);
+            mEditButton.setOnClickListener(mClickListener);
             mActiveModelText = findViewById(R.id.active_model);
+            mVolatileMappingText = findViewById(R.id.volatile_mapping);
             mInputsText = findViewById(R.id.inputs);
             mEventsText = findViewById(R.id.events);
             mLastEventText = findViewById(R.id.last_event);
+            mGrabButton = findViewById(R.id.btn_grab);
+            mGrabButton.setOnClickListener(mClickListener);
             mMappingButton = findViewById(R.id.btn_mapping);
             mMappingButton.setOnClickListener(mClickListener);
             mAxesSetupButton = findViewById(R.id.btn_axes_setup);
@@ -165,6 +180,8 @@ class GamepadContent extends PeripheralContent<GamepadFacadeProvider, GamepadFac
         void onBind(@NonNull GamepadContent content, @NonNull GamepadFacade gamepad) {
             Drone.Model activeModel = gamepad.getActiveDroneModel();
             mActiveModelText.setText(activeModel == null ? null : activeModel.toString());
+            mVolatileMappingText.setText(gamepad.getVolatileMapping().isEnabled() ?
+                    R.string.boolean_setting_enabled : R.string.boolean_setting_disabled);
             List<Object> inputs = new ArrayList<>();
             inputs.addAll(gamepad.getGrabbedButtons());
             inputs.addAll(gamepad.getGrabbedAxes());
@@ -189,12 +206,15 @@ class GamepadContent extends PeripheralContent<GamepadFacadeProvider, GamepadFac
             }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override
             public void onClick(View v, @NonNull GamepadContent content, @NonNull GamepadFacade gamepad) {
                 Intent intent = null;
-                if (v.getId() == R.id.btn_grab) {
+                if (v.getId() == R.id.btn_edit) {
+                    intent = new Intent(mContext, GamepadSettingsActivity.class);
+                } else if (v.getId() == R.id.btn_grab) {
                     intent = new Intent(mContext, GamepadGrabActivity.class);
                 } else if (v.getId() == R.id.btn_mapping) {
                     intent = new Intent(mContext, GamepadMappingsActivity.class);

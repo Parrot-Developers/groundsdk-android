@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdk.arsdkengine.persistence;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.gson.JsonParser;
 import com.parrot.drone.groundsdk.MockSharedPreferences;
@@ -100,7 +101,7 @@ public class AppDefaultsTests {
         for (Field fRawId : R.raw.class.getFields()) {
             String testFileName = fRawId.getName();
             if (testFileName.startsWith("app_defaults_")) {
-                try (InputStream resStream = InstrumentationRegistry.getContext().getResources().openRawResource(
+                try (InputStream resStream = ApplicationProvider.getApplicationContext().getResources().openRawResource(
                         fRawId.getInt(null))) {
                     byte[] buffer = new byte[resStream.available()];
                     //noinspection ResultOfMethodCallIgnored

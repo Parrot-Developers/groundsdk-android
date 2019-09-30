@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -36,8 +37,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_margin="@dimen/content_margin"
+    android:orientation="vertical"
     tools:context="com.parrot.drone.groundsdkdemo.peripheral.gamepad.GamepadEditMappingActivity">
 
     <LinearLayout
@@ -51,8 +52,8 @@
             android:text="@string/property_gamepad_mapping_drone_model"/>
 
         <TextView
-            style="?android:attr/spinnerDropDownItemStyle"
             android:id="@+id/model"
+            style="?android:attr/spinnerDropDownItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="ANAFI_THERMAL"/>
@@ -69,12 +70,12 @@
             android:text="@string/property_gamepad_mapping_type"/>
 
         <Spinner
-            style="?android:attr/spinnerStyle"
             android:id="@+id/mapping_type"
+            style="?android:attr/spinnerStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item"
-            tools:entries="@array/preview_mapping_types"/>
+            tools:entries="@array/preview_mapping_types"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
     </LinearLayout>
 
     <LinearLayout
@@ -89,12 +90,12 @@
             android:text="@string/property_gamepad_mapping_action"/>
 
         <Spinner
-            style="?android:attr/spinnerStyle"
             android:id="@+id/mapping_action"
+            style="?android:attr/spinnerStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item"
-            tools:entries="@array/preview_buttons_action_types"/>
+            tools:entries="@array/preview_buttons_action_types"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
     </LinearLayout>
 
     <RelativeLayout
@@ -104,13 +105,13 @@
         android:orientation="vertical">
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_edit_axis"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
-            android:padding="4dp"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:padding="4dp"
             android:text="@string/action_edit"
             tools:ignore="RelativeOverlap"/>
 
@@ -120,14 +121,14 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/btn_edit_axis"
             android:layout_alignBottom="@id/btn_edit_axis"
-            android:gravity="center_vertical"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/btn_edit_axis"
+            android:gravity="center_vertical"
             android:text="@string/property_gamepad_mapping_axis"/>
 
         <TextView
-            style="?android:spinnerDropDownItemStyle"
             android:id="@+id/axis"
+            style="?android:spinnerDropDownItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/btn_edit_axis"
@@ -141,13 +142,13 @@
         android:orientation="vertical">
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_edit_buttons"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
-            android:padding="4dp"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:padding="4dp"
             android:text="@string/action_edit"/>
 
         <TextView
@@ -156,14 +157,14 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/btn_edit_buttons"
             android:layout_alignBottom="@id/btn_edit_buttons"
-            android:gravity="center_vertical"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/btn_edit_buttons"
+            android:gravity="center_vertical"
             android:text="@string/property_gamepad_mapping_buttons"/>
 
         <TextView
-            style="?android:spinnerDropDownItemStyle"
             android:id="@+id/buttons"
+            style="?android:spinnerDropDownItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/btn_edit_buttons"
@@ -174,8 +175,8 @@
         android:id="@+id/notice"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="bottom"
+        android:layout_weight="1"
         android:gravity="center_horizontal|bottom"
         tools:text="Move an axis of your gamepad to select it.\nPress NEXT when done"/>
 
@@ -184,17 +185,17 @@
         android:layout_height="wrap_content">
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_confirm"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/action_confirm"
-            android:enabled="false"/>
+            android:enabled="false"
+            android:text="@string/action_confirm"/>
 
         <Button
-            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/btn_delete"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

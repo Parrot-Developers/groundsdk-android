@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;
 import com.parrot.drone.groundsdk.device.pilotingitf.PointOfInterestPilotingItf;

@@ -36,8 +36,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbAccessory;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.DeviceConnector;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -111,12 +112,12 @@ import java.util.function.Predicate;
  * <p>
  * Below are given several recommendations to use a GroundSdk session tied to an android {@code Activity}:
  * <ul>
- * <li>Create the session in {@link Activity#onCreate} method, passing the android-provided
- * {@code savedInstanceState Bundle}, and to close it in {@link Activity#onDestroy} method.</li>
- * <li>Resume the session in  {@link Activity#onStart} and suspend it in {@link Activity#onStop}. </li>
- * <li>Alternatively, resume the session in {@link Activity#onResume()} and suspend it in
- * {@link Activity#onPause}.</li>
- * <li>Retain the session in {@link Activity#onSaveInstanceState} method, if (and only if) there is a pending
+ * <li>Create the session in activity {@code onCreate()} method, passing the android-provided
+ * {@code savedInstanceState Bundle}, and to close it in activity {@code onDestroy()} method.</li>
+ * <li>Resume the session in activity {@code onStart()} and suspend it in activity {@code onStop()}. </li>
+ * <li>Alternatively, resume the session in activity {@code onResume()} and suspend it in activity
+ * {@code onPause()}.</li>
+ * <li>Retain the session in activity {@code onSaveInstanceState()} method, if (and only if) there is a pending
  * {@link Activity#isChangingConfigurations configuration change}.
  * </ul>
  * <p>

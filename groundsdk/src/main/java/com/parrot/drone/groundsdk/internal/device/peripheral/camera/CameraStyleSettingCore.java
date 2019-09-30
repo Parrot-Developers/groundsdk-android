@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.camera;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraStyle;
 import com.parrot.drone.groundsdk.internal.value.IntSettingCore;
@@ -210,7 +210,7 @@ public final class CameraStyleSettingCore extends CameraStyle.Setting {
     /** Core class for CameraStyle.StyleParameter. */
     public final class CameraStyleParameterCore implements CameraStyle.StyleParameter {
 
-        // Int setting backend.
+        /** Int setting backend. */
         @NonNull
         private final IntSettingCore mDelegate;
 

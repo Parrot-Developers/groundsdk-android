@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.stream;
 
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * Allows to overlay custom graphics on top of a stream rendered by a {@link GsdkStreamView}.

@@ -645,7 +645,7 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(3));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_WIND).getLevel(), is(Alarms.Alarm.Level.OFF));
 
-        // drone sends wind ok
+        // drone sends strong wind at the critical level
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateWindStateChanged(
                 ArsdkFeatureArdrone3.PilotingstateWindstatechangedState.CRITICAL));
 
@@ -674,5 +674,35 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
 
         assertThat(mChangeCnt, is(3));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+    }
+
+    @Test
+    public void testStrongVibrations() {
+        connectDrone(mDrone, 1);
+
+        // check default value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_VIBRATIONS).getLevel(), is(Alarms.Alarm.Level.OFF));
+
+        // drone sends strong vibrations warning
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateVibrationLevelChanged(
+                ArsdkFeatureArdrone3.PilotingstateVibrationlevelchangedState.WARNING));
+
+        assertThat(mChangeCnt, is(2));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_VIBRATIONS).getLevel(), is(Alarms.Alarm.Level.WARNING));
+
+        // drone sends vibrations ok
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateVibrationLevelChanged(
+                ArsdkFeatureArdrone3.PilotingstateVibrationlevelchangedState.OK));
+
+        assertThat(mChangeCnt, is(3));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_VIBRATIONS).getLevel(), is(Alarms.Alarm.Level.OFF));
+
+        // drone sends strong vibrations at the critical level
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateVibrationLevelChanged(
+                ArsdkFeatureArdrone3.PilotingstateVibrationlevelchangedState.CRITICAL));
+
+        assertThat(mChangeCnt, is(4));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_VIBRATIONS).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
     }
 }

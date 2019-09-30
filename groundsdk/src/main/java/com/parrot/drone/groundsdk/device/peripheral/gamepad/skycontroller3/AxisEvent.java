@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.SkyController3Gamepad;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisInterpolator;

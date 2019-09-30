@@ -32,10 +32,10 @@
 
 package com.parrot.drone.groundsdk.internal.stream;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.FloatRange;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.stream.Replay;
 import com.parrot.drone.sdkcore.TimeProvider;

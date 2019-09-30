@@ -34,10 +34,11 @@ package com.parrot.drone.groundsdk.internal.engine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.facility.UserAccount;
 import com.parrot.drone.groundsdk.internal.facility.UserAccountCore;

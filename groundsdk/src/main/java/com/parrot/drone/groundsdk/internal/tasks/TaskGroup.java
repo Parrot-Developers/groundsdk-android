@@ -32,9 +32,10 @@
 
 package com.parrot.drone.groundsdk.internal.tasks;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
 import android.util.SparseArray;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;

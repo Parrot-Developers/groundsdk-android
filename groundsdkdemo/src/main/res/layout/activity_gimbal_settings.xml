@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -45,102 +46,102 @@
         android:orientation="vertical"
         android:padding="@dimen/content_margin">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_gimbal_stabilized_axes"
                 android:textAllCaps="true"
-                android:text="@string/property_gimbal_stabilized_axes"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/stabilized_axes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="LinearLayoutManager"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_gimbal_max_speeds"
                 android:textAllCaps="true"
-                android:text="@string/property_gimbal_max_speeds"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/max_speeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="LinearLayoutManager"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
+            app:cardBackgroundColor="?android:attr/headerBackground"
             app:cardCornerRadius="4dp"
-            app:cardBackgroundColor="?android:attr/headerBackground">
+            app:contentPaddingLeft="@dimen/content_margin"
+            app:contentPaddingRight="@dimen/content_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLargeInverse"
-                android:textStyle="bold"
+                android:text="@string/property_gimbal_control"
                 android:textAllCaps="true"
-                android:text="@string/property_gimbal_control"/>
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:textStyle="bold"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            app:cardCornerRadius="4dp"
             app:contentPaddingLeft="@dimen/content_margin"
-            app:contentPaddingRight="@dimen/content_margin"
-            app:cardCornerRadius="4dp">
+            app:contentPaddingRight="@dimen/content_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -170,22 +171,22 @@
                         android:text="@string/property_gimbal_control_velocity"/>
                 </RadioGroup>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/position_targets"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="LinearLayoutManager"/>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/velocity_targets"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layoutManager="LinearLayoutManager"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    app:layoutManager="LinearLayoutManager"/>
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

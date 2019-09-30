@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf.animation;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Animation;
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Flip;

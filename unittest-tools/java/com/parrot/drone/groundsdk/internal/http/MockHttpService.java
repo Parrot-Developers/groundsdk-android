@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.spy;
 
 public class MockHttpService {
 
-    private static final ResponseBody EMPTY_RESPONSE = ResponseBody.create(MediaType.parse(""), "");
+    private static final ResponseBody EMPTY_RESPONSE = ResponseBody.create("", MediaType.parse(""));
 
     public final HttpSession mSession;
 
@@ -126,10 +126,10 @@ public class MockHttpService {
 
             RequestBody expectedBody = request.body(), actualBody = mRequest.body();
             if (actualBody == null) {
-                actualBody = RequestBody.create(null, "");
+                actualBody = RequestBody.create("", null);
             }
             if (expectedBody == null) {
-                expectedBody = RequestBody.create(null, "");
+                expectedBody = RequestBody.create("", null);
             }
             MediaType expectedContentType = expectedBody.contentType();
             MediaType actualContentType = actualBody.contentType();

@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.pilotingitf;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Interface for {@link PilotingItf} components that require activation.

@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    compileOnly supportAnnotations
+    implementation androidXAnnotations
 }
 
 /* Task to generate arsdk commands java code */

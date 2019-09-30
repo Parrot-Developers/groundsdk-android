@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.http;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.http.HttpClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
@@ -287,8 +287,7 @@ public class HttpReportClient extends HttpClient {
         /**
          * Downloads a report.
          *
-         * @param url       url of the report, as returned by {@link #getReports()} in field {@link
-         *                  HttpReportInfo#mUrl}
+         * @param url       url of the report, as returned by {@link #getReports()}; see {@link HttpReportInfo#getUrl()}
          * @param anonymous whether an anonymous report should be downloaded (values is {@code "no"} for a full report,
          *                  otherwise {@code null} or {@code "yes"} for an anonymous report
          *
@@ -301,7 +300,7 @@ public class HttpReportClient extends HttpClient {
         /**
          * Deletes a report.
          *
-         * @param name name of the report, as returned by {@link #getReports()} in field {@link HttpReportInfo#mName}
+         * @param name name of the report, as returned by {@link #getReports()}; see {@link HttpReportInfo#getName()}
          *
          * @return a retrofit call for the request
          */

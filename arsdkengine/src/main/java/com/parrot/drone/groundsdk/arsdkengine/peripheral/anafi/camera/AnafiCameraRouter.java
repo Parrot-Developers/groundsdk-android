@@ -32,10 +32,11 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera;
 
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DeviceController;
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DroneController;
@@ -451,6 +452,29 @@ public final class AnafiCameraRouter extends DronePeripheralController {
         }
 
         /**
+         * Sends alignment on each axis to the device.
+         *
+         * @param yaw   yaw offset to send
+         * @param pitch pitch offset to send
+         * @param roll  roll offset to send
+         *
+         * @return {@code true} if any command was sent to the device, otherwise false
+         */
+        final boolean sendAlignment(double yaw, double pitch, double roll) {
+            return sendCommand(ArsdkFeatureCamera.encodeSetAlignmentOffsets(mInfo.mId, (float) yaw, (float) pitch,
+                    (float) roll));
+        }
+
+        /**
+         * Sends alignment reset request to the device.
+         *
+         * @return {@code true} if any command was sent to the device, otherwise false
+         */
+        final boolean sendAlignmentReset() {
+            return sendCommand(ArsdkFeatureCamera.encodeResetAlignmentOffsets(mInfo.mId));
+        }
+
+        /**
          * Sends automatic HDR setting to the device.
          *
          * @param enable HDR setting to send
@@ -740,6 +764,19 @@ public final class AnafiCameraRouter extends DronePeripheralController {
         abstract void onStyle(@NonNull IntegerRange saturationRange, @NonNull IntegerRange contrastRange,
                               @NonNull IntegerRange sharpnessRange, @NonNull CameraStyle.Style style,
                               int saturation, int contrast, int sharpness);
+
+        /**
+         * Notifies reception of alignment settings.
+         *
+         * @param yawRange   supported yaw offset range
+         * @param pitchRange supported pitch offset range
+         * @param rollRange  supported roll offset range
+         * @param yaw        yaw offset value
+         * @param pitch      pitch offset value
+         * @param roll       roll offset value
+         */
+        abstract void onAlignment(@NonNull DoubleRange yawRange, @NonNull DoubleRange pitchRange,
+                                  @NonNull DoubleRange rollRange, double yaw, double pitch, double roll);
 
         /**
          * Notifies reception of HDR state.
@@ -1067,6 +1104,19 @@ public final class AnafiCameraRouter extends DronePeripheralController {
             controllerFor(camId).onStyle(IntegerRange.of(saturationMin, saturationMax),
                     IntegerRange.of(contrastMin, contrastMax), IntegerRange.of(sharpnessMin, sharpnessMax),
                     StyleAdapter.from(style), saturation, contrast, sharpness);
+        }
+
+        @Override
+        public void onAlignmentOffsets(int camId, float minBoundYaw, float maxBoundYaw, float currentYaw,
+                                       float minBoundPitch, float maxBoundPitch, float currentPitch, float minBoundRoll,
+                                       float maxBoundRoll, float currentRoll) {
+            if (minBoundYaw > maxBoundYaw || minBoundPitch > maxBoundPitch || minBoundRoll > maxBoundRoll) {
+                throw new ArsdkCommand.RejectedEventException("Invalid alignment settings");
+            }
+
+            controllerFor(camId).onAlignment(DoubleRange.of(minBoundYaw, maxBoundYaw),
+                    DoubleRange.of(minBoundPitch, maxBoundPitch), DoubleRange.of(minBoundRoll, maxBoundRoll),
+                    currentYaw, currentPitch, currentRoll);
         }
 
         @Override

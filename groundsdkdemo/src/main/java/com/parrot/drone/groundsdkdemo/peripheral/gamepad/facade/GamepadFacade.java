@@ -32,15 +32,16 @@
 
 package com.parrot.drone.groundsdkdemo.peripheral.gamepad.facade;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisInterpolator;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisMappableAction;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.ButtonsMappableAction;
+import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
 
 import java.util.Collection;
 import java.util.List;
@@ -216,6 +217,9 @@ public abstract class GamepadFacade implements Peripheral {
 
     @Nullable
     public abstract Set<Axis> getReversedAxes(@NonNull Drone.Model droneModel);
+
+    @NonNull
+    public abstract OptionalBooleanSetting getVolatileMapping();
 
     GamepadFacade() {
     }

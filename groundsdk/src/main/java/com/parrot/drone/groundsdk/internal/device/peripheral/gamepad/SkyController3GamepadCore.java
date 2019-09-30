@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.gamepad;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
@@ -46,6 +46,8 @@ import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.Mappi
 import com.parrot.drone.groundsdk.internal.component.ComponentDescriptor;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;
 import com.parrot.drone.groundsdk.internal.component.SingletonComponentCore;
+import com.parrot.drone.groundsdk.internal.value.OptionalBooleanSettingCore;
+import com.parrot.drone.groundsdk.internal.value.SettingController;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -109,6 +111,15 @@ public final class SkyController3GamepadCore extends SingletonComponentCore impl
          * @param axes    set of axes to grab
          */
         void setGrabbedInputs(@NonNull Set<Button> buttons, @NonNull Set<Axis> axes);
+
+        /**
+         * Sets volatile mapping setting.
+         *
+         * @param enable volatile mapping setting value to set
+         *
+         * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
+         */
+        boolean setVolatileMapping(boolean enable);
     }
 
     /** Engine peripheral backend. */
@@ -143,6 +154,10 @@ public final class SkyController3GamepadCore extends SingletonComponentCore impl
     @NonNull
     private EnumMap<ButtonEvent, ButtonEvent.State> mGrabbedButtonEvents;
 
+    /** Volatile mapping setting. */
+    @NonNull
+    private final OptionalBooleanSettingCore mVolatileMapping;
+
     /** Application button event listener. */
     @Nullable
     private ButtonEvent.Listener mButtonEventListener;
@@ -171,16 +186,20 @@ public final class SkyController3GamepadCore extends SingletonComponentCore impl
         mGrabbedAxes = EnumSet.noneOf(Axis.class);
         mGrabbedButtonEvents = new EnumMap<>(ButtonEvent.class);
         mReversedAxes = new EnumMap<>(Drone.Model.class);
+        mVolatileMapping = new OptionalBooleanSettingCore(new SettingController(this::onSettingChange),
+                mBackend::setVolatileMapping);
     }
 
     @Override
     public void unpublish() {
         mButtonEventListener = null;
         mAxisEventListener = null;
+        mSupportedModels.clear();
         mMappings.clear();
         mGrabbedButtons.clear();
         mGrabbedAxes.clear();
         mGrabbedButtonEvents.clear();
+        cancelSettingsRollbacks();
         super.unpublish();
     }
 
@@ -290,6 +309,12 @@ public final class SkyController3GamepadCore extends SingletonComponentCore impl
     public Set<Axis> getReversedAxes(@NonNull Drone.Model droneModel) {
         EnumSet<Axis> reversedAxes = mReversedAxes.get(droneModel);
         return reversedAxes == null ? null : EnumSet.copyOf(reversedAxes);
+    }
+
+    @NonNull
+    @Override
+    public OptionalBooleanSettingCore volatileMapping() {
+        return mVolatileMapping;
     }
 
     /**
@@ -583,6 +608,32 @@ public final class SkyController3GamepadCore extends SingletonComponentCore impl
             mDroneModel = droneModel;
             mAxis = axis;
             mReversed = reversed;
+        }
+    }
+
+    /**
+     * Cancels all pending settings rollbacks.
+     *
+     * @return {@code this}, to allow chained calls
+     */
+    @NonNull
+    public SkyController3GamepadCore cancelSettingsRollbacks() {
+        mVolatileMapping.cancelRollback();
+        return this;
+    }
+
+    /**
+     * Notified when an user setting changes.
+     * <p>
+     * In case the change originates from the user modifying the setting value, updates the store to show the setting
+     * is updating.
+     *
+     * @param fromUser {@code true} if the change originates from the user, otherwise {@code false}
+     */
+    private void onSettingChange(boolean fromUser) {
+        mChanged = true;
+        if (fromUser) {
+            notifyUpdated();
         }
     }
 }

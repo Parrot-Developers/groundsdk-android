@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.instrument;
 
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;

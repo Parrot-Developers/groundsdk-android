@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.facility;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.facility.Facility;
 import com.parrot.drone.groundsdk.facility.UserLocation;

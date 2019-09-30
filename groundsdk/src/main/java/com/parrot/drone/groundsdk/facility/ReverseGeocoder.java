@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.facility;
 
 import android.location.Address;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Facility that provides reverse geocoding service.

@@ -39,7 +39,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.utility.SystemBarometer;
 
@@ -77,8 +78,8 @@ public class BarometerMonitorTests {
         mMockSensorManager = Mockito.mock(SensorManager.class);
         // unfortunately we cannot mock sensor easily on android 28+ (internal API restricted to dark greylist)
         // so we use a real sensor from the device, which must support such sensor
-        mPressureSensor = InstrumentationRegistry.getContext().getSystemService(SensorManager.class)
-                                                 .getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressureSensor = ApplicationProvider.getApplicationContext().getSystemService(SensorManager.class)
+                                             .getDefaultSensor(Sensor.TYPE_PRESSURE);
         mMonitor1 = Mockito.mock(SystemBarometer.Monitor.class);
         mMonitor2 = Mockito.mock(SystemBarometer.Monitor.class);
 

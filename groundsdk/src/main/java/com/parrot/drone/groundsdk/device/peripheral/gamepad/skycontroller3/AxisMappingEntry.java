@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisMappableAction;

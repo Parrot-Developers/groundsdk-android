@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -31,15 +32,15 @@
   ~
   -->
 
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:contentPadding="@dimen/content_margin"
-    card_view:cardCornerRadius="4dp">
+    card_view:cardCornerRadius="4dp"
+    card_view:contentPadding="@dimen/content_margin">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -51,15 +52,15 @@
                 android:id="@android:id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical|start"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_weight="1"
                 android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:text="@string/peripheral_camera_thermal"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_edit"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
@@ -69,8 +70,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_active_state"/>
+            <TextView android:text="@string/property_camera_active_state"/>
 
             <TextView
                 android:id="@+id/active_state"
@@ -81,8 +81,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_mode"/>
+            <TextView android:text="@string/property_camera_mode"/>
 
             <TextView
                 android:id="@+id/mode"
@@ -93,8 +92,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_exposure"/>
+            <TextView android:text="@string/property_camera_exposure"/>
 
             <TextView
                 android:id="@+id/exposure"
@@ -105,8 +103,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_exposure_lock"/>
+            <TextView android:text="@string/property_camera_exposure_lock"/>
 
             <TextView
                 android:id="@+id/exposure_lock"
@@ -117,8 +114,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_ev_compensation"/>
+            <TextView android:text="@string/property_camera_ev_compensation"/>
 
             <TextView
                 android:id="@+id/ev"
@@ -129,8 +125,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_white_balance"/>
+            <TextView android:text="@string/property_camera_white_balance"/>
 
             <TextView
                 android:id="@+id/white_balance"
@@ -141,8 +136,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_white_balance_lock"/>
+            <TextView android:text="@string/property_camera_white_balance_lock"/>
 
             <TextView
                 android:id="@+id/white_balance_lock"
@@ -153,8 +147,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_photo_state"/>
+            <TextView android:text="@string/property_camera_photo_state"/>
 
             <TextView
                 android:id="@+id/photo_state"
@@ -165,8 +158,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_recording_state"/>
+            <TextView android:text="@string/property_camera_recording_state"/>
 
             <TextView
                 android:id="@+id/recording_state"
@@ -177,8 +169,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_auto_record"/>
+            <TextView android:text="@string/property_camera_auto_record"/>
 
             <TextView
                 android:id="@+id/auto_record"
@@ -189,8 +180,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_hdr"/>
+            <TextView android:text="@string/property_camera_hdr"/>
 
             <TextView
                 android:id="@+id/hdr"
@@ -201,8 +191,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_camera_style"/>
+            <TextView android:text="@string/property_camera_style"/>
 
             <TextView
                 android:id="@+id/style"
@@ -213,8 +202,18 @@
 
         <TableRow>
 
+            <TextView android:text="@string/property_camera_alignment"/>
+
             <TextView
-                android:text="@string/property_camera_zoom_info"/>
+                android:id="@+id/alignment"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="yaw:\u00a00 pitch:\u00a00 roll:\u00a00"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/property_camera_zoom_info"/>
 
             <TextView
                 android:id="@+id/zoom_info"
@@ -226,8 +225,8 @@
         <LinearLayout>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_photo"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -235,13 +234,13 @@
                 tools:ignore="ContentDescription"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_record"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                tools:text="@string/action_start_recording"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription"
+                tools:text="@string/action_start_recording"/>
         </LinearLayout>
     </TableLayout>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

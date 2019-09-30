@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -52,6 +52,28 @@ import java.util.Set;
  * <p>
  * The gimbal can act on one or multiple axes. It can stabilize a given axis, meaning that the movement on this axis
  * will be following the horizon (for {@link Axis#PITCH} and {@link Axis#ROLL}) or the North (for the {@link Axis#YAW}).
+ * <p>
+ * Two frames of reference are used to {@link #control(ControlMode, Double, Double, Double) control} the gimbal with the
+ * {@link ControlMode#POSITION POSITION} mode, and to retrieve the gimbal
+ * {@link #getAttitude(Axis, FrameOfReference) attitude}.
+ * <p>
+ * {@link FrameOfReference#ABSOLUTE ABSOLUTE}:
+ * <ul>
+ * <li>yaw: given angle is relative to the magnetic North (clockwise).</li>
+ * <li>pitch: given angle is relative to the horizon.
+ * Positive pitch values means an orientation towards sky.</li>
+ * <li>roll: given angle is relative to the horizon line.
+ * Positive roll values means an orientation to the right when seeing the gimbal from behind.</li>
+ * </ul><p>
+ * {@link FrameOfReference#RELATIVE RELATIVE}:
+ * <ul>
+ * <li>yaw: given angle is relative to the heading of the drone.
+ * Positive yaw values means a right orientation when seeing the gimbal from above.</li>
+ * <li>pitch: given angle is relative to the body of the drone.
+ * Positive pitch values means an orientation of the gimbal towards the top of the drone.</li>
+ * <li>roll: given angle is relative to the body of the drone.
+ * Positive roll values means an clockwise rotation of the gimbal.</li>
+ * </ul>
  * <p>
  * This peripheral can be obtained from a {@link Drone drone} using:
  * <pre>{@code drone.getPeripheral(Gimbal.class)}</pre>
@@ -72,6 +94,16 @@ public interface Gimbal extends Peripheral {
 
         /** Roll axis of the gimbal. */
         ROLL
+    }
+
+    /** Frame of reference. */
+    enum FrameOfReference {
+
+        /** Absolute frame of reference. */
+        ABSOLUTE,
+
+        /** Frame of reference relative to the drone. */
+        RELATIVE
     }
 
     /** Way of controlling the gimbal. */
@@ -157,7 +189,7 @@ public interface Gimbal extends Peripheral {
     Set<Axis> getSupportedAxes();
 
     /**
-     * Retrieves attitude bounds of an axis, in degrees.
+     * Retrieves attitude bounds of an axis in the current frame of reference, in degrees.
      * <p>
      * The given {@code axis} <strong>MUST</strong> be a {@link #getSupportedAxes() supported axis}.
      *
@@ -211,7 +243,10 @@ public interface Gimbal extends Peripheral {
     BooleanSetting getStabilization(@NonNull Axis axis);
 
     /**
-     * Retrieves current attitude of an axis, in degrees.
+     * Retrieves current attitude of an axis in the current frame of reference, in degrees.
+     * <p>
+     * The current frame of reference is {@link FrameOfReference#ABSOLUTE ABSOLUTE} if the axis is stabilized, and is
+     * {@link FrameOfReference#RELATIVE RELATIVE} if it is not.
      * <p>
      * The given {@code axis} <strong>MUST</strong> be a {@link #getSupportedAxes() supported axis}.
      *
@@ -224,6 +259,20 @@ public interface Gimbal extends Peripheral {
     double getAttitude(@NonNull Axis axis);
 
     /**
+     * Retrieves current attitude of an axis in a given frame of reference, in degrees.
+     * <p>
+     * The given {@code axis} <strong>MUST</strong> be a {@link #getSupportedAxes() supported axis}.
+     *
+     * @param axis  the axis
+     * @param frame the frame of reference
+     *
+     * @return the attitude for the specified axis in the specified frame of reference
+     *
+     * @throws IllegalArgumentException in case the specified axis is not a supported axis
+     */
+    double getAttitude(@NonNull Axis axis, @NonNull FrameOfReference frame);
+
+    /**
      * Controls the gimbal.
      * <p>
      * Unit of the {@code yaw}, {@code pitch}, {@code roll} values depends on the value of the {@code mode} parameter:
@@ -234,24 +283,9 @@ public interface Gimbal extends Peripheral {
      * ({@link #getMaxSpeed(Axis)}.getValue()) ratio (from -1 to 1).</li>
      * </ul><p>
      * If mode is {@link ControlMode#POSITION POSITION}, frame of reference of a given axis depends on the value of the
-     * stabilization on this axis. If this axis is stabilized (i.e.
-     * {@link #getStabilization(Axis)}.isEnabled(), here are the frames of reference:
-     * <ul>
-     * <li>yaw: given angle is relative to the magnetic North (clockwise).</li>
-     * <li>pitch: given angle is relative to the horizon.
-     * Positive pitch values means an orientation towards sky.</li>
-     * <li>roll: given angle is relative to the horizon line.
-     * Positive roll values means an orientation to the right when seeing the gimbal from behind.</li>
-     * </ul><p>
-     * However, if the axis is not stabilized:
-     * <ul>
-     * <li>yaw: given angle is relative to the heading of the drone.
-     * Positive yaw values means a right orientation when seeing the gimbal from above.</li>
-     * <li>pitch: given angle is relative to the body of the drone.
-     * Positive pitch values means an orientation of the gimbal towards the top of the drone.</li>
-     * <li>roll: given angle is relative to the body of the drone.
-     * Positive roll values means an clockwise rotation of the gimbal.</li>
-     * </ul>
+     * stabilization on this axis. If this axis is stabilized (i.e. {@link #getStabilization(Axis)}.isEnabled()), the
+     * {@link FrameOfReference#ABSOLUTE ABSOLUTE} frame of reference is used. Otherwise, the
+     * {@link FrameOfReference#RELATIVE RELATIVE} frame of reference is used.
      *
      * @param mode  the mode that should be used to move the gimbal. This parameter will change the unit of the
      *              following parameters

@@ -38,15 +38,16 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
-import android.support.annotation.AttrRes;
-import android.support.annotation.FloatRange;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.PixelCopy;
 import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.R;
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;

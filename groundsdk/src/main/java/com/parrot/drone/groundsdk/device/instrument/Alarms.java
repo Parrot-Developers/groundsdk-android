@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.instrument;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -119,7 +119,20 @@ public interface Alarms extends Instrument {
              * Flying is not recommended.</li>
              * </ul>
              */
-            VERTICAL_CAMERA
+            VERTICAL_CAMERA,
+
+            /**
+             * Vibrations alters the drone ability to fly properly.
+             * <p>
+             * When at level <ul>
+             * <li>{@link Level#OFF}, detected vibration level is normal and has no impact on drone flight;</li>
+             * <li>{@link Level#WARNING}, detected vibration level is strong enough to alter the drone ability to fly
+             * properly, potentially because propellers are not tightly screwed;</li>
+             * <li>{@link Level#CRITICAL}, detected vibration level is so strong that the drone is completely unable to
+             * fly properly, indicating a serious drone malfunction.</li>
+             * </ul>
+             */
+            STRONG_VIBRATIONS
         }
 
         /** Level of an alarm. */

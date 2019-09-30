@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.pilotingitf;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.value.BooleanSetting;
@@ -44,6 +44,9 @@ import java.util.Set;
  * Flight Plan piloting interface for drones.
  * <p>
  * Allows to make the drone execute predefined flight plans. <br>
+ * A flight plan is defined using a file in Mavlink format. For further information, please refer to
+ * <a href="https://developer.parrot.com/docs/mavlink-flightplan">Parrot FlightPlan Mavlink documentation</a>.
+ * <p>
  * This interface remains {@link State#UNAVAILABLE unavailable} until all {@link #getUnavailabilityReasons()
  * unavailability reasons} are cleared: <ul>
  * <li>A Flight Plan file has been {@link #uploadFlightPlan(File) uploaded} to the drone, and </li>
@@ -70,6 +73,8 @@ public interface FlightPlanPilotingItf extends PilotingItf, Activable {
      * becomes {@link State#IDLE idle} and the Flight Plan is ready to be {@link #activate(boolean) executed}.
      *
      * @param flightPlanFile file to upload
+     *
+     * @see <a href="https://developer.parrot.com/docs/mavlink-flightplan">Parrot FlightPlan Mavlink documentation</a>
      */
     void uploadFlightPlan(@NonNull File flightPlanFile);
 
@@ -103,7 +108,10 @@ public interface FlightPlanPilotingItf extends PilotingItf, Activable {
         CANNOT_TAKE_OFF,
 
         /** No flight plan file uploaded. */
-        MISSING_FLIGHT_PLAN_FILE
+        MISSING_FLIGHT_PLAN_FILE,
+
+        /** Drone camera is not available. */
+        CAMERA_UNAVAILABLE
     }
 
     /**

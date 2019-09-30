@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.thermalcontrol;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureThermal;
 

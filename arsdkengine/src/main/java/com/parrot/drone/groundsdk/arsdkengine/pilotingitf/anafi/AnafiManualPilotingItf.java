@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.BlackBoxDroneSession;
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
@@ -534,7 +534,8 @@ public class AnafiManualPilotingItf extends ActivablePilotingItfController {
                         case TAKINGOFF:
                         case USERTAKEOFF:
                         case MOTOR_RAMPING:
-                            mPilotingItf.updateCanLand(true).updateCanTakeOff(false).notifyUpdated();
+                            mPilotingItf.updateCanLand(true).updateCanTakeOff(false)
+                                        .updateSmartWillDoThrownTakeOff(false).notifyUpdated();
                             break;
                         case EMERGENCY:
                         case EMERGENCY_LANDING:

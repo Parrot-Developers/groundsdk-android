@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.stream;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.stream.SdkCoreMediaInfo;
 

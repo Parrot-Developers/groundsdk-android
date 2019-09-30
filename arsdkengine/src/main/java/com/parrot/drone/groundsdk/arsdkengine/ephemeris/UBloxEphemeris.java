@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.arsdkengine.ephemeris;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.R;
 import com.parrot.drone.groundsdk.device.Drone;

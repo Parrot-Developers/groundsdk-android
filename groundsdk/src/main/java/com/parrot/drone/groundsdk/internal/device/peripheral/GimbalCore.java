@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.Gimbal;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
@@ -158,9 +158,13 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
     @NonNull
     private final EnumMap<Axis, BooleanSettingCore> mStabilizedAxes;
 
-    /** Current attitude for each axis, in degrees. Non null for all supported axes. */
+    /** Current absolute attitude for each axis, in degrees. Non null for all supported axes. */
     @NonNull
-    private final EnumMap<Axis, Double> mAttitude;
+    private final EnumMap<Axis, Double> mAbsoluteAttitude;
+
+    /** Current relative attitude for each axis, in degrees. Non null for all supported axes. */
+    @NonNull
+    private final EnumMap<Axis, Double> mRelativeAttitude;
 
     /** Current gimbal errors. */
     @NonNull
@@ -194,7 +198,8 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
         mMaxSpeeds = new EnumMap<>(Axis.class);
         mLockedAxes = EnumSet.noneOf(Axis.class);
         mStabilizedAxes = new EnumMap<>(Axis.class);
-        mAttitude = new EnumMap<>(Axis.class);
+        mAbsoluteAttitude = new EnumMap<>(Axis.class);
+        mRelativeAttitude = new EnumMap<>(Axis.class);
         mErrors = EnumSet.noneOf(Error.class);
         mCalibrationProcessState = CalibrationProcessState.NONE;
     }
@@ -245,7 +250,14 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
     public double getAttitude(@NonNull Axis axis) {
         checkAxisSupport(axis);
         //noinspection ConstantConditions: validated by checkAxisSupport
-        return mAttitude.get(axis);
+        return mStabilizedAxes.get(axis).isEnabled() ? mAbsoluteAttitude.get(axis) : mRelativeAttitude.get(axis);
+    }
+
+    @Override
+    public double getAttitude(@NonNull Axis axis, @NonNull FrameOfReference frame) {
+        checkAxisSupport(axis);
+        //noinspection ConstantConditions: validated by checkAxisSupport
+        return frame == FrameOfReference.ABSOLUTE ? mAbsoluteAttitude.get(axis) : mRelativeAttitude.get(axis);
     }
 
     @Override
@@ -337,7 +349,8 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
             // remove all axes that are not supported from the other gimbal attributes
             mAttitudeBounds.keySet().retainAll(axes);
             mLockedAxes.retainAll(axes);
-            mAttitude.keySet().retainAll(axes);
+            mAbsoluteAttitude.keySet().retainAll(axes);
+            mRelativeAttitude.keySet().retainAll(axes);
             for (Axis unsupportedAxis : EnumSet.complementOf(axes)) {
                 DoubleSettingCore maxSpeedSetting = mMaxSpeeds.remove(unsupportedAxis);
                 if (maxSpeedSetting != null) {
@@ -365,8 +378,11 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
                             value -> mBackend.setStabilization(axis, value));
                     mStabilizedAxes.put(axis, booleanSetting);
                 }
-                if (mAttitude.get(axis) == null) {
-                    mAttitude.put(axis, 0d);
+                if (mAbsoluteAttitude.get(axis) == null) {
+                    mAbsoluteAttitude.put(axis, 0d);
+                }
+                if (mRelativeAttitude.get(axis) == null) {
+                    mRelativeAttitude.put(axis, 0d);
                 }
             }
 
@@ -477,7 +493,7 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
     }
 
     /**
-     * Updates current attitude on the given axis.
+     * Updates current absolute attitude on the given axis.
      * <p>
      * <strong>Note:</strong> this will only apply the update if the axis is supported.
      *
@@ -487,11 +503,33 @@ public class GimbalCore extends SingletonComponentCore implements Gimbal {
      * @return {@code this}, to allow chained calls
      */
     @NonNull
-    public GimbalCore updateAttitude(@NonNull Axis axis, double attitude) {
+    public GimbalCore updateAbsoluteAttitude(@NonNull Axis axis, double attitude) {
         if (mSupportedAxes.contains(axis)) {
             //noinspection ConstantConditions: validated because in mSupportedAxes
-            if (Double.compare(mAttitude.get(axis), attitude) != 0) {
-                mAttitude.put(axis, attitude);
+            if (Double.compare(mAbsoluteAttitude.get(axis), attitude) != 0) {
+                mAbsoluteAttitude.put(axis, attitude);
+                mChanged = true;
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Updates current relative attitude on the given axis.
+     * <p>
+     * <strong>Note:</strong> this will only apply the update if the axis is supported.
+     *
+     * @param axis     the axis to which the new attitude will apply
+     * @param attitude the new attitude on the given axis, in degrees
+     *
+     * @return {@code this}, to allow chained calls
+     */
+    @NonNull
+    public GimbalCore updateRelativeAttitude(@NonNull Axis axis, double attitude) {
+        if (mSupportedAxes.contains(axis)) {
+            //noinspection ConstantConditions: validated because in mSupportedAxes
+            if (Double.compare(mRelativeAttitude.get(axis), attitude) != 0) {
+                mRelativeAttitude.put(axis, attitude);
                 mChanged = true;
             }
         }

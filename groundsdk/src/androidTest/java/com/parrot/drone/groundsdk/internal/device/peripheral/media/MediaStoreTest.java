@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.internal.device.peripheral.media;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MediaStoreWiperMatcher;
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
@@ -311,7 +312,7 @@ public class MediaStoreTest {
         verify(mBackend).fetchThumbnail(eq(mMedia1), mFetchCb.capture());
 
         Bitmap thumbnailBitmap = BitmapFactory.decodeResource(
-                InstrumentationRegistry.getContext().getResources(), R.drawable.test_thumbnail);
+                ApplicationProvider.getApplicationContext().getResources(), R.drawable.test_thumbnail);
 
         // mock successful thumbnail fetch
         mFetchCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, thumbnailBitmap);
@@ -352,7 +353,7 @@ public class MediaStoreTest {
         verify(mBackend).fetchThumbnail(eq(mResource1), mFetchCb.capture());
 
         Bitmap thumbnailBitmap = BitmapFactory.decodeResource(
-                InstrumentationRegistry.getContext().getResources(), R.drawable.test_thumbnail);
+                ApplicationProvider.getApplicationContext().getResources(), R.drawable.test_thumbnail);
 
         // mock successful thumbnail fetch
         mFetchCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, thumbnailBitmap);

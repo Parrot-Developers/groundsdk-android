@@ -32,11 +32,12 @@
 
 package com.parrot.drone.groundsdkdemo.info;
 
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.SystemInfo;
@@ -115,6 +116,7 @@ class SysInfoContent extends PeripheralContent<Peripheral.Provider, SystemInfo> 
             mFactoryResetProgress.setVisibility(sysInfo.isFactoryResetInProgress() ? View.VISIBLE : View.GONE);
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

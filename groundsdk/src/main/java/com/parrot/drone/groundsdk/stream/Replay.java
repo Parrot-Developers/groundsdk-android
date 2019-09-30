@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.stream;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.Ref;
 

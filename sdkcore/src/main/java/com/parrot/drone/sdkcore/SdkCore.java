@@ -33,8 +33,9 @@
 package com.parrot.drone.sdkcore;
 
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
 import android.system.Os;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.sdkcore.BuildConfig;
 import com.parrot.drone.sdkcore.ulog.ULog;

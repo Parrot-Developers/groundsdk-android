@@ -33,9 +33,10 @@
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.gamepad;
 
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngineTestBase;
 import com.parrot.drone.groundsdk.device.Drone;
@@ -45,6 +46,7 @@ import com.parrot.drone.groundsdk.device.peripheral.VirtualGamepad;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisInterpolator;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.AxisMappableAction;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.ButtonsMappableAction;
+import com.parrot.drone.groundsdk.device.peripheral.gamepad.VolatileMappingState;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.AxisEvent;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.AxisMappingEntry;
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.ButtonEvent;
@@ -68,6 +70,11 @@ import java.util.List;
 import java.util.Set;
 
 import static com.parrot.drone.groundsdk.MapMatcher.mapHasSize;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsDisabled;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsDisabling;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsEnabled;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsEnabling;
+import static com.parrot.drone.groundsdk.OptionalSettingMatcher.optionalSettingIsAvailable;
 import static com.parrot.drone.groundsdk.Sc3MappingEntryMatcher.hasAction;
 import static com.parrot.drone.groundsdk.Sc3MappingEntryMatcher.hasAxis;
 import static com.parrot.drone.groundsdk.Sc3MappingEntryMatcher.hasButtons;
@@ -1599,6 +1606,38 @@ public class Sc3GamepadTests extends ArsdkEngineTestBase {
             // also validate that each axis mask can be converted back to an axis
             assertThat(Sc3Gamepad.InputMasks.axisFrom(maskInfo.mAxes), notNullValue());
         }
+    }
+
+    @Test
+    public void testVolatileMapping() {
+        connectRemoteControl(mRemoteControl, 1,
+                () -> mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMapperVolatileMappingState(0)));
+        assertThat(mSkyController3GamepadChangeCnt, is(1));
+        assertThat(mSkyController3Gamepad.volatileMapping(), allOf(
+                optionalSettingIsAvailable(),
+                optionalBooleanSettingIsDisabled()));
+
+        // enable volatile mapping from api
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.mapperEnterVolatileMapping()));
+        mSkyController3Gamepad.volatileMapping().setEnabled(true);
+        assertThat(mSkyController3GamepadChangeCnt, is(2));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabling());
+
+        // update from backend
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMapperVolatileMappingState(1));
+        assertThat(mSkyController3GamepadChangeCnt, is(3));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabled());
+
+        // disable volatile mapping from api
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.mapperExitVolatileMapping()));
+        mSkyController3Gamepad.volatileMapping().setEnabled(false);
+        assertThat(mSkyController3GamepadChangeCnt, is(4));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsDisabling());
+
+        // update from backend
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMapperVolatileMappingState(0));
+        assertThat(mSkyController3GamepadChangeCnt, is(5));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsDisabled());
     }
 
     private void setSupportedDroneModels(Drone.Model... models) {

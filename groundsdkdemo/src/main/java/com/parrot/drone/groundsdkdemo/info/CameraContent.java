@@ -35,21 +35,23 @@ package com.parrot.drone.groundsdkdemo.info;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.MainCamera;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.ThermalCamera;
 import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
+import com.parrot.drone.groundsdk.device.peripheral.camera.CameraAlignment;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposureLock;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraPhoto;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraRecording;
@@ -141,6 +143,7 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
         @NonNull
         private final TextView mCameraNameText;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -181,6 +184,9 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
         private final TextView mStyleText;
 
         @NonNull
+        private final TextView mAlignmentText;
+
+        @NonNull
         private final TextView mZoomInfoText;
 
         @NonNull
@@ -206,6 +212,7 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
             mAutoRecordText = findViewById(R.id.auto_record);
             mHdrText = findViewById(R.id.hdr);
             mStyleText = findViewById(R.id.style);
+            mAlignmentText = findViewById(R.id.alignment);
             mZoomInfoText = findViewById(R.id.zoom_info);
             mPhotoButton = findViewById(R.id.btn_photo);
             mRecordButton = findViewById(R.id.btn_record);
@@ -229,6 +236,7 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
                     R.string.boolean_setting_enabled : R.string.boolean_setting_disabled);
             bindHdr(camera);
             bindStyle(camera.style());
+            bindAlignment(camera.alignment());
             bindZoom(camera.zoom());
             mPhotoButton.setText(camera.canStopPhotoCapture() ?
                     R.string.action_stop_photo_capture : R.string.action_start_photo_capture);
@@ -348,6 +356,16 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
                             style.contrast().getValue(), style.sharpness().getValue()));
         }
 
+        private void bindAlignment(@Nullable CameraAlignment.Setting alignment) {
+            if (alignment != null) {
+                mAlignmentText.setText(
+                        mContext.getString(R.string.alignment_format, alignment.yaw(), alignment.pitch(),
+                                alignment.roll()));
+            } else {
+                mAlignmentText.setText(R.string.no_value);
+            }
+        }
+
         private void bindHdr(@NonNull Camera camera) {
             OptionalBooleanSetting hdr = camera.autoHdr();
             if (hdr.isAvailable()) {
@@ -369,6 +387,7 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
             }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override
@@ -392,7 +411,6 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
                         CameraSettingsActivity.launch(mContext, content.mDevice, content.mCameraClass);
                         break;
                 }
-
             }
         };
     }

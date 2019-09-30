@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -52,8 +53,8 @@
         tools:text="Preferred Target"/>
 
     <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
         android:id="@android:id/progress"
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
@@ -61,25 +62,25 @@
         android:visibility="gone"/>
 
     <Spinner
-        style="?android:attr/spinnerStyle"
         android:id="@android:id/edit"
+        style="?android:attr/spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical|end"/>
 
     <TextView
-        style="?android:attr/spinnerStyle"
         android:id="@android:id/empty"
+        style="?android:attr/spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical|end"
+        android:enabled="false"
+        android:gravity="center_vertical|start"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-        android:gravity="center_vertical|start"
-        android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="@string/unsupported"
-        android:visibility="gone"
-        android:enabled="false"/>
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:visibility="gone"/>
 
 </merge>

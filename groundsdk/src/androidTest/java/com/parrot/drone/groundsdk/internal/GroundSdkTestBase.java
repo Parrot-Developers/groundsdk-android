@@ -34,8 +34,9 @@ package com.parrot.drone.groundsdk.internal;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.facility.Facility;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;

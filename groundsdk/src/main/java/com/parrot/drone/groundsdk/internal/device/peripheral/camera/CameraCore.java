@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.camera;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
@@ -55,7 +55,8 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
     public interface Backend extends CameraExposureSettingCore.Backend, CameraWhiteBalanceSettingCore.Backend,
                                      CameraPhotoSettingCore.Backend, CameraRecordingSettingCore.Backend,
                                      CameraZoomCore.Backend, CameraStyleSettingCore.Backend,
-                                     CameraExposureLockCore.Backend, CameraWhiteBalanceLockCore.Backend {
+                                     CameraExposureLockCore.Backend, CameraWhiteBalanceLockCore.Backend,
+                                     CameraAlignmentSettingCore.Backend {
 
         /**
          * Sets camera mode.
@@ -158,6 +159,10 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
     @NonNull
     private final CameraStyleSettingCore mStyleSetting;
 
+    /** Camera alignment setting. */
+    @Nullable
+    private CameraAlignmentSettingCore mAlignmentSetting;
+
     /** Camera zoom. */
     @Nullable
     private CameraZoomCore mZoom;
@@ -221,6 +226,7 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
         mActive = false;
         mWhiteBalanceLock = null;
         mExposureLock = null;
+        mAlignmentSetting = null;
         mZoom = null;
         cancelSettingsRollbacks();
     }
@@ -276,6 +282,12 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
     @Override
     public CameraStyleSettingCore style() {
         return mStyleSetting;
+    }
+
+    @Nullable
+    @Override
+    public CameraAlignmentSettingCore alignment() {
+        return mActive ? mAlignmentSetting : null;
     }
 
     @Nullable
@@ -402,7 +414,7 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
      */
     @NonNull
     public final CameraCore updateActiveFlag(boolean active) {
-        if (mActive != active || mExposureLock != null || mWhiteBalanceLock != null || mHdrActive) {
+        if (mActive != active) {
             mActive = active;
             mChanged = true;
         }
@@ -472,6 +484,24 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
     }
 
     /**
+     * Creates the alignment setting if it doesn't exist yet and returns it.
+     *
+     * @return the alignment setting
+     */
+    @NonNull
+    public CameraAlignmentSettingCore createAlignmentIfNeeded() {
+        if (mAlignmentSetting == null) {
+            mAlignmentSetting = new CameraAlignmentSettingCore((fromUser) -> {
+                if (mActive || fromUser) {
+                    onSettingChange(fromUser);
+                }
+            }, mBackend);
+            mChanged |= mActive;
+        }
+        return mAlignmentSetting;
+    }
+
+    /**
      * Updates current HDR state.
      *
      * @param active new current state
@@ -502,6 +532,9 @@ public abstract class CameraCore extends SingletonComponentCore implements Camer
         mWhiteBalanceSetting.cancelRollback();
         mAutoHdr.cancelRollback();
         mStyleSetting.cancelRollback();
+        if (mAlignmentSetting != null) {
+            mAlignmentSetting.cancelRollback();
+        }
         mExposureCompensationSetting.cancelRollback();
         mPhotoSetting.cancelRollback();
         mRecordingSetting.cancelRollback();

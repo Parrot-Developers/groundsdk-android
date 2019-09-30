@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.wifi;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Represents a Wifi channel.

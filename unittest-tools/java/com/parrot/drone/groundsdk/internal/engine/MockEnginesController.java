@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.engine;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.HashSet;

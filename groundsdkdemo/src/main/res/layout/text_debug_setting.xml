@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -36,12 +37,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/content_margin"
     android:layout_marginStart="@dimen/content_margin"
-    android:layout_marginRight="@dimen/content_margin"
-    android:layout_marginEnd="@dimen/content_margin"
-    android:layout_marginBottom="@dimen/cell_vertical_margin"
+    android:layout_marginLeft="@dimen/content_margin"
     android:layout_marginTop="@dimen/cell_vertical_margin"
+    android:layout_marginEnd="@dimen/content_margin"
+    android:layout_marginRight="@dimen/content_margin"
+    android:layout_marginBottom="@dimen/cell_vertical_margin"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     tools:ignore="Autofill, LabelFor">
@@ -73,13 +74,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:inputType="text"
+        android:focusable="true"
         android:imeOptions="actionDone"
-        android:focusable="true"/>
+        android:inputType="text"/>
 
     <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
         android:id="@android:id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"

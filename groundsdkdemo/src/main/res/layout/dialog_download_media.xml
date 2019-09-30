@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -40,8 +41,7 @@
 
     <TableRow>
 
-        <TextView
-            android:text="@string/property_media_count"/>
+        <TextView android:text="@string/property_media_count"/>
 
         <TextView
             android:id="@+id/media_count"
@@ -51,8 +51,8 @@
     </TableRow>
 
     <ProgressBar
-        style="?android:progressBarStyleHorizontal"
         android:id="@+id/media_progress"
+        style="?android:progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="false"
@@ -61,8 +61,7 @@
 
     <TableRow>
 
-        <TextView
-            android:text="@string/property_resources_count"/>
+        <TextView android:text="@string/property_resources_count"/>
 
         <TextView
             android:id="@+id/resources_count"
@@ -72,8 +71,8 @@
     </TableRow>
 
     <ProgressBar
-        style="?android:progressBarStyleHorizontal"
         android:id="@+id/resources_progress"
+        style="?android:progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="false"

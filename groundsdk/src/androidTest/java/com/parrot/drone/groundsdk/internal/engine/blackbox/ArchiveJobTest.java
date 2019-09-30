@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.engine.blackbox;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.internal.io.Files;
 import com.parrot.drone.groundsdk.internal.io.IoStreams;
@@ -90,7 +90,7 @@ public class ArchiveJobTest {
                 if (mFailWrite) {
                     throw new IOException("Test case: blackbox write failure");
                 }
-                IoStreams.transfer(InstrumentationRegistry.getContext().getResources().openRawResource(
+                IoStreams.transfer(ApplicationProvider.getApplicationContext().getResources().openRawResource(
                         R.raw.mock_blackbox), output);
             } catch (InterruptedException e) {
                 throw new AssertionError(e);
@@ -126,7 +126,7 @@ public class ArchiveJobTest {
     @Test
     public void testArchive() {
         // non existent engine dir should be created
-        File nonExistentReportsDir = new File(InstrumentationRegistry.getContext().getFilesDir(),
+        File nonExistentReportsDir = new File(ApplicationProvider.getApplicationContext().getFilesDir(),
                 "non_existent_dir");
         Files.deleteDirectoryTree(nonExistentReportsDir);
 
@@ -147,7 +147,7 @@ public class ArchiveJobTest {
         try {
             IoStreams.transfer(new FileInputStream(blackbox), blackboxContent);
             GZIPOutputStream zipStream = new GZIPOutputStream(expectedContent);
-            IoStreams.transfer(InstrumentationRegistry.getContext().getResources().openRawResource(
+            IoStreams.transfer(ApplicationProvider.getApplicationContext().getResources().openRawResource(
                     R.raw.mock_blackbox), zipStream);
             zipStream.close();
         } catch (IOException | InterruptedException e) {
@@ -159,7 +159,7 @@ public class ArchiveJobTest {
     @Test
     public void testFailureDuringArchive() {
         // non existent engine dir should be created
-        File nonExistentReportsDir = new File(InstrumentationRegistry.getContext().getFilesDir(),
+        File nonExistentReportsDir = new File(ApplicationProvider.getApplicationContext().getFilesDir(),
                 "non_existent_dir");
         Files.deleteDirectoryTree(nonExistentReportsDir);
 

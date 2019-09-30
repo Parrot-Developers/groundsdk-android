@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.arsdk;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 import com.parrot.drone.sdkcore.arsdk.crashml.MockArsdkCrashmlDownloadRequest;

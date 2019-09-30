@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.device.peripheral.media;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.peripheral.MediaStore;

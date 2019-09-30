@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral.camera;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.value.EnumSetting;
 import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
@@ -190,6 +190,19 @@ public interface Camera {
      */
     @NonNull
     CameraStyle.Setting style();
+
+    /**
+     * Gives access to the camera alignment setting.
+     * <p>
+     * This setting allows to set camera alignment offsets applied to each axis.
+     * <p>
+     * This setting is only available when the drone is connected.
+     *
+     * @return camera alignment setting, or {@code null} if alignment is not supported or when the drone is not
+     *         connected
+     */
+    @Nullable
+    CameraAlignment.Setting alignment();
 
     /**
      * Retrieves the camera zoom sub-peripheral.

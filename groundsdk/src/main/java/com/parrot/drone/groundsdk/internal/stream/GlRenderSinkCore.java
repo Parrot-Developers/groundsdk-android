@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.stream;
 
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.stream.Overlayer;
 import com.parrot.drone.groundsdk.stream.TextureLoader;

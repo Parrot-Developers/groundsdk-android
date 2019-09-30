@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;

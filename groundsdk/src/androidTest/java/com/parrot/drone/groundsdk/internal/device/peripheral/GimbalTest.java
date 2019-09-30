@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.Gimbal;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
@@ -156,9 +156,12 @@ public class GimbalTest {
                    .updateMaxSpeeds(maxSpeeds)
                    .updateLockedAxes(EnumSet.of(Gimbal.Axis.YAW, Gimbal.Axis.ROLL))
                    .updateStabilization(EnumSet.of(Gimbal.Axis.YAW, Gimbal.Axis.PITCH))
-                   .updateAttitude(Gimbal.Axis.YAW, 10.0)
-                   .updateAttitude(Gimbal.Axis.PITCH, 10.0)
-                   .updateAttitude(Gimbal.Axis.ROLL, 10.0)
+                   .updateAbsoluteAttitude(Gimbal.Axis.YAW, 10.0)
+                   .updateAbsoluteAttitude(Gimbal.Axis.PITCH, 10.0)
+                   .updateAbsoluteAttitude(Gimbal.Axis.ROLL, 10.0)
+                   .updateRelativeAttitude(Gimbal.Axis.YAW, 20.0)
+                   .updateRelativeAttitude(Gimbal.Axis.PITCH, 20.0)
+                   .updateRelativeAttitude(Gimbal.Axis.ROLL, 20.0)
                    .notifyUpdated();
 
         assertThat(mComponentChangeCnt, is(4));
@@ -174,9 +177,12 @@ public class GimbalTest {
         assertThat(mGimbal.getStabilization(Gimbal.Axis.YAW), booleanSettingIsEnabled());
         assertThat(mGimbal.getStabilization(Gimbal.Axis.PITCH), booleanSettingIsEnabled());
         assertThat(mGimbal.getStabilization(Gimbal.Axis.ROLL), booleanSettingIsDisabled());
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(10.0));
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(10.0));
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.ABSOLUTE), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(20.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(20.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.ROLL, Gimbal.FrameOfReference.RELATIVE), is(20.0));
 
         // check that removing supported axes automatically removes these axes from all gimbal attributes
         mGimbalImpl.updateSupportedAxes(EnumSet.of(Gimbal.Axis.YAW)).notifyUpdated();
@@ -186,7 +192,8 @@ public class GimbalTest {
         assertThat(mGimbal.getMaxSpeed(Gimbal.Axis.YAW), doubleSettingIsUpToDateAt(0.0, 2.2, 3.3));
         assertThat(mGimbal.getLockedAxes(), containsInAnyOrder(Gimbal.Axis.YAW));
         assertThat(mGimbal.getStabilization(Gimbal.Axis.YAW), booleanSettingIsEnabled());
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(20.0));
 
         // check that adding supported axes automatically adds these axes to all gimbal attributes
         mGimbalImpl.updateSupportedAxes(EnumSet.of(Gimbal.Axis.YAW, Gimbal.Axis.PITCH)).notifyUpdated();
@@ -199,8 +206,10 @@ public class GimbalTest {
         assertThat(mGimbal.getLockedAxes(), containsInAnyOrder(Gimbal.Axis.YAW, Gimbal.Axis.PITCH));
         assertThat(mGimbal.getStabilization(Gimbal.Axis.YAW), booleanSettingIsEnabled());
         assertThat(mGimbal.getStabilization(Gimbal.Axis.PITCH), booleanSettingIsDisabled());
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(10.0));
-        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(10.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(20.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(0.0));
     }
 
     @Test
@@ -411,32 +420,53 @@ public class GimbalTest {
         mGimbalImpl.updateSupportedAxes(EnumSet.of(Gimbal.Axis.YAW, Gimbal.Axis.PITCH));
         mGimbalImpl.publish();
 
-        // test initial value
+        // test initial values
         assertThat(mComponentChangeCnt, is(1));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(0.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(0.0));
+        assertThat(mGimbal.getStabilization(Gimbal.Axis.YAW), booleanSettingIsDisabled());
+        assertThat(mGimbal.getStabilization(Gimbal.Axis.PITCH), booleanSettingIsDisabled());
 
-        // test update from backend
-        mGimbalImpl.updateAttitude(Gimbal.Axis.YAW, 2.0).notifyUpdated();
+        // test update relative attitude from backend
+        mGimbalImpl.updateRelativeAttitude(Gimbal.Axis.YAW, 2.0).notifyUpdated();
         assertThat(mComponentChangeCnt, is(2));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(2.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(2.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(0.0));
 
-        // test new update from backend
-        mGimbalImpl.updateAttitude(Gimbal.Axis.PITCH, 3.0).notifyUpdated();
+        // test update absolute attitude from backend
+        mGimbalImpl.updateAbsoluteAttitude(Gimbal.Axis.PITCH, 3.0).notifyUpdated();
         assertThat(mComponentChangeCnt, is(3));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(2.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.ABSOLUTE), is(0.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.ABSOLUTE), is(3.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW, Gimbal.FrameOfReference.RELATIVE), is(2.0));
+        assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH, Gimbal.FrameOfReference.RELATIVE), is(0.0));
+
+        // test update stabilization from backend
+        mGimbalImpl.updateStabilization(EnumSet.of(Gimbal.Axis.PITCH)).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mGimbal.getStabilization(Gimbal.Axis.PITCH), booleanSettingIsEnabled());
         assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(2.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(3.0));
 
         // check that updating with same value does not trigger a notification
-        mGimbalImpl.updateAttitude(Gimbal.Axis.PITCH, 3.0).notifyUpdated();
-        assertThat(mComponentChangeCnt, is(3));
+        mGimbalImpl.updateAbsoluteAttitude(Gimbal.Axis.PITCH, 3.0).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(2.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(3.0));
 
         // check that updating a non-supported axis does not trigger a notification
-        mGimbalImpl.updateAttitude(Gimbal.Axis.ROLL, 5.0).notifyUpdated();
-        assertThat(mComponentChangeCnt, is(3));
+        mGimbalImpl.updateAbsoluteAttitude(Gimbal.Axis.ROLL, 5.0).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.YAW), is(2.0));
         assertThat(mGimbal.getAttitude(Gimbal.Axis.PITCH), is(3.0));
     }

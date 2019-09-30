@@ -32,9 +32,9 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
@@ -49,6 +49,7 @@ import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.Butto
 import com.parrot.drone.groundsdk.device.peripheral.gamepad.skycontroller3.MappingEntry;
 import com.parrot.drone.groundsdk.internal.MockComponentStore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.gamepad.SkyController3GamepadCore;
+import com.parrot.drone.groundsdk.internal.tasks.TestExecutor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,8 +61,15 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.parrot.drone.groundsdk.MapMatcher.mapHasSize;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsDisabled;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsDisabling;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsEnabled;
+import static com.parrot.drone.groundsdk.OptionalBooleanSettingMatcher.optionalBooleanSettingIsEnabling;
+import static com.parrot.drone.groundsdk.OptionalSettingMatcher.optionalSettingIsAvailable;
+import static com.parrot.drone.groundsdk.OptionalSettingMatcher.optionalSettingIsUnavailable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.both;
@@ -91,6 +99,7 @@ public class SkyController3GamepadTest {
 
     @Before
     public void setUp() {
+        TestExecutor.setup();
         mStore = new MockComponentStore<>();
         mBackend = new Backend();
         mButtonEventListener = new ButtonEventListener();
@@ -610,6 +619,51 @@ public class SkyController3GamepadTest {
     }
 
     @Test
+    public void testVolatileMapping() {
+        mSkyController3GamepadImpl.publish();
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mSkyController3Gamepad.volatileMapping(), allOf(
+                optionalSettingIsUnavailable(),
+                optionalBooleanSettingIsDisabled()));
+
+        // mock update from low-level, volatile mapping is now supported
+        mSkyController3GamepadImpl.volatileMapping().updateSupportedFlag(true);
+        mSkyController3GamepadImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mSkyController3Gamepad.volatileMapping(), allOf(
+                optionalSettingIsAvailable(),
+                optionalBooleanSettingIsDisabled()));
+
+        // enable volatile mapping
+        mSkyController3Gamepad.volatileMapping().toggle();
+        assertThat(mChangeCnt, is(3));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabling());
+        assertThat(mBackend.mEnableVolatileMappingCnt, is(1));
+        assertThat(mBackend.mVolatileMappingEnabled, is(true));
+
+        // update from low-level
+        mSkyController3GamepadImpl.volatileMapping().updateValue(true);
+        mSkyController3GamepadImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(4));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabled());
+
+        // disable volatile mapping
+        mSkyController3Gamepad.volatileMapping().toggle();
+        assertThat(mChangeCnt, is(5));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsDisabling());
+        assertThat(mBackend.mEnableVolatileMappingCnt, is(2));
+        assertThat(mBackend.mVolatileMappingEnabled, is(false));
+
+        // update from low-level
+        mSkyController3GamepadImpl.volatileMapping().updateValue(false);
+        mSkyController3GamepadImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(6));
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsDisabled());
+    }
+
+    @Test
     public void testActiveDroneModel() {
         mSkyController3GamepadImpl.publish();
         assertThat(mChangeCnt, is(1));
@@ -642,6 +696,34 @@ public class SkyController3GamepadTest {
         assertThat(mChangeCnt, is(3));
         assertThat(mSkyController3Gamepad.getSupportedDroneModels(), containsInAnyOrder(
                 Drone.Model.ANAFI_4K, Drone.Model.ANAFI_THERMAL));
+    }
+
+    @Test
+    public void testCancelRollbacks() {
+        mSkyController3GamepadImpl.volatileMapping().updateSupportedFlag(true).updateValue(false);
+
+        mSkyController3GamepadImpl.publish();
+
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsDisabled());
+
+        // mock user changes all settings
+        mSkyController3Gamepad.volatileMapping().setEnabled(true);
+
+        // cancel all rollbacks
+        mSkyController3GamepadImpl.cancelSettingsRollbacks();
+
+        // all setting should be updated to user values
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabled());
+
+        // mock timeout
+        mockSettingTimeout();
+
+        // nothing should change
+        assertThat(mSkyController3Gamepad.volatileMapping(), optionalBooleanSettingIsEnabled());
+    }
+
+    private static void mockSettingTimeout() {
+        TestExecutor.mockTimePasses(5, TimeUnit.SECONDS);
     }
 
     private static final class Backend implements SkyController3GamepadCore.Backend {
@@ -677,6 +759,10 @@ public class SkyController3GamepadTest {
         SkyController3Gamepad.Axis mReversedAxis;
 
         boolean mReversed;
+
+        int mEnableVolatileMappingCnt;
+
+        boolean mVolatileMappingEnabled;
 
         void reset() {
             mSetGrabbedInputsCnt = mResetMappingsCnt = mSetupMappingEntryCnt = mSetAxisInterpolatorCnt = 0;
@@ -727,6 +813,13 @@ public class SkyController3GamepadTest {
             mSetGrabbedInputsCnt++;
             mGrabbedButtons = buttons;
             mGrabbedAxes = axes;
+        }
+
+        @Override
+        public boolean setVolatileMapping(boolean enable) {
+            mEnableVolatileMappingCnt++;
+            mVolatileMappingEnabled = enable;
+            return true;
         }
     }
 

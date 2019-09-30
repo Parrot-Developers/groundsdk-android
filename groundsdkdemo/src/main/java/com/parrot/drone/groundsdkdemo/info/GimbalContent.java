@@ -33,11 +33,12 @@
 package com.parrot.drone.groundsdkdemo.info;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.Gimbal;
@@ -64,6 +65,7 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
 
     private static final class ViewHolder extends PeripheralContent.ViewHolder<GimbalContent, Gimbal> {
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mEditButton;
 
@@ -83,7 +85,10 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
         private final TextView mMaxSpeedsText;
 
         @NonNull
-        private final TextView mAttitudeText;
+        private final TextView mAbsoluteAttitudeText;
+
+        @NonNull
+        private final TextView mRelativeAttitudeText;
 
         @NonNull
         private final TextView mCalibratedText;
@@ -91,9 +96,11 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
         @NonNull
         private final TextView mErrorsText;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mOffsetsCorrectionBtn;
 
+        @SuppressWarnings("FieldCanBeLocal")
         @NonNull
         private final Button mCalibrateBtn;
 
@@ -106,7 +113,8 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
             mStabilizedAxesText = findViewById(R.id.stabilized_axes);
             mBoundsText = findViewById(R.id.bounds);
             mMaxSpeedsText = findViewById(R.id.max_speeds);
-            mAttitudeText = findViewById(R.id.attitude);
+            mAbsoluteAttitudeText = findViewById(R.id.absolute_attitude);
+            mRelativeAttitudeText = findViewById(R.id.relative_attitude);
             mCalibratedText = findViewById(R.id.calibrated);
             mErrorsText = findViewById(R.id.errors);
             mOffsetsCorrectionBtn = findViewById(R.id.btn_offsets_correction);
@@ -122,7 +130,8 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
             bindStabilizedAxes(gimbal);
             bindBounds(gimbal);
             bindMaxSpeeds(gimbal);
-            bindAttitude(gimbal);
+            bindAttitude(gimbal, Gimbal.FrameOfReference.ABSOLUTE);
+            bindAttitude(gimbal, Gimbal.FrameOfReference.RELATIVE);
             mCalibratedText.setText(Boolean.toString(gimbal.isCalibrated()));
             mErrorsText.setText(TextUtils.join(" ", gimbal.currentErrors()));
         }
@@ -170,7 +179,7 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
             mMaxSpeedsText.setText(Html.fromHtml(builder.toString()));
         }
 
-        private void bindAttitude(@NonNull Gimbal gimbal) {
+        private void bindAttitude(@NonNull Gimbal gimbal, @NonNull Gimbal.FrameOfReference frame) {
             StringBuilder builder = new StringBuilder();
             for (Gimbal.Axis axis : gimbal.getSupportedAxes()) {
                 if (builder.length() > 0) {
@@ -178,11 +187,16 @@ class GimbalContent extends PeripheralContent<Drone, Gimbal> {
                 }
                 builder.append(axis)
                        .append("=")
-                       .append(mContext.getString(R.string.double_value_format, gimbal.getAttitude(axis)));
+                       .append(mContext.getString(R.string.double_value_format, gimbal.getAttitude(axis, frame)));
             }
-            mAttitudeText.setText(builder.toString());
+            if (frame == Gimbal.FrameOfReference.ABSOLUTE) {
+                mAbsoluteAttitudeText.setText(builder.toString());
+            } else {
+                mRelativeAttitudeText.setText(builder.toString());
+            }
         }
 
+        @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -30,6 +31,7 @@
   ~     SUCH DAMAGE.
   ~
   -->
+
 <resources>
     <!-- Application key -->
     <string name="gsdk_application_key"/>
@@ -80,6 +82,10 @@
          Quota is checked when groundsdk first starts. Eldest blackbox files are deleted until the total size
          of all collected blackbox files is lower than this quota. -->
     <integer name="gsdk_blackbox_quota">0</integer>
+
+    <!-- Folder in the application directory on external storage where blackboxes are copied.
+         Empty to disable copy to public folder. -->
+    <string name="gsdk_blackbox_public_folder"/>
 
     <!-- Tells whether flight data synchronization is enabled. -->
     <bool name="gsdk_flight_data_enabled">true</bool>

@@ -36,6 +36,7 @@ import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngineTestBase;
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.MainCamera;
 import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
+import com.parrot.drone.groundsdk.device.peripheral.camera.CameraAlignment;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraEvCompensation;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposure;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraExposureLock;
@@ -60,6 +61,9 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.EnumSet;
 
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingPitchIs;
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingRollIs;
+import static com.parrot.drone.groundsdk.AlignmentSettingMatcher.alignmentSettingYawIs;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabling;
@@ -178,7 +182,6 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(0));
         assertThat(mCamera, nullValue());
 
-        // connect drone, mocking receiving online only parameters, so something changes on disconnection
         // connect drone, mocking receiving online only parameters, so something changes on disconnection
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
                 caps().whiteBalanceLock(ArsdkFeatureCamera.Supported.SUPPORTED).encode()));
@@ -959,6 +962,98 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 styleSettingContrastIs(4, -4, 4),
                 styleSettingSharpnessIs(0, 0, 0),
                 settingIsUpToDate()));
+    }
+
+    @Test
+    public void testAlignment() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1, caps().encode()));
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mCamera.alignment(), nullValue());
+
+        // mock alignment event reception
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCameraAlignmentOffsets(
+                0, -2.0f, 2.0f, 1.0f, -4.0f, 4.0f, 2.0f, -6.0f, 6.0f, 3.0f));
+        assertThat(mChangeCnt, is(2));
+        CameraAlignment.Setting alignment = mCamera.alignment();
+        assertThat(alignment, notNullValue());
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.0, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+
+        // change yaw
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetAlignmentOffsets(0, 1.5f, 2.0f, 3.0f)));
+        alignment.setYaw(1.5);
+        assertThat(mChangeCnt, is(3));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpdating()));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCameraAlignmentOffsets(
+                0, -2.0f, 2.0f, 1.5f, -4.0f, 4.0f, 2.0f, -6.0f, 6.0f, 3.0f));
+        assertThat(mChangeCnt, is(4));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, 2.0, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+        mMockArsdkCore.assertNoExpectation();
+
+        // change pitch
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetAlignmentOffsets(0, 1.5f, -3.5f, 3.0f)));
+        alignment.setPitch(-3.5);
+        assertThat(mChangeCnt, is(5));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, -3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpdating()));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCameraAlignmentOffsets(
+                0, -2.0f, 2.0f, 1.5f, -4.0f, 4.0f, -3.5f, -6.0f, 6.0f, 3.0f));
+        assertThat(mChangeCnt, is(6));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, -3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 3.0, 6.0),
+                settingIsUpToDate()));
+        mMockArsdkCore.assertNoExpectation();
+
+        // change roll
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetAlignmentOffsets(0, 1.5f, -3.5f, 5.0f)));
+        alignment.setRoll(5.0);
+        assertThat(mChangeCnt, is(7));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, -3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 5.0, 6.0),
+                settingIsUpdating()));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCameraAlignmentOffsets(
+                0, -2.0f, 2.0f, 1.5f, -4.0f, 4.0f, -3.5f, -6.0f, 6.0f, 5.0f));
+        assertThat(mChangeCnt, is(8));
+        assertThat(alignment, allOf(
+                alignmentSettingYawIs(-2.0, 1.5, 2.0),
+                alignmentSettingPitchIs(-4.0, -3.5, 4.0),
+                alignmentSettingRollIs(-6.0, 5.0, 6.0),
+                settingIsUpToDate()));
+        mMockArsdkCore.assertNoExpectation();
+
+        // reset alignment
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraResetAlignmentOffsets(0)));
+        alignment.reset();
+        assertThat(mChangeCnt, is(8));
+
+        // alignment should be null after a disconnection
+        disconnectDrone(mDrone, 1);
+
+        assertThat(mChangeCnt, is(9));
+        assertThat(mCamera.alignment(), nullValue());
     }
 
     @Test

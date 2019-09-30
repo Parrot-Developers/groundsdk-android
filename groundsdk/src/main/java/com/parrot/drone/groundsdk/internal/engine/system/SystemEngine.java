@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.engine.system;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.parrot.drone.groundsdk.internal.Monitorable;
 import com.parrot.drone.groundsdk.internal.engine.EngineBase;

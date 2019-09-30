@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.blackbox.data;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Expose;

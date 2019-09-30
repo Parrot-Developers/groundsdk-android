@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.devicecontroller;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngine;
 import com.parrot.drone.groundsdk.arsdkengine.Iso8601;
@@ -55,17 +55,18 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiGeofence;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiLeds;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiMagnetometer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiMotors;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiPilotingControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiPreciseHome;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiRemovableUserStorage;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiStreamServer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiSystemInfo;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiTargetTracker;
-import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.thermalcontrol.AnafiThermalControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera.AnafiAntiFlicker;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera.AnafiCameraRouter;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.flightdata.AnafiFlightDataDownloader;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.gimbal.AnafiGimbal;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.media.AnafiMediaStore;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.thermalcontrol.AnafiThermalControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.wifi.AnafiWifiAccessPoint;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.DebugDevToolbox;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.crashml.HttpReportDownloader;
@@ -150,7 +151,8 @@ public class AnafiFamilyDroneController extends DroneController {
                 new AnafiPreciseHome(this),
                 new AnafiThermalControl(this),
                 new AnafiStreamServer(this),
-                new AnafiLeds(this)
+                new AnafiLeds(this),
+                new AnafiPilotingControl(this)
         );
     }
 

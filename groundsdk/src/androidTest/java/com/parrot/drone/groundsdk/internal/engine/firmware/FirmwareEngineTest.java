@@ -33,7 +33,8 @@
 package com.parrot.drone.groundsdk.internal.engine.firmware;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
 import com.parrot.drone.groundsdk.facility.Facility;
@@ -102,7 +103,7 @@ public class FirmwareEngineTest {
 
     @Before
     public void setUp() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         context.deleteSharedPreferences(Persistence.PREF_FILE);
 
         MockComponentStore<Facility> facilityStore = new MockComponentStore<>();

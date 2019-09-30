@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~     Copyright (C) 2019 Parrot Drones SAS
   ~
@@ -31,15 +32,15 @@
   ~
   -->
 
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:contentPadding="@dimen/content_margin"
-    card_view:cardCornerRadius="4dp">
+    card_view:cardCornerRadius="4dp"
+    card_view:contentPadding="@dimen/content_margin">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -51,15 +52,15 @@
                 android:id="@android:id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical|start"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_weight="1"
+                android:text="@string/facility_firmware_manager"
                 android:textAllCaps="true"
-                android:text="@string/facility_firmware_manager"/>
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/btn_browse"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
@@ -69,8 +70,7 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_firmware_manager_firmwares"/>
+            <TextView android:text="@string/property_firmware_manager_firmwares"/>
 
             <TextView
                 android:id="@+id/all_count"
@@ -82,17 +82,16 @@
 
         <TableRow>
 
-            <TextView
-                android:text="@string/property_firmware_manager_local"/>
+            <TextView android:text="@string/property_firmware_manager_local"/>
 
             <TextView
                 android:id="@+id/local_count"
-                android:gravity="center_vertical|end"
                 android:layout_weight="1"
+                android:gravity="center_vertical|end"
                 tools:text="33"/>
 
         </TableRow>
 
     </TableLayout>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

@@ -32,7 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.engine.flightlog;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.internal.utility.FlightLogStorage;
 import com.parrot.drone.sdkcore.ulog.ULog;

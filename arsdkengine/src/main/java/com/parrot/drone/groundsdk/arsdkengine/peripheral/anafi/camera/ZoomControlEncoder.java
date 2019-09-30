@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.camera;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraZoom;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;

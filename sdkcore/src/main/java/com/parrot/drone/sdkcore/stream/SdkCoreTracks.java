@@ -32,7 +32,7 @@
 
 package com.parrot.drone.sdkcore.stream;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Collects specific track names used in Parrot media files.

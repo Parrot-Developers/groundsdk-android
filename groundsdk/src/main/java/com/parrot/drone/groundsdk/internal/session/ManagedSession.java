@@ -32,8 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.session;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.ManagedGroundSdk;
 
@@ -59,7 +58,7 @@ final class ManagedSession extends Session {
     }
 
     /**
-     * Called back by {@link SessionManager} when the attached activity calls {@link Activity#onStart()}.
+     * Called back by {@link SessionManager} when the attached activity calls {@code onStart()}.
      */
     void onActivityStarted() {
         if (mObserverBehavior == ManagedGroundSdk.ObserverBehavior.NOTIFY_ON_START) {
@@ -68,7 +67,7 @@ final class ManagedSession extends Session {
     }
 
     /**
-     * Called back by {@link SessionManager} when the attached activity calls {@link Activity#onResume()}.
+     * Called back by {@link SessionManager} when the attached activity calls {@code onResume()}.
      */
     void onActivityResumed() {
         if (mObserverBehavior == ManagedGroundSdk.ObserverBehavior.NOTIFY_ON_RESUME) {
@@ -77,7 +76,7 @@ final class ManagedSession extends Session {
     }
 
     /**
-     * Called back by {@link SessionManager} when the attached activity calls {@link Activity#onPause()}.
+     * Called back by {@link SessionManager} when the attached activity calls {@code onPause()}.
      */
     void onActivityPaused() {
         if (mObserverBehavior == ManagedGroundSdk.ObserverBehavior.NOTIFY_ON_RESUME) {
@@ -87,7 +86,7 @@ final class ManagedSession extends Session {
 
 
     /**
-     * Called back by {@link SessionManager} when the attached activity calls {@link Activity#onStop()}.
+     * Called back by {@link SessionManager} when the attached activity calls {@code onStop()}.
      */
     void onActivityStopped() {
         if (mObserverBehavior == ManagedGroundSdk.ObserverBehavior.NOTIFY_ON_START) {

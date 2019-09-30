@@ -32,8 +32,8 @@
 
 package com.parrot.drone.groundsdk.internal.device.peripheral.stream;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.peripheral.stream.CameraLive;
 import com.parrot.drone.groundsdk.internal.stream.StreamCore;

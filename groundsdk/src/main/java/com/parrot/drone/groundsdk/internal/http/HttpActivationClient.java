@@ -33,8 +33,9 @@
 package com.parrot.drone.groundsdk.internal.http;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 import com.parrot.drone.sdkcore.ulog.ULog;
@@ -124,8 +125,7 @@ public class HttpActivationClient extends HttpClient {
      * A device, as sent to activation server.
      */
     @SuppressWarnings("unused")
-    static
-    class HttpDevice {
+    static class HttpDevice {
 
         /** Device uid. */
         @NonNull
