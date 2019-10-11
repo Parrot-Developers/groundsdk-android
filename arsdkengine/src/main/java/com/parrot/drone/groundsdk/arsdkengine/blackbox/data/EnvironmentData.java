@@ -113,6 +113,18 @@ public final class EnvironmentData extends TimeStampedData {
         }
 
         /**
+         * Updates current battery voltage.
+         *
+         * @param voltage battery voltage
+         */
+        public void setBatteryVoltage(int voltage) {
+            if (mTemplate.mBatteryVoltage != voltage) {
+                mTemplate.mBatteryVoltage = voltage;
+                mTemplate.stamp();
+            }
+        }
+
+        /**
          * Generates a new sample from current data.
          *
          * @return a new immutable environment data sample.
@@ -194,6 +206,11 @@ public final class EnvironmentData extends TimeStampedData {
     @SerializedName("wifi_rssi")
     private int mWifiSignal;
 
+    /** Battery voltage. */
+    @Expose
+    @SerializedName("product_battery_voltage")
+    private int mBatteryVoltage;
+
     /**
      * Default constructor.
      */
@@ -211,6 +228,7 @@ public final class EnvironmentData extends TimeStampedData {
     private EnvironmentData(@NonNull EnvironmentData other) {
         super(other);
         mWifiSignal = other.mWifiSignal;
+        mBatteryVoltage = other.mBatteryVoltage;
         mDroneLocation = new LocationInfo(other.mDroneLocation);
         mControllerLocation = new LocationInfo(other.mControllerLocation);
         mRemotePcmd = new RcPilotingCommand(other.mRemotePcmd);

@@ -41,8 +41,10 @@ import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.PilotingCommand;
 import com.parrot.drone.groundsdk.internal.device.DroneCore;
 import com.parrot.drone.groundsdk.internal.tasks.Executor;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureBattery;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureCommon;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureFollowMe;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureGeneric;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureRc;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 import com.parrot.drone.sdkcore.ulog.ULog;
@@ -127,6 +129,9 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 break;
             case ArsdkFeatureFollowMe.UID:
                 ArsdkFeatureFollowMe.decode(command, mFollowMeCallback);
+                break;
+            case ArsdkFeatureBattery.UID:
+                ArsdkFeatureBattery.decode(command, mBatteryCallback);
                 break;
             case ArsdkFeatureRc.UID:
                 ArsdkFeatureRc.decode(command, mExternalRcCallback);
@@ -270,6 +275,34 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 }
 
                 @Override
+                public void onHoveringWarning(int noGpsTooDark, int noGpsTooHigh) {
+                    if (noGpsTooDark != 0) {
+                        mContext.addEvent(Event.hoveringWarning(true));
+                    }
+                    if (noGpsTooHigh != 0) {
+                        mContext.addEvent(Event.hoveringWarning(false));
+                    }
+                }
+
+                @Override
+                public void onForcedLandingAutoTrigger(
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateForcedlandingautotriggerReason reason, long delay) {
+                    mContext.addEvent(Event.forcedLanding(reason == null ? -1 : reason.value));
+                }
+
+                @Override
+                public void onWindStateChanged(
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateWindstatechangedState state) {
+                    mContext.addEvent(Event.windStateChange(state == null ? -1 : state.value));
+                }
+
+                @Override
+                public void onVibrationLevelChanged(
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateVibrationlevelchangedState state) {
+                    mContext.addEvent(Event.vibrationLevelChange(state == null ? -1 : state.value));
+                }
+
+                @Override
                 public void onFlyingStateChanged(
                         @Nullable ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState state) {
                     mContext.addEvent(Event.flyingStateChange(state == null ? -1 : state.value));
@@ -306,6 +339,11 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 public void onAltitudeChanged(double altitude) {
                     mContext.mFlightInfo.setAltitude(altitude);
                 }
+
+                @Override
+                public void onAltitudeAboveGroundChanged(float altitude) {
+                    mContext.mFlightInfo.setHeightAboveGround(altitude);
+                }
             };
 
     /** Callbacks called when a command of the feature ArsdkFeatureArdrone3.SettingsState is decoded. */
@@ -322,11 +360,47 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 public void onMotorSoftwareVersionChanged(String version) {
                     mBlackBox.mHeader.setMotorVersion(version);
                 }
+
+                @Override
+                public void onMotorErrorStateChanged(
+                        int motorids,
+                        @Nullable ArsdkFeatureArdrone3.SettingsstateMotorerrorstatechangedMotorerror motorerror) {
+                    mContext.addEvent(Event.motorError(motorerror == null ? -1 : motorerror.value));
+                }
             };
+
+    /** Callbacks called when a command of the feature ArsdkFeatureBattery is decoded. */
+    private final ArsdkFeatureBattery.Callback mBatteryCallback = new ArsdkFeatureBattery.Callback() {
+
+        @Override
+        public void onAlert(@Nullable ArsdkFeatureBattery.Alert alert, @Nullable ArsdkFeatureBattery.AlertLevel level,
+                            int listFlagsBitField) {
+            if (!ArsdkFeatureGeneric.ListFlags.EMPTY.inBitField(listFlagsBitField) &&
+                !ArsdkFeatureGeneric.ListFlags.REMOVE.inBitField(listFlagsBitField) &&
+                level != ArsdkFeatureBattery.AlertLevel.NONE) {
+                mContext.addEvent(Event.batteryAlert(level == ArsdkFeatureBattery.AlertLevel.CRITICAL,
+                        alert == null ? -1 : alert.value));
+            }
+        }
+
+        @Override
+        public void onVoltage(int voltage) {
+            mContext.mEnvironmentInfo.setBatteryVoltage(voltage);
+        }
+    };
 
     /** Callbacks called when a command of the feature ArsdkFeatureCommon.CommonState is decoded. */
     private final ArsdkFeatureCommon.CommonState.Callback mCommonStateCallback =
             new ArsdkFeatureCommon.CommonState.Callback() {
+
+                @Override
+                public void onSensorsStatesListChanged(
+                        @Nullable ArsdkFeatureCommon.CommonstateSensorsstateslistchangedSensorname sensorname,
+                        int sensorstate) {
+                    if (sensorstate == 0) {
+                        mContext.addEvent(Event.sensorError(sensorname == null ? -1 : sensorname.value));
+                    }
+                }
 
                 @Override
                 public void onBatteryStateChanged(int percent) {
@@ -336,6 +410,11 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 @Override
                 public void onWifiSignalChanged(int rssi) {
                     mContext.mEnvironmentInfo.setWifiSignal(rssi);
+                }
+
+                @Override
+                public void onBootId(String bootid) {
+                    mBlackBox.mHeader.setBootId(bootid);
                 }
             };
 

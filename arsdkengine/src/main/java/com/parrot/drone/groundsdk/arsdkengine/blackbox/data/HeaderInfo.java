@@ -69,7 +69,7 @@ public final class HeaderInfo {
     @SuppressWarnings("unused") // read when serialized to json
     @Expose
     @SerializedName("blackbox_version")
-    private static final String BLACKBOX_VERSION = "1.0.4";
+    private static final String BLACKBOX_VERSION = "1.0.5";
 
     /** Android operating system version. */
     @SuppressWarnings("unused") // read when serialized to json
@@ -145,6 +145,13 @@ public final class HeaderInfo {
     @Nullable
     private String mGpsVersion;
 
+    /** Drone boot id. */
+    @SuppressWarnings("unused") // read when serialized to json
+    @Expose
+    @SerializedName("boot_id")
+    @Nullable
+    private String mBootId;
+
     /** Remote controller info. */
     @SuppressWarnings("unused") // read when serialized to json
     @Expose
@@ -192,6 +199,15 @@ public final class HeaderInfo {
      */
     public void setGpsVersion(@NonNull String gpsVersion) {
         mGpsVersion = gpsVersion;
+    }
+
+    /**
+     * Updates drone boot id.
+     *
+     * @param bootId drone boot id
+     */
+    public void setBootId(@NonNull String bootId) {
+        mBootId = bootId;
     }
 
     /**

@@ -57,6 +57,91 @@ public class Event {
     }
 
     /**
+     * Obtains a hovering warning event.
+     *
+     * @param tooDark {@code true} if the reason is darkness, {@code false} if it's the drone height
+     *
+     * @return hovering warning event
+     */
+    @NonNull
+    public static Event hoveringWarning(boolean tooDark) {
+        return new StringEvent("product_hovering_warning", tooDark ? "no_gps_too_dark" : "no_gps_too_high");
+    }
+
+    /**
+     * Obtains a forced landing event.
+     *
+     * @param reason forced landing reason
+     *
+     * @return forced landing event
+     */
+    @NonNull
+    public static Event forcedLanding(int reason) {
+        return new IntEvent("product_forced_landing", reason);
+    }
+
+    /**
+     * Obtains a wind state change event.
+     *
+     * @param state wind state
+     *
+     * @return wind state change event
+     */
+    @NonNull
+    public static Event windStateChange(int state) {
+        return new IntEvent("product_wind", state);
+    }
+
+    /**
+     * Obtains a vibration level change event.
+     *
+     * @param state vibration level state
+     *
+     * @return vibration level change event
+     */
+    @NonNull
+    public static Event vibrationLevelChange(int state) {
+        return new IntEvent("product_vibration_level", state);
+    }
+
+    /**
+     * Obtains a motor error event.
+     *
+     * @param error motor error
+     *
+     * @return motor error event
+     */
+    @NonNull
+    public static Event motorError(int error) {
+        return new IntEvent("product_motor_error", error);
+    }
+
+    /**
+     * Obtains a battery alert event.
+     *
+     * @param critical {@code true} if the alert is critical, {@code false} if it's a warning
+     * @param type     alert type
+     *
+     * @return battery alert event
+     */
+    @NonNull
+    public static Event batteryAlert(boolean critical, int type) {
+        return new IntEvent("product_battery_" + (critical ? "critical" : "warning"), type);
+    }
+
+    /**
+     * Obtains a sensor error event.
+     *
+     * @param sensor sensor
+     *
+     * @return sensor error event
+     */
+    @NonNull
+    public static Event sensorError(int sensor) {
+        return new IntEvent("product_sensor_error", sensor);
+    }
+
+    /**
      * Obtains a battery level change event.
      *
      * @param level battery level

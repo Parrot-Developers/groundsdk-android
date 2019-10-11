@@ -15,12 +15,12 @@ GroundSdk Android dependencies:
     }
 
     dependencies {
-        // Add GroundSdk (1.1.0) dependencies
-        implementation 'com.parrot.drone.groundsdk:groundsdk:1.1.0'
-        runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:1.1.0'
+        // Add GroundSdk (1.1.1) dependencies
+        implementation 'com.parrot.drone.groundsdk:groundsdk:1.1.1'
+        runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:1.1.1'
     }
 
-.. note:: replace `1.1.0` by the GroundSdk version to use.
+.. note:: replace ``1.1.1`` by the GroundSdk version to use.
 
 This allows to download and link GroundSdk AARs to your project.
 

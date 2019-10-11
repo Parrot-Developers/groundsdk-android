@@ -39,7 +39,7 @@ import com.google.gson.annotations.SerializedName;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.PilotingCommand;
 
 /**
- * Black box environment data sample.
+ * Black box flight data sample.
  * <p>
  * Contains information such as current drone speed, attitude, altitude and piloting command.
  */
@@ -95,6 +95,18 @@ public final class FlightData extends TimeStampedData {
         public void setAltitude(double altitude) {
             if (Double.compare(mTemplate.mAltitude, altitude) != 0) {
                 mTemplate.mAltitude = altitude;
+                mTemplate.stamp();
+            }
+        }
+
+        /**
+         * Updates current drone height above ground level.
+         *
+         * @param height drone height above ground
+         */
+        public void setHeightAboveGround(float height) {
+            if (Double.compare(mTemplate.mHeightAboveGround, height) != 0) {
+                mTemplate.mHeightAboveGround = height;
                 mTemplate.stamp();
             }
         }
@@ -267,6 +279,11 @@ public final class FlightData extends TimeStampedData {
     @SerializedName("product_alt")
     private double mAltitude;
 
+    /** Drone height above ground level. */
+    @Expose
+    @SerializedName("product_height_above_ground")
+    private float mHeightAboveGround;
+
     /**
      * Drone piloting command info.
      */
@@ -339,6 +356,7 @@ public final class FlightData extends TimeStampedData {
         mSpeed = new SpeedInfo(other.mSpeed);
         mAttitude = new AttitudeInfo(other.mAttitude);
         mAltitude = other.mAltitude;
+        mHeightAboveGround = other.mHeightAboveGround;
         mDronePcmd = new DronePilotingCommand(other.mDronePcmd);
     }
 }

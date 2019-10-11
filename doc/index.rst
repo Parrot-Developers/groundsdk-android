@@ -7,4 +7,4 @@ GroundSdk Android Documentation
     setupaar
     buildgroundsdk
     concepts
-    Samples <http://https://developer.parrot.com/docs/groundsdk-android-samples/>
+    Samples <https://developer.parrot.com/docs/groundsdk-android-samples/>
