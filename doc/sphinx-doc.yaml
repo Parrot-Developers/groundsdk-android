@@ -1,2 +1,7 @@
 project: GroundSdk Android
 out_dir: groundsdk-android
+python_path:
+    - $ROOT
+custom_config:
+    extensions:
+        - sphinx-ext

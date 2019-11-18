@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
@@ -97,6 +98,7 @@ public class PointOfInterestEditActivity extends GroundSdkActivityBase {
 
         mMapView = findViewById(R.id.map);
         EditText altitudeEdit = findViewById(R.id.altitude_edit);
+        Spinner modeSpinner = findViewById(R.id.mode_spinner);
         Button startButton = findViewById(R.id.btn_start);
         Button stopButton = findViewById(R.id.btn_stop);
 
@@ -135,8 +137,11 @@ public class PointOfInterestEditActivity extends GroundSdkActivityBase {
                     v -> {
                         if (mSelectionMarkerOptions != null) {
                             LatLng position = mSelectionMarkerOptions.getPosition();
+                            PointOfInterestPilotingItf.Mode mode = modeSpinner.getSelectedItemPosition() == 0
+                                    ? PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL
+                                    : PointOfInterestPilotingItf.Mode.FREE_GIMBAL;
                             pointOfInterestPilotingItf.start(position.latitude, position.longitude,
-                                    getDoubleValue(altitudeEdit));
+                                    getDoubleValue(altitudeEdit), mode);
                             if (mSelectionMarker != null) {
                                 mSelectionMarker.remove();
                             }

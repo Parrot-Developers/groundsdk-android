@@ -150,7 +150,8 @@ public class AnafiPointOfInterestPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
         assertThat(mChangeCnt, is(3));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
 
         // start a new piloted POI
         mMockArsdkCore.expect(new Expectation.Command(1,
@@ -158,14 +159,16 @@ public class AnafiPointOfInterestPilotingItfTests extends ArsdkEngineTestBase {
         mPilotingItf.start(1.0f, 2.0f, 3.0f);
         assertThat(mChangeCnt, is(3));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
 
         // new POI started on the drone
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOI(1.0f, 2.0f, 3.0f,
                 ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
 
         // interface becomes unavailable as the drone is landed
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(LANDED));
@@ -175,39 +178,66 @@ public class AnafiPointOfInterestPilotingItfTests extends ArsdkEngineTestBase {
     }
 
     @Test
-    public void testReconnectionWhenFlying() {
+    public void testPilotedPOIFreeGimbal() {
         connectDrone(mDrone, 1);
+
+        // should be inactive
         assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
 
+        // drone tells that piloted POI is available, piloting interface should stay unavailable as drone is not flying
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOIV2(0.0f, 0.0f, 0.0f,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode.LOCKED_GIMBAL,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status.AVAILABLE));
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
+
+        // drone is flying, piloting interface should now become idle
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOI(1.0f, 2.0f, 3.0f,
-                ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
-
-        // should be active
         assertThat(mChangeCnt, is(2));
-        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
 
-        // disconnect
-        disconnectDrone(mDrone, 1);
+        // start a piloted POI with free gimbal, interface does not become active yet
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.ardrone3PilotingStartPilotedPOIV2(10.0f, 2.5f, -5.0f,
+                        ArsdkFeatureArdrone3.PilotingStartpilotedpoiv2Mode.FREE_GIMBAL), true));
+        mPilotingItf.start(10.0f, 2.5f, -5.0f, PointOfInterestPilotingItf.Mode.FREE_GIMBAL);
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
+
+        // interface not activated when piloted POI is pending on the drone
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOIV2(10.0f, 2.5f, -5.0f,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode.FREE_GIMBAL,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status.PENDING));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
+
+        // interface activated when piloted POI is started on the drone
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOIV2(10.0f, 2.5f, -5.0f,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode.FREE_GIMBAL,
+                        ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status.RUNNING));
         assertThat(mChangeCnt, is(3));
-        assertThat(mPilotingItf, is(nullValue()));
-
-        // connect when drone is flying
-        connectDrone(mDrone, 1, () -> {
-            mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
-            mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOI(1.0f, 2.0f, 3.0f,
-                    ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
-        });
-
-        // should be active
-        assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0,
+                PointOfInterestPilotingItf.Mode.FREE_GIMBAL));
+
+        // interface becomes unavailable as the drone is landed
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(LANDED));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
     }
 
     @Test
-    public void testReconnectionWhenPOIRunning() {
+    public void testReconnectionWhenFlying() {
         connectDrone(mDrone, 1);
         assertThat(mChangeCnt, is(1));
 
@@ -236,6 +266,40 @@ public class AnafiPointOfInterestPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.getCurrentPointOfInterest(), nullValue());
+    }
+
+    @Test
+    public void testReconnectionWhenPOIRunning() {
+        connectDrone(mDrone, 1);
+        assertThat(mChangeCnt, is(1));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOI(1.0f, 2.0f, 3.0f,
+                ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
+
+        // should be active
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
+
+        // disconnect
+        disconnectDrone(mDrone, 1);
+        assertThat(mChangeCnt, is(3));
+        assertThat(mPilotingItf, is(nullValue()));
+
+        // connect when drone is flying
+        connectDrone(mDrone, 1, () -> {
+            mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+            mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStatePilotedPOI(1.0f, 2.0f, 3.0f,
+                    ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
+        });
+
+        // should be active
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(1.0, 2.0, 3.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
     }
 
     @Test
@@ -268,7 +332,8 @@ public class AnafiPointOfInterestPilotingItfTests extends ArsdkEngineTestBase {
                 ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.RUNNING));
         assertThat(mChangeCnt, is(3));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
-        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0));
+        assertThat(mPilotingItf.getCurrentPointOfInterest(), matchesDirective(10.0, 2.5, -5.0,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
 
         // expect the piloting command loop to have started
         seqNrGenerator.syncTime();

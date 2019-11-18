@@ -60,17 +60,24 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
         /** Altitude of the location to look at. */
         private final double mAltitude;
 
+        /** Point Of Interest operating mode. */
+        @NonNull
+        private final Mode mMode;
+
         /**
          * Creates a target for a piloted Point Of Interest.
          *
          * @param latitude  latitude of the location (in degrees) to look at
          * @param longitude longitude of the location (in degrees) to look at
          * @param altitude  altitude above take off point (in m) to look at
+         * @param mode      operating mode
          */
-        public PointOfInterestCore(double latitude, double longitude, double altitude) {
+        public PointOfInterestCore(double latitude, double longitude, double altitude,
+                                   @NonNull PointOfInterestPilotingItf.Mode mode) {
             mLatitude = latitude;
             mLongitude = longitude;
             mAltitude = altitude;
+            mMode = mode;
         }
 
         @Override
@@ -88,6 +95,12 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
             return mAltitude;
         }
 
+        @NonNull
+        @Override
+        public Mode getMode() {
+            return mMode;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -100,7 +113,7 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
             PointOfInterestCore that = (PointOfInterestCore) o;
 
             return Double.compare(that.mLatitude, mLatitude) == 0 && Double.compare(that.mLongitude, mLongitude) == 0 &&
-                   Double.compare(that.mAltitude, mAltitude) == 0;
+                   Double.compare(that.mAltitude, mAltitude) == 0 && mMode == that.mMode;
         }
 
         @Override
@@ -113,6 +126,7 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
             result = 31 * result + (int) (temp ^ (temp >>> 32));
             temp = Double.doubleToLongBits(mAltitude);
             result = 31 * result + (int) (temp ^ (temp >>> 32));
+            result = 31 * result + mMode.hashCode();
             return result;
         }
     }
@@ -130,8 +144,9 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
          * @param latitude  latitude of the location (in degrees) to look at
          * @param longitude longitude of the location (in degrees) to look at
          * @param altitude  altitude above take off point (in meters) to look at
+         * @param mode      Point Of Interest mode
          */
-        void start(double latitude, double longitude, double altitude);
+        void start(double latitude, double longitude, double altitude, @NonNull Mode mode);
 
         /**
          * Sets the piloting command pitch value.
@@ -177,7 +192,12 @@ public class PointOfInterestPilotingItfCore extends ActivablePilotingItfCore imp
 
     @Override
     public void start(double latitude, double longitude, double altitude) {
-        mBackend.start(latitude, longitude, altitude);
+        mBackend.start(latitude, longitude, altitude, Mode.LOCKED_GIMBAL);
+    }
+
+    @Override
+    public void start(double latitude, double longitude, double altitude, @NonNull Mode mode) {
+        mBackend.start(latitude, longitude, altitude, mode);
     }
 
     @Nullable

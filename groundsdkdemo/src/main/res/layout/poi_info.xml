@@ -84,7 +84,7 @@
                 android:id="@+id/current_poi"
                 android:layout_weight="1"
                 android:gravity="center_vertical|end"
-                tools:text="ACTIVE"/>
+                tools:text="48.8795, 2.3675, alt=5, LOCKED_GIMBAL"/>
         </TableRow>
 
         <Button

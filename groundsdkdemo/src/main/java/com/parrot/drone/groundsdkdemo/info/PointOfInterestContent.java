@@ -88,14 +88,15 @@ class PointOfInterestContent extends ActivablePilotingItfContent<Drone, PointOfI
             } else {
                 mActivateBtn.setVisibility(View.GONE);
             }
-            PointOfInterestPilotingItf.PointOfInterest PointOfInterest =
+            PointOfInterestPilotingItf.PointOfInterest pointOfInterest =
                     pointOfInterestPilotingItf.getCurrentPointOfInterest();
             String displayedPOI;
-            if (PointOfInterest == null) {
+            if (pointOfInterest == null) {
                 displayedPOI = mContext.getString(R.string.no_value);
             } else {
-                displayedPOI = String.format(Locale.US, "%.6f, %.6f, alt=%.2f",
-                        PointOfInterest.getLatitude(), PointOfInterest.getLongitude(), PointOfInterest.getAltitude());
+                displayedPOI = String.format(Locale.US, "%.6f, %.6f, alt=%.2f, %s",
+                        pointOfInterest.getLatitude(), pointOfInterest.getLongitude(), pointOfInterest.getAltitude(),
+                        pointOfInterest.getMode());
             }
             mCurrentPOI.setText(displayedPOI);
         }

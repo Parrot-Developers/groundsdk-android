@@ -45,10 +45,9 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public final class PointOfInterestMatcher {
 
     @NonNull
-    public static Matcher<PointOfInterestPilotingItf.PointOfInterest> matchesDirective(double latitude,
-                                                                                       double longitude,
-                                                                                       double altitude) {
-        return Matchers.allOf(latitudeIs(latitude), longitudeIs(longitude), altitudeIs(altitude));
+    public static Matcher<PointOfInterestPilotingItf.PointOfInterest> matchesDirective(
+            double latitude, double longitude, double altitude, @NonNull PointOfInterestPilotingItf.Mode mode) {
+        return Matchers.allOf(latitudeIs(latitude), longitudeIs(longitude), altitudeIs(altitude), modeIs(mode));
     }
 
     @NonNull
@@ -84,6 +83,19 @@ public final class PointOfInterestMatcher {
             @Override
             protected Double featureValueOf(PointOfInterestPilotingItf.PointOfInterest actual) {
                 return actual.getAltitude();
+            }
+        };
+    }
+
+    @NonNull
+    private static Matcher<PointOfInterestPilotingItf.PointOfInterest> modeIs(PointOfInterestPilotingItf.Mode mode) {
+        return new FeatureMatcher<PointOfInterestPilotingItf.PointOfInterest, PointOfInterestPilotingItf.Mode>(
+                equalTo(mode), "mode is", "mode") {
+
+            @Override
+            protected PointOfInterestPilotingItf.Mode featureValueOf(
+                    PointOfInterestPilotingItf.PointOfInterest actual) {
+                return actual.getMode();
             }
         };
     }

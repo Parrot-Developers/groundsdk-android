@@ -7,7 +7,7 @@ Android Archive Libraries (AAR) from `jcenter <https://bintray.com/bintray/jcent
 For this purpose, edit your application `build.gradle` file to add
 GroundSdk Android dependencies:
 
-.. code-block:: groovy
+.. substitution-code-block:: groovy
 
     repositories {
         // Add jcenter repository (if not already present)
@@ -15,12 +15,12 @@ GroundSdk Android dependencies:
     }
 
     dependencies {
-        // Add GroundSdk (1.1.1) dependencies
-        implementation 'com.parrot.drone.groundsdk:groundsdk:1.1.1'
-        runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:1.1.1'
+        // Add GroundSdk dependencies
+        implementation 'com.parrot.drone.groundsdk:groundsdk:|version|'
+        runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:|version|'
     }
 
-.. note:: replace ``1.1.1`` by the GroundSdk version to use.
+.. note:: you may replace |version| by the GroundSdk version you want to use.
 
 This allows to download and link GroundSdk AARs to your project.
 

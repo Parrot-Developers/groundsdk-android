@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.ActivablePilotingItfController;
+import com.parrot.drone.groundsdk.device.pilotingitf.PointOfInterestPilotingItf;
 import com.parrot.drone.groundsdk.internal.device.pilotingitf.ActivablePilotingItfCore;
 import com.parrot.drone.groundsdk.internal.device.pilotingitf.PointOfInterestPilotingItfCore;
 import com.parrot.drone.groundsdk.internal.device.pilotingitf.PointOfInterestPilotingItfCore.PointOfInterestCore;
@@ -57,9 +58,8 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
     /** {@code true} if the drone is flying. */
     private boolean mDroneFlying;
 
-    /** Last status of piloted Point Of Interest received from drone. */
-    @Nullable
-    private ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus mArsdkPoiStatus;
+    /** Tells if piloted Point Of Interest is available. */
+    private boolean mAvailable;
 
     /** Current Point Of Interest. */
     @Nullable
@@ -75,6 +75,9 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
      */
     @Nullable
     private PointOfInterestCore mPendingPointOfInterestRequest;
+
+    /** {@code true} if PilotedPOIV2 command is supported by the drone. */
+    private boolean mPoiV2Supported;
 
     /**
      * Constructor.
@@ -103,7 +106,7 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
         mPilotingItf.unpublish();
         mCurrentPointOfInterest = null;
         mPendingPointOfInterestRequest = null;
-        mArsdkPoiStatus = null;
+        mAvailable = false;
         mDroneFlying = false;
         super.onDisconnected();
     }
@@ -112,8 +115,9 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
     public void requestActivation() {
         super.requestActivation();
         if (mPendingPointOfInterestRequest != null) {
-            sendCommand(Piloting.encodeStartPilotedPOI(mPendingPointOfInterestRequest.getLatitude(),
-                    mPendingPointOfInterestRequest.getLongitude(), mPendingPointOfInterestRequest.getAltitude()));
+            sendPointOfInterestCommand(mPendingPointOfInterestRequest.getLatitude(),
+                    mPendingPointOfInterestRequest.getLongitude(), mPendingPointOfInterestRequest.getAltitude(),
+                    mPendingPointOfInterestRequest.getMode());
             mPendingPointOfInterestRequest = null;
         } else if (ULog.w(TAG)) {
             ULog.w(TAG, "Cannot start piloted POI: no pending POI request");
@@ -125,6 +129,23 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
         super.requestDeactivation();
         sendCommand(Piloting.encodeStopPilotedPOI());
         mPendingPointOfInterestRequest = null;
+    }
+
+    /**
+     * Sends a Point Of Interest start command.
+     *
+     * @param latitude  latitude of the location (in degrees) to look at
+     * @param longitude longitude of the location (in degrees) to look at
+     * @param altitude  altitude above take off point (in meters) to look at
+     * @param mode      Point Of Interest mode
+     */
+    private void sendPointOfInterestCommand(double latitude, double longitude, double altitude,
+                                            @NonNull PointOfInterestPilotingItf.Mode mode) {
+        if (mPoiV2Supported) {
+            sendCommand(Piloting.encodeStartPilotedPOIV2(latitude, longitude, altitude, convert(mode)));
+        } else if (mode == PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL) {
+            sendCommand(Piloting.encodeStartPilotedPOI(latitude, longitude, altitude));
+        }
     }
 
     /**
@@ -142,15 +163,13 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
     /**
      * Updates the current Point Of Interest running on the drone.
      *
-     * @param arsdkPoiStatus         status of piloted Point Of Interest received from drone
+     * @param available              {@code true} if piloted Point Of Interest is available, otherwise {@code false}
      * @param currentPointOfInterest current Point Of Interest, {@code null} otherwise
      */
-    private void updateCurrentPointOfInterest(
-            @Nullable ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus arsdkPoiStatus,
-            @Nullable PointOfInterestCore currentPointOfInterest) {
+    private void updateCurrentPointOfInterest(boolean available, @Nullable PointOfInterestCore currentPointOfInterest) {
         boolean changed = false;
-        if (arsdkPoiStatus != mArsdkPoiStatus) {
-            mArsdkPoiStatus = arsdkPoiStatus;
+        if (mAvailable != available) {
+            mAvailable = available;
             changed = true;
         }
         if ((currentPointOfInterest == null && mCurrentPointOfInterest != null)
@@ -167,13 +186,11 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
      * Updates the state of the piloting interface.
      * <p>
      * If the drone is not flying or is marked as unavailable by the drone, the interface state is set to {@code
-     * UNAVAILABLE}.<br> Otherwise, the interface state is set to {@code IDLE} if there is running Point Of Interest or
-     * to {@code ACTIVE} if there is a running Point Of Interest.<br>
+     * UNAVAILABLE}.<br> Otherwise, the interface state is set to {@code IDLE} if there is no running Point Of Interest
+     * or to {@code ACTIVE} if there is a running Point Of Interest.<br>
      */
     private void updateState() {
-        if (mDroneFlying
-            && mArsdkPoiStatus != null
-            && mArsdkPoiStatus != ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.UNAVAILABLE) {
+        if (mDroneFlying && mAvailable) {
             mPilotingItf.updateCurrentPointOfInterest(mCurrentPointOfInterest);
             if (mCurrentPointOfInterest == null) {
                 notifyIdle();
@@ -182,8 +199,49 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
             }
         } else {
             mPilotingItf.updateCurrentPointOfInterest(null);
+            mPendingPointOfInterestRequest = null;
             notifyUnavailable();
         }
+    }
+
+    /**
+     * Converts a groundsdk {@link PointOfInterestPilotingItf.Mode Point Of Interest mode} into its arsdk
+     * {@link ArsdkFeatureArdrone3.PilotingStartpilotedpoiv2Mode representation}.
+     *
+     * @param mode groundsdk Point Of Interest mode to convert
+     *
+     * @return arsdk representation of the specified mode
+     */
+    @NonNull
+    private static ArsdkFeatureArdrone3.PilotingStartpilotedpoiv2Mode convert(
+            @NonNull PointOfInterestPilotingItf.Mode mode) {
+        switch (mode) {
+            case LOCKED_GIMBAL:
+                return ArsdkFeatureArdrone3.PilotingStartpilotedpoiv2Mode.LOCKED_GIMBAL;
+            case FREE_GIMBAL:
+                return ArsdkFeatureArdrone3.PilotingStartpilotedpoiv2Mode.FREE_GIMBAL;
+        }
+        return null;
+    }
+
+    /**
+     * Converts an arsdk {@link ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode Point Of Interest mode} into its
+     * groundsdk {@link PointOfInterestPilotingItf.Mode representation}.
+     *
+     * @param mode arsdk Point Of Interest mode to convert
+     *
+     * @return groundsdk representation of the specified mode
+     */
+    @NonNull
+    private static PointOfInterestPilotingItf.Mode convert(
+            @NonNull ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode mode) {
+        switch (mode) {
+            case LOCKED_GIMBAL:
+                return PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL;
+            case FREE_GIMBAL:
+                return PointOfInterestPilotingItf.Mode.FREE_GIMBAL;
+        }
+        return null;
     }
 
     @Override
@@ -230,9 +288,33 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
                         && Double.compare(latitude, UNKNOWN_COORDINATE) != 0
                         && Double.compare(longitude, UNKNOWN_COORDINATE) != 0
                         && Double.compare(altitude, UNKNOWN_COORDINATE) != 0) {
-                        updateCurrentPointOfInterest(status, new PointOfInterestCore(latitude, longitude, altitude));
+                        updateCurrentPointOfInterest(true, new PointOfInterestCore(latitude, longitude, altitude,
+                                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
                     } else {
-                        updateCurrentPointOfInterest(status, null);
+                        boolean available = status != null
+                                            && status != ArsdkFeatureArdrone3.PilotingstatePilotedpoiStatus.UNAVAILABLE;
+                        updateCurrentPointOfInterest(available, null);
+                    }
+                }
+
+                @Override
+                public void onPilotedPOIV2(double latitude, double longitude, double altitude,
+                                           @Nullable ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Mode mode,
+                                           @Nullable ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status status) {
+                    mPoiV2Supported = true;
+
+                    if (mode != null
+                        && status == ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status.RUNNING
+                        && Double.compare(latitude, UNKNOWN_COORDINATE) != 0
+                        && Double.compare(longitude, UNKNOWN_COORDINATE) != 0
+                        && Double.compare(altitude, UNKNOWN_COORDINATE) != 0) {
+
+                        updateCurrentPointOfInterest(true, new PointOfInterestCore(latitude, longitude, altitude,
+                                convert(mode)));
+                    } else {
+                        boolean available = status != null
+                            && status != ArsdkFeatureArdrone3.PilotingstatePilotedpoiv2Status.UNAVAILABLE;
+                        updateCurrentPointOfInterest(available, null);
                     }
                 }
             };
@@ -242,14 +324,15 @@ public class AnafiPointOfInterestPilotingItf extends ActivablePilotingItfControl
             implements PointOfInterestPilotingItfCore.Backend {
 
         @Override
-        public void start(double latitude, double longitude, double altitude) {
+        public void start(double latitude, double longitude, double altitude,
+                          @NonNull PointOfInterestPilotingItf.Mode mode) {
             switch (mPilotingItf.getState()) {
                 case IDLE:
-                    mPendingPointOfInterestRequest = new PointOfInterestCore(latitude, longitude, altitude);
+                    mPendingPointOfInterestRequest = new PointOfInterestCore(latitude, longitude, altitude, mode);
                     activate();
                     break;
                 case ACTIVE:
-                    sendCommand(Piloting.encodeStartPilotedPOI(latitude, longitude, altitude));
+                    sendPointOfInterestCommand(latitude, longitude, altitude, mode);
                     break;
                 case UNAVAILABLE:
                     break;

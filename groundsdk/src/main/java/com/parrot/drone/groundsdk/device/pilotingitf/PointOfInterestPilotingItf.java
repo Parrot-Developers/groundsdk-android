@@ -33,17 +33,27 @@
 package com.parrot.drone.groundsdk.device.pilotingitf;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
+import com.parrot.drone.groundsdk.device.peripheral.Gimbal;
 
 /**
  * Point Of Interest piloting interface for copters.
  * <p>
- * During a piloted Point Of Interest, the drone will always look at the given Point Of Interest but can be piloted
- * normally. However, yaw value is not settable. Camera tilt and pan command is ignored by the drone.
+ * During a piloted Point Of Interest, the drone always points towards the given Point Of Interest but can be piloted
+ * normally. However, yaw value is not settable.
  * <p>
+ * There are two variants of piloted Point Of Interest:
+ * <ul>
+ *     <li>In {@link Mode#LOCKED_GIMBAL locked gimbal mode}, the gimbal always looks at the Point Of Interest. Gimbal
+ *     control command is ignored by the drone.</li>
+ *     <li>In {@link Mode#FREE_GIMBAL free gimbal mode}, the gimbal initially looks at the Point Of Interest, and is
+ *     then freely controllable by the gimbal
+ *     {@link Gimbal#control(Gimbal.ControlMode, Double, Double, Double) command}.</li>
+ * </ul>
  * This piloting interface can be obtained from a {@link Drone drone} using:
  * <pre>{@code drone.getPilotingItf(PointOfInterestPilotingItf.class)}</pre>
  *
@@ -51,6 +61,16 @@ import com.parrot.drone.groundsdk.device.Drone;
  * @see Drone#getPilotingItf(Class, Ref.Observer)
  */
 public interface PointOfInterestPilotingItf extends PilotingItf, Activable {
+
+    /** Point Of Interest operating mode. */
+    enum Mode {
+
+        /** Gimbal is locked on the Point Of Interest. */
+        LOCKED_GIMBAL,
+
+        /** Gimbal is freely controllable. */
+        FREE_GIMBAL
+    }
 
     /** A Point Of Interest to look at. */
     interface PointOfInterest {
@@ -75,7 +95,27 @@ public interface PointOfInterestPilotingItf extends PilotingItf, Activable {
          * @return the altitude in meters
          */
         double getAltitude();
+
+        /**
+         * Retrieves the Point Of Interest mode.
+         *
+         * @return the mode
+         */
+        @NonNull
+        Mode getMode();
     }
+
+    /**
+     * Starts a piloted Point Of Interest in locked gimbal mode.
+     * <p>
+     * This is equivalent to calling
+     * {@link #start(double, double, double, Mode) start(latitude, longitude, altitude, Mode.LOCKED_GIMBAL)}.
+     *
+     * @param latitude  latitude of the location (in degrees) to look at
+     * @param longitude longitude of the location (in degrees) to look at
+     * @param altitude  altitude above take off point (in meters) to look at
+     */
+    void start(double latitude, double longitude, double altitude);
 
     /**
      * Starts a piloted Point Of Interest.
@@ -83,8 +123,9 @@ public interface PointOfInterestPilotingItf extends PilotingItf, Activable {
      * @param latitude  latitude of the location (in degrees) to look at
      * @param longitude longitude of the location (in degrees) to look at
      * @param altitude  altitude above take off point (in meters) to look at
+     * @param mode      Point Of Interest mode
      */
-    void start(double latitude, double longitude, double altitude);
+    void start(double latitude, double longitude, double altitude, @NonNull Mode mode);
 
     /**
      * Retrieves the current targeted Point Of Interest.

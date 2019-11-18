@@ -32,6 +32,7 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;
@@ -96,13 +97,29 @@ public class PointOfInterestPilotingItfTest {
         // start piloted Point Of Interest
         itf.start(48.8795, 2.3675, 5);
         assertThat(mChangeCnt, is(1));
-        assertThat(mBackend.mCurrentPointOfInterest, matchesDirective(48.8795, 2.3675, 5));
+        assertThat(mBackend.mCurrentPointOfInterest, matchesDirective(48.8795, 2.3675, 5,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
 
         // update current Point Of Interest
-        PointOfInterestCore poi = new PointOfInterestCore(48.0, 2.0, 10);
+        PointOfInterestCore poi = new PointOfInterestCore(48.0, 2.0, 10,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL);
         mPilotingItfImpl.updateCurrentPointOfInterest(poi).notifyUpdated();
         assertThat(mChangeCnt, is(2));
-        assertThat(itf.getCurrentPointOfInterest(), matchesDirective(48.0, 2.0, 10));
+        assertThat(itf.getCurrentPointOfInterest(), matchesDirective(48.0, 2.0, 10,
+                PointOfInterestPilotingItf.Mode.LOCKED_GIMBAL));
+
+        // start piloted Point Of Interest with free gimbal
+        itf.start(50, 10, 30, PointOfInterestPilotingItf.Mode.FREE_GIMBAL);
+        assertThat(mChangeCnt, is(2));
+        assertThat(mBackend.mCurrentPointOfInterest, matchesDirective(50, 10, 30,
+                PointOfInterestPilotingItf.Mode.FREE_GIMBAL));
+
+        // update current Point Of Interest
+        poi = new PointOfInterestCore(50.1, 10.2, 30.3, PointOfInterestPilotingItf.Mode.FREE_GIMBAL);
+        mPilotingItfImpl.updateCurrentPointOfInterest(poi).notifyUpdated();
+        assertThat(mChangeCnt, is(3));
+        assertThat(itf.getCurrentPointOfInterest(), matchesDirective(50.1, 10.2, 30.3,
+                PointOfInterestPilotingItf.Mode.FREE_GIMBAL));
     }
 
     @Test
@@ -164,8 +181,9 @@ public class PointOfInterestPilotingItfTest {
         }
 
         @Override
-        public void start(double latitude, double longitude, double altitude) {
-            mCurrentPointOfInterest = new PointOfInterestCore(latitude, longitude, altitude);
+        public void start(double latitude, double longitude, double altitude,
+                          @NonNull PointOfInterestPilotingItf.Mode mode) {
+            mCurrentPointOfInterest = new PointOfInterestCore(latitude, longitude, altitude, mode);
         }
 
         @Override

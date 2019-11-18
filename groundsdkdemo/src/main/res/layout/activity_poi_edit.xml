@@ -87,22 +87,38 @@
                     android:textStyle="bold"/>
             </TableRow>
 
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center_vertical|start"
+                    android:labelFor="@+id/mode_spinner"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="@string/mode"/>
+
+                <Spinner
+                    android:id="@+id/mode_spinner"
+                    android:layout_gravity="center_vertical|end"
+                    android:entries="@array/poi_modes"
+                    tools:listitem="@android:layout/simple_dropdown_item_1line"/>
+            </TableRow>
+
             <Button
                 android:id="@+id/btn_start"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/action_start_piloted_poi"/>
 
-        </TableLayout>
+            <Button
+                android:id="@+id/btn_stop"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/action_stop_piloted_poi"/>
 
-        <Button
-            android:id="@+id/btn_stop"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/action_stop_piloted_poi"/>
+        </TableLayout>
 
     </LinearLayout>
 </ScrollView>

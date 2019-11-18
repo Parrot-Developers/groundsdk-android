@@ -593,6 +593,11 @@
     <string name="right">To the Right (m)</string>
     <string name="downward">Downward (m)</string>
     <string name="rotation">Rotation (°)</string>
+    <string name="mode">Mode</string>
+    <string-array name="poi_modes">
+        <item>LOCKED_GIMBAL</item>
+        <item>FREE_GIMBAL</item>
+    </string-array>
     <string name="default_altitude_value">5</string>
     <string name="default_component_value">0</string>
     <string name="bitrate_format" tools:ignore="PluralsCandidate">%1$d bit/s</string>
