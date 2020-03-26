@@ -81,7 +81,7 @@ final class MediaThumbnailCache {
         /**
          * Requests a media item thumbnail
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -101,7 +101,7 @@ final class MediaThumbnailCache {
         /**
          * Requests a media resource thumbnail
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -178,7 +178,7 @@ final class MediaThumbnailCache {
      * Gets a thumbnail from the cache.
      * <p>
      * If the thumbnail bitmap is present in the corresponding cache entry, the callback is immediately passed the
-     * thumbnail. <br/>
+     * thumbnail. <br>
      * Otherwise, the callback is remembered in the associated cache entry to be notified later, once the request
      * for this thumbnail completes. If no such request exists yet, it is created and queued in the list
      * of requests to be processed.

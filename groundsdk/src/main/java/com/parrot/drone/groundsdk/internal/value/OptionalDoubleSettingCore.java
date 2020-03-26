@@ -150,7 +150,7 @@ public final class OptionalDoubleSettingCore extends OptionalDoubleSetting {
     /**
      * Updates the current setting value.
      * <p>
-     * Resets the updating flag in case it was set. <br/>
+     * Resets the updating flag in case it was set. <br>
      * Called from lower layer when the backend sends a new value for the setting.
      *
      * @param value new setting value

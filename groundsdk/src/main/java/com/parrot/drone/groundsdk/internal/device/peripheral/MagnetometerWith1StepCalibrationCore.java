@@ -49,7 +49,7 @@ public class MagnetometerWith1StepCalibrationCore extends MagnetometerCore imple
             ComponentDescriptor.of(MagnetometerWith1StepCalibration.class, MagnetometerCore.DESC);
 
     /**
-     * State of the calibration process.<br/>
+     * State of the calibration process.<br>
      * Null only if calibration process has not started.
      */
     @Nullable
@@ -99,7 +99,7 @@ public class MagnetometerWith1StepCalibrationCore extends MagnetometerCore imple
     //region backend methods
 
     /**
-     * Updates the calibration progress of the magnetometer.<br/>
+     * Updates the calibration progress of the magnetometer.<br>
      * <p>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *

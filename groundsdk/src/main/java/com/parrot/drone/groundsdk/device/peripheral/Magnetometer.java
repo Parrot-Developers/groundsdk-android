@@ -44,7 +44,7 @@ import com.parrot.drone.groundsdk.Ref;
  * <p>
  * This peripheral can be obtained from a {@link Provider peripheral providing device} (such as a drone or a
  * remote control) using:
- * <br/><pre>    {@code device.getPeripheral(Magnetometer.class)}</pre>
+ * <br><pre>    {@code device.getPeripheral(Magnetometer.class)}</pre>
  *
  * @see Provider#getPeripheral(Class)
  * @see Provider#getPeripheral(Class, Ref.Observer)

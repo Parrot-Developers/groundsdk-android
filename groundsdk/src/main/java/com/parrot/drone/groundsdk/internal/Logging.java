@@ -63,6 +63,9 @@ public final class Logging {
     /** Tag for flight data engine logs. */
     public static final ULogTag TAG_FLIGHTDATA = new ULogTag("gsdk.flightdata");
 
+    /** Tag for GUTMA logs engine logs. */
+    public static final ULogTag TAG_GUTMALOG = new ULogTag("gsdk.gutmalog");
+
     /** Tag for flight log engine logs. */
     public static final ULogTag TAG_FLIGHTLOG = new ULogTag("gsdk.flightlog");
 
@@ -74,6 +77,9 @@ public final class Logging {
 
     /** Tag for http logs. */
     public static final ULogTag TAG_HTTP = new ULogTag("gsdk.http");
+
+    /** Tag for MAVLink logs. */
+    public static final ULogTag TAG_MAVLINK = new ULogTag("gsdk.mavlink");
 
     /**
      * Private constructor for static utility class.

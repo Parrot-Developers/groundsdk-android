@@ -39,7 +39,7 @@ import androidx.annotation.Nullable;
 /**
  * Candle animation interface.
  * <p>
- * This animation instructs the drone to fly horizontally in direction of a target and then to fly up. <br/>
+ * This animation instructs the drone to fly horizontally in direction of a target and then to fly up. <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

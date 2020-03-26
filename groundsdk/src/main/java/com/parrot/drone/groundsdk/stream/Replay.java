@@ -86,7 +86,7 @@ public interface Replay extends Stream {
      * Informs about current playback position.
      * <p>
      * Note that position changes are <strong>NOT</strong> notified through any registered
-     * {@link Ref.Observer observer} of that stream. <br/>
+     * {@link Ref.Observer observer} of that stream. <br>
      * The application may poll this value at the appropriate rate, depending on its use case.
      *
      * @return current playback position, in milliseconds

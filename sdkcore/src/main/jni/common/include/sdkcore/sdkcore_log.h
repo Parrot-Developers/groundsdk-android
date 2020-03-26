@@ -41,8 +41,9 @@
 #endif
 
 #include <ulog.h>
-__attribute__((weak)) ULOG_DECLARE_TAG(ULOG_TAG);
-
+#define SDKCORE_LOG_DEFINE_TAG(name) \
+	__attribute__((__weak__)) __ULOG_DECL(name)
+SDKCORE_LOG_DEFINE_TAG(ULOG_TAG);
 #include <errno.h>
 
 /** Log as debug */

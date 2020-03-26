@@ -47,7 +47,7 @@ import java.util.Set;
  * <p>
  * This peripheral can be obtained from a {@link Provider peripheral providing device} (such as a drone or a
  * remote control) using:
- * <br/><pre>    {@code device.getPeripheral(MagnetometerWith3StepCalibration.class)}</pre>
+ * <br><pre>    {@code device.getPeripheral(MagnetometerWith3StepCalibration.class)}</pre>
  *
  * @see Provider#getPeripheral(Class)
  * @see Provider#getPeripheral(Class, Ref.Observer)

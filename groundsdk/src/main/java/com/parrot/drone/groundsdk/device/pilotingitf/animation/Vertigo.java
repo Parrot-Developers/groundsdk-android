@@ -39,7 +39,7 @@ import androidx.annotation.Nullable;
 /**
  * Vertigo animation interface.
  * <p>
- * This animation instructs the drone to zoom in on the subject and to move away from it at same time. <br/>
+ * This animation instructs the drone to zoom in on the subject and to move away from it at same time. <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

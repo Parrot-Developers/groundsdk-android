@@ -87,7 +87,7 @@ public abstract class MagnetometerCore extends SingletonComponentCore implements
     }
 
     /**
-     * Updates the calibration state of the magnetometer.<br/>
+     * Updates the calibration state of the magnetometer.<br>
      * <p>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *

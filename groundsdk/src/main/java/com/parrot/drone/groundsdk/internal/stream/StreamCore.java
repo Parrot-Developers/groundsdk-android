@@ -242,7 +242,7 @@ public abstract class StreamCore implements Stream {
     /**
      * Notifies that the stream playback state changes.
      * <p>
-     * Subclasses may override this method to properly update their own state. <br/>
+     * Subclasses may override this method to properly update their own state. <br>
      * An update to the component will be notified after this method returns.
      *
      * @param state stream playback state
@@ -267,7 +267,7 @@ public abstract class StreamCore implements Stream {
     /**
      * Notifies that the stream stops.
      * <p>
-     * Subclasses may override this method to properly update their own state. <br/>
+     * Subclasses may override this method to properly update their own state. <br>
      * Default implementation does nothing.
      * <p>
      * An update to the component will be notified after this method returns.
@@ -278,7 +278,7 @@ public abstract class StreamCore implements Stream {
     /**
      * Notifies that the stream has been released.
      * <p>
-     * Subclasses may override this method to perform appropriate stream management. <br/>
+     * Subclasses may override this method to perform appropriate stream management. <br>
      * Default implementation does nothing.
      */
     protected void onRelease() {

@@ -154,6 +154,7 @@ public class AnafiAlarms extends DroneInstrumentController {
                                    .notifyUpdated();
                             break;
                         case CRITICAL_BATTERY:
+                        case ALMOST_EMPTY_BATTERY:
                             if (!mBatteryFeatureSupported) {
                                 // the drone has not sent alarms using battery feature, so manage battery alarms here
                                 mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)

@@ -41,7 +41,7 @@ import com.parrot.drone.groundsdk.value.EnumSetting;
 /**
  * Precise Home peripheral interface for drones.
  * <p>
- * Precise home allows the drone to more precisely reach the take-off location when landing or returning home.<br/>
+ * Precise home allows the drone to more precisely reach the take-off location when landing or returning home.<br>
  * To do so, {@code PreciseHome} peripheral must be {@link PreciseHome#mode() enabled}.
  * As precise home is not always practically feasible, this peripheral reports a current state which
  * indicates whether precise home will be activated upon landing, or if it is currently active (in

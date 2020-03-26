@@ -518,7 +518,7 @@ public class GsdkStreamView extends FrameLayout {
      * Called on a dedicated GL rendering thread
      * <p>
      * Subclasses may override this method to implement any custom behavior that must happen on the GL rendering thread
-     * when rendering starts. <br/>
+     * when rendering starts. <br>
      * Default implementation does nothing.
      */
     protected void onStartRendering() {
@@ -530,7 +530,7 @@ public class GsdkStreamView extends FrameLayout {
      * Called on a dedicated GL rendering thread
      * <p>
      * Subclasses may override this method to implement any custom behavior that must happen on the GL rendering thread
-     * when rendering stops. <br/>
+     * when rendering stops. <br>
      * Default implementation does nothing.
      */
     protected void onStopRendering() {

@@ -53,6 +53,7 @@ import com.parrot.drone.groundsdk.facility.CrashReporter;
 import com.parrot.drone.groundsdk.facility.FirmwareManager;
 import com.parrot.drone.groundsdk.facility.FlightDataManager;
 import com.parrot.drone.groundsdk.facility.FlightLogReporter;
+import com.parrot.drone.groundsdk.facility.GutmaLogManager;
 import com.parrot.drone.groundsdk.internal.device.DeviceModels;
 import com.parrot.drone.groundsdk.internal.utility.BlackBoxStorage;
 import com.parrot.drone.groundsdk.internal.utility.CrashReportStorage;
@@ -184,6 +185,9 @@ public final class GroundSdkConfig {
     /** {@code true} if support of flight log is enabled. */
     private boolean mFlightLogEnabled;
 
+    /** {@code true} if GUTMA log synchronization is enabled. */
+    private boolean mGutmaLogEnabled;
+
     /** {@code true} if video decoding is enabled. */
     private boolean mVideoDecodingEnabled;
 
@@ -224,6 +228,10 @@ public final class GroundSdkConfig {
     /** Flight data storage space quota, in bytes. */
     @IntRange(from = 0)
     private long mFlightDataQuota;
+
+    /** GUTMA log storage space quota, in bytes. */
+    @IntRange(from = 0)
+    private long mGutmaLogQuota;
 
     /** Flight log storage space quota, in bytes. */
     @IntRange(from = 0)
@@ -312,6 +320,7 @@ public final class GroundSdkConfig {
         mBlackBoxPublicFolder = resources.getString(R.string.gsdk_blackbox_public_folder);
         mEphemeridesEnabled = resources.getBoolean(R.bool.gsdk_ephemeris_sync_enabled);
         mFlightDataEnabled = resources.getBoolean(R.bool.gsdk_flight_data_enabled);
+        mGutmaLogEnabled = resources.getBoolean(R.bool.gsdk_gutma_log_enabled);
         mAutoConnectionAtStartup = resources.getBoolean(R.bool.gsdk_auto_connection_at_startup);
         mAutoSelectWifiCountry = resources.getBoolean(R.bool.gsdk_auto_select_wifi_country);
         mReverseGeocoderDefaultCountryCode = resources.getString(R.string.gsdk_reverse_geocoder_default_country_code);
@@ -348,6 +357,12 @@ public final class GroundSdkConfig {
         }
         mFlightLogQuota = quota == 0 ? Long.MAX_VALUE : quota;
 
+        quota = resources.getInteger(R.integer.gsdk_gutma_log_quota);
+        if (quota < 0) {
+            throw new ConfigurationError("gsdk_gutma_log_quota must be positive");
+        }
+        mGutmaLogQuota = quota == 0 ? Long.MAX_VALUE : quota;
+
         mThumbnailCacheSize = resources.getInteger(R.integer.gsdk_media_thumbnail_cache_size);
         if (mThumbnailCacheSize < 0) {
             throw new ConfigurationError("gsdk_media_thumbnail_cache_size must be positive");
@@ -373,6 +388,7 @@ public final class GroundSdkConfig {
         mBlackBoxPublicFolder = "";
         mEphemeridesEnabled = false;
         mFlightDataEnabled = false;
+        mGutmaLogEnabled = false;
         mAutoConnectionAtStartup = false;
         mAutoSelectWifiCountry = false;
         mReverseGeocoderDefaultCountryCode = "";
@@ -384,6 +400,7 @@ public final class GroundSdkConfig {
         mBlackboxQuota = 0;
         mFlightDataQuota = 0;
         mFlightLogQuota = 0;
+        mGutmaLogQuota = 0;
         mThumbnailCacheSize = 0;
     }
 
@@ -407,7 +424,7 @@ public final class GroundSdkConfig {
      * Builds a set of {@code DeviceModel} from a string array.
      * <p>
      * Each string in the array will be used to build a corresponding {@code DeviceModel} as per the underlying enum
-     * name from {@link Drone.Model#name() Drone.Model} or {@link RemoteControl.Model#name() RemoteControl.Model}. <br/>
+     * name from {@link Drone.Model#name() Drone.Model} or {@link RemoteControl.Model#name() RemoteControl.Model}. <br>
      * Any unmatched string is ignored.
      * <p>
      * In case the provided array is empty, all known device models are returned from this method.
@@ -579,6 +596,15 @@ public final class GroundSdkConfig {
     }
 
     /**
+     * Tells whether GUTMA log synchronization is enabled.
+     *
+     * @return {@code true} if GUTMA log synchronization is enabled, {@code false} otherwise
+     */
+    public boolean isGutmaLogEnabled() {
+        return mGutmaLogEnabled;
+    }
+
+    /**
      * Tells whether video decoding is enabled.
      *
      * @return {@code true} if video decoding is enabled, {@code false} otherwise
@@ -717,6 +743,16 @@ public final class GroundSdkConfig {
     }
 
     /**
+     * Gives GUTMA log storage space quota, in bytes.
+     *
+     * @return GUTMA log storage space quota
+     */
+    @IntRange(from = 0)
+    public long getGutmaLogQuota() {
+        return mGutmaLogQuota;
+    }
+
+    /**
      * Gives media thumbnails cache maximum allowed size, in bytes.
      *
      * @return thumbnail cache size
@@ -808,7 +844,7 @@ public final class GroundSdkConfig {
      * Enables firmwares synchronization.
      * <p>
      * If enabled, {@link FirmwareManager} public facility and {@link FirmwareStore}, {@link FirmwareDownloader}
-     * internal utilities will be published. <br/>
+     * internal utilities will be published. <br>
      * On devices, {@link Updater} peripheral will be available.
      *
      * @param enable {@code true} to enable the firmware synchronization, {@code false} to disable it.
@@ -876,6 +912,21 @@ public final class GroundSdkConfig {
         checkLocked();
         mFlightLogEnabled = enable;
         mFlightLogQuota = quota;
+    }
+
+    /**
+     * Enables GUTMA log synchronization.
+     * <p>
+     * If enabled, {@link GutmaLogManager} public facility and {@link GutmaLogStorage} internal utility
+     * will be published.
+     *
+     * @param enable {@code true} to enable GUTMA log synchronization, {@code false} to disable it
+     * @param quota  GUTMA log storage space quota, in bytes
+     */
+    public void enableGutmaLogSupport(boolean enable, @IntRange(from = 0) long quota) {
+        checkLocked();
+        mGutmaLogEnabled = enable;
+        mGutmaLogQuota = quota;
     }
 
     /**

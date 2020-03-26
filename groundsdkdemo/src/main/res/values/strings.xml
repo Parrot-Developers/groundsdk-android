@@ -105,6 +105,7 @@
     <string name="action_edit_mappings">Mappings</string>
     <string name="action_new_mapping">New mapping</string>
     <string name="action_reset_mapping">Reset mapping</string>
+    <string name="action_prepare_update">Prepare update</string>
     <string name="action_update">Update</string>
     <string name="action_factory_reset">Factory reset</string>
     <string name="action_reset_settings">Reset settings</string>
@@ -349,6 +350,7 @@
     <string name="property_firmware_manager_firmwares">Firmwares</string>
     <string name="property_firmware_manager_local">Local</string>
     <string name="property_flightdata_manager_file_count">Flight data files</string>
+    <string name="property_gutmalog_manager_file_count">GUTMA log files</string>
     <string name="property_updater_unavailability_reasons">Unavailability reasons</string>
     <string name="property_updater_downloadable_firmwares">To download</string>
     <string name="property_updater_applicable_firmwares">To apply</string>
@@ -381,6 +383,9 @@
     <string name="property_thermal_rendering_mode">Mode</string>
     <string name="property_thermal_blending">Blending rate</string>
     <string name="property_piloting_control_behavior">Behavior</string>
+    <string name="property_battery_gauge_updater_state">State</string>
+    <string name="property_battery_gauge_updater_unavailability_reasons">Unavailability reasons</string>
+    <string name="property_battery_gauge_updater_current_progress">Current progress</string>
     <string name="boolean_setting_enabled">On</string>
     <string name="boolean_setting_disabled">Off</string>
     <string name="valid">Valid</string>
@@ -547,6 +552,7 @@
     <string name="peripheral_precise_home">Precise Home</string>
     <string name="peripheral_thermal_control">Thermal Control</string>
     <string name="peripheral_piloting_control">Piloting Control</string>
+    <string name="peripheral_battery_gauge_updater">Battery Gauge Updater</string>
     <string name="facility_auto_connection">Auto Connection</string>
     <string name="facility_blackbox_reporter">BlackBox Reporter</string>
     <string name="facility_crash_reporter">Crash Reporter</string>
@@ -554,6 +560,7 @@
     <string name="facility_user_heading">User Heading</string>
     <string name="facility_reverse_geocoder">Reverse Geocoder</string>
     <string name="facility_flightdata_manager">Flight Data Manager</string>
+    <string name="facility_gutmalog_manager">GUTMA Log Manager</string>
     <string name="facility_flightlog_reporter">Flight Log Reporter</string>
     <string name="facility_firmware_manager">Firmware Manager</string>
     <string name="facility_user_account">User Account</string>

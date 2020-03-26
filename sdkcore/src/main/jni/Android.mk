@@ -16,6 +16,7 @@ include $(SDKCORE_PATH)/pomp/Android.mk
 include $(SDKCORE_PATH)/ulog/Android.mk
 include $(SDKCORE_PATH)/stream/Android.mk
 include $(SDKCORE_PATH)/arsdk/Android.mk
+include $(SDKCORE_PATH)/flightlog-converter/Android.mk
 
 # allows to declare an sdkcore module: include $(BUILD_SDKCORE_MODULE)
 BUILD_SDKCORE_MODULE := $(SDKCORE_PATH)/build-sdkcore-module.mk

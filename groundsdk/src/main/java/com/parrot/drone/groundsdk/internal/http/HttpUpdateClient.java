@@ -88,7 +88,7 @@ public class HttpUpdateClient extends HttpClient {
      */
     public HttpUpdateClient(@NonNull Context context) {
         String altUrl = GroundSdkConfig.get(context).getAlternateFirmwareServer();
-        HttpSession session = altUrl == null ? HttpSession.appCentral(context) : HttpSession.custom(altUrl);
+        HttpSession session = altUrl == null ? HttpSession.appCentral(context) : HttpSession.custom(altUrl, context);
         mService = session.create(new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()),
                 Service.class);
     }

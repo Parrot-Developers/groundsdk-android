@@ -53,7 +53,7 @@ import static com.parrot.drone.groundsdk.internal.Logging.TAG_ENGINE;
  * Base class for an engine.
  * <p>
  * External engines must be subclasses of this class, and define a specific metadata entry under the application tag
- * in the {@code AndroidManifest.xml}. <br/>
+ * in the {@code AndroidManifest.xml}. <br>
  * The name of the metadata entry must start with {@link #META_KEY}; the metadata value must be the fully qualified
  * name of the engine implementation class. For example:
  * <pre>{@code
@@ -197,7 +197,7 @@ public class EngineBase {
      * Retrieves an utility interface.
      * <p>
      * <strong>IMPORTANT:</strong> this method should be called only once the engine is started. This restriction
-     * allows to ensure that all engines have published their appropriate utilities at that point. <br/>
+     * allows to ensure that all engines have published their appropriate utilities at that point. <br>
      * Failure to observe this restriction will produce an {@link IllegalStateException}.
      *
      * @param utilityType class of the utility interface to obtain
@@ -219,7 +219,7 @@ public class EngineBase {
      * that they are always available.
      * <p>
      * <strong>IMPORTANT:</strong> this method should be called only once the engine is started. This restriction
-     * allows to ensure that all engines have published their appropriate utilities at that point. <br/>
+     * allows to ensure that all engines have published their appropriate utilities at that point. <br>
      * Failure to observe this restriction will produce an {@link IllegalStateException}.
      *
      * @param utilityType class of the utility interface to obtain
@@ -379,7 +379,7 @@ public class EngineBase {
     /**
      * Called when the engine is requested to stop.
      * <p>
-     * This method acts as a signal from GroundSdk that the engine is not needed anymore, at least externally. <br/>
+     * This method acts as a signal from GroundSdk that the engine is not needed anymore, at least externally. <br>
      * The underlying engine implementation may decide not to stop yet, for internal reasons, but should eventually
      * call {@link #acknowledgeStopRequest()} when it reaches an internal state where it is acceptable for itself to
      * be stopped.
@@ -431,7 +431,7 @@ public class EngineBase {
     /**
      * Acknowledges a pending stop request.
      * <p>
-     * This informs GroundSdk that the engine is now prepared to be forcefully stopped at any time. <br/>
+     * This informs GroundSdk that the engine is now prepared to be forcefully stopped at any time. <br>
      * After having called this method, the underlying implementation must be prepared for either the {@link #onStop()}
      * (if GroundSdk decides to stop the engine) or the {@link #onStart()} (if GroundSdk decides to restart the engine)
      * callback to be called at any time.

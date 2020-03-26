@@ -39,7 +39,7 @@ import androidx.annotation.Nullable;
 /**
  * Parabola animation interface.
  * <p>
- * This animation instructs the drone to fly above the target in a parabola shape. <br/>
+ * This animation instructs the drone to fly above the target in a parabola shape. <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

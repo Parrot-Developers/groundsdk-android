@@ -110,9 +110,9 @@ Java_com_parrot_drone_sdkcore_arsdk_backend_ArsdkDiscovery_nativeAddDevice(
 	RETURN_IF_FAILED(self != NULL, -EINVAL);
 
 	struct arsdk_discovery_device_info info = {
-			.name = (*env)->GetStringUTFChars(env, jname, 0),
-			.addr = (*env)->GetStringUTFChars(env, jaddr, 0),
-			.id = (*env)->GetStringUTFChars(env, jid, 0),
+			.name = (*env)->GetStringUTFChars(env, jname, NULL),
+			.addr = (*env)->GetStringUTFChars(env, jaddr, NULL),
+			.id = (*env)->GetStringUTFChars(env, jid, NULL),
 			.type = (enum arsdk_device_type) type,
 			.port = (uint16_t) port
 	};
@@ -142,7 +142,7 @@ Java_com_parrot_drone_sdkcore_arsdk_backend_ArsdkDiscovery_nativeRemoveDevice(
 	RETURN_IF_FAILED(self != NULL, -EINVAL);
 
 	struct arsdk_discovery_device_info info = {
-			.name = (*env)->GetStringUTFChars(env, jname, 0),
+			.name = (*env)->GetStringUTFChars(env, jname, NULL),
 			.type = (enum arsdk_device_type) type
 	};
 

@@ -32,12 +32,11 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.blackbox.data;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.parrot.drone.sdkcore.TimeProvider;
+
+import androidx.annotation.NonNull;
 
 /**
  * Black box event factory.
@@ -163,20 +162,6 @@ public class Event {
     @NonNull
     public static Event countryChange(@NonNull String countryCode) {
         return new StringEvent("wifi_country", countryCode);
-    }
-
-    /**
-     * Obtains an external radio controller state change event.
-     *
-     * @param active   {@code true} if the radio controller is active, otherwise {@code false}
-     * @param protocol radio controller protocol
-     *
-     * @return external radio controller state change event
-     */
-    @NonNull
-    public static Event externalRcStateChange(boolean active, @Nullable String protocol) {
-        return new StringEvent("external_remote_" + (active ? "connected" : "disconnected"),
-                "Radio controller - " + protocol);
     }
 
     /**

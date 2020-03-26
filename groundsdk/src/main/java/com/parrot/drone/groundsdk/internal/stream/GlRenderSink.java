@@ -184,7 +184,7 @@ public interface GlRenderSink extends Stream.Sink {
         /**
          * Configures color histogram computation.
          * <p>
-         * When enabled, color histogram statistics are computed for each rendered frame. <br/>
+         * When enabled, color histogram statistics are computed for each rendered frame. <br>
          * Those computation can be retrieved through the configured {@link Overlayer}, if any.
          *
          * @param enable {@code true} to enable color histogram computation, {@code false} to disable it

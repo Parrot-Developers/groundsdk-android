@@ -303,7 +303,7 @@ public final class CameraWhiteBalance {
         /**
          * Retrieves the currently supported white balance modes.
          * <p>
-         * An empty set means that the whole setting is currently unsupported. <br/>
+         * An empty set means that the whole setting is currently unsupported. <br>
          * A set containing a single value means that the setting is supported, yet the application is not allowed to
          * change the white balance mode.
          * <p>

@@ -76,7 +76,7 @@ public interface FirmwareStore extends Monitorable<FirmwareStore.Monitor>, Utili
      * firmware towards the latest known version, <strong>AND</strong> that have been downloaded.
      * <p>
      * Firmwares in the returned list are sorted by application order, i.e. first firmwares, once downloaded, must be
-     * applied to the device before subsequent ones. <br/>
+     * applied to the device before subsequent ones. <br>
      * Only first firmware from the returned list, if any, can be applied immediately to update the device;
      * subsequent firmwares are only given as indication as for what should follow next in the updating process.
      *

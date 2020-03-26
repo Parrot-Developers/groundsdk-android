@@ -40,7 +40,7 @@ import androidx.annotation.Nullable;
  * Dronie animation interface.
  * <p>
  * This animation instructs the drone to fly away from the target on a given distance with a predefined (and not
- * configurable) angle. <br/>
+ * configurable) angle. <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

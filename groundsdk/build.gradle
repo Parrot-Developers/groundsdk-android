@@ -34,7 +34,7 @@ dependencies {
 
 task javadoc(type: Javadoc) {
     doFirst {
-        if (!JavaVersion.current().isJava11Compatible()) {
+        if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_11)) {
             throw new TaskInstantiationException("Javadoc must be generated using JDK 11+")
         }
     }
@@ -55,7 +55,9 @@ task javadoc(type: Javadoc) {
         options {
             source android.compileOptions.sourceCompatibility.majorVersion
             linksOffline 'http://d.android.com/reference/', "${android.sdkDirectory}/docs/reference"
-            addBooleanOption '-no-module-directories', true
+            if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
+                addBooleanOption '-no-module-directories', true
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ import androidx.annotation.NonNull;
 /**
  * Flip animation interface.
  * <p>
- * This animation instructs the drone to flip in place around one of its axes. <br/>
+ * This animation instructs the drone to flip in place around one of its axes. <br>
  * The axis in question depends on the instructed flip direction.
  */
 public interface Flip extends Animation {
@@ -61,7 +61,7 @@ public interface Flip extends Animation {
     /**
      * Flip animation configuration class.
      * <p>
-     * Allows to configure the flip direction parameter for this animation. <br/>
+     * Allows to configure the flip direction parameter for this animation. <br>
      * This parameter is mandatory.
      */
     final class Config extends Animation.Config {

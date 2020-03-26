@@ -92,7 +92,7 @@ final class FirmwareDownloaderCore implements FirmwareDownloader {
      * Downloads firmwares.
      * <p>
      * This method will first try to obtain {@link FirmwareInfo} for each of the specified firmware, by querying
-     * the {@link FirmwareStore}. <br/>
+     * the {@link FirmwareStore}. <br>
      * In case it fails to obtain such info for any of the specified firmwares, then nothing happens and this method
      * returns {@code null}; otherwise, it behaves as {@link #download(Collection, FirmwareDownloader.Task.Observer)}.
      *

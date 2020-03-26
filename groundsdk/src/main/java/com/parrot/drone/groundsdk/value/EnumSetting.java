@@ -65,7 +65,7 @@ public abstract class EnumSetting<E extends Enum<E>> extends Setting {
     /**
      * Retrieves the set of available choices for the setting.
      * <p>
-     * An empty set means that the whole setting is currently unsupported. <br/>
+     * An empty set means that the whole setting is currently unsupported. <br>
      * A set containing a single value means that the setting is supported, yet not mutable by the application.
      * <p>
      * The returned set is owned by the caller and can be freely modified.

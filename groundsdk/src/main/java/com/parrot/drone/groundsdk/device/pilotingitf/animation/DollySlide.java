@@ -40,7 +40,7 @@ import androidx.annotation.Nullable;
  * Dolly slide animation interface.
  * <p>
  * This animation instructs the drone to fly horizontally with respect to a specific angle between its original
- * position (before the animation begins), the target, and its destination. <br/>
+ * position (before the animation begins), the target, and its destination. <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

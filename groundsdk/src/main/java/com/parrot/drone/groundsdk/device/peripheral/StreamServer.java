@@ -58,11 +58,11 @@ public interface StreamServer extends Peripheral {
      * <p>
      * Provides global control of the ability to start streams.
      * <p>
-     * When streaming gets enabled, currently {@link Stream.State#SUSPENDED suspended} stream will be resumed. <br/>
+     * When streaming gets enabled, currently {@link Stream.State#SUSPENDED suspended} stream will be resumed. <br>
      * When streaming is enabled, streams can be started.
      * <p>
      * When streaming gets disabled, currently started stream gets suspended, in case it supports being resumed, or
-     * {@link Stream.State#STOPPED stopped} otherwise. <br/>
+     * {@link Stream.State#STOPPED stopped} otherwise. <br>
      * When streaming is disabled, no stream can be started.
      *
      * @param enable {@code true} to enable streaming, {@code false} to disable it

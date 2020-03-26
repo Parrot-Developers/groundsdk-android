@@ -41,7 +41,7 @@ import com.parrot.drone.groundsdk.internal.session.Session;
  * self when asked for a proxy.
  * <p>
  * Concrete subclasses <strong>MUST</strong> implement the API interface specified in the descriptor they have
- * provided at construction. <br/>
+ * provided at construction. <br>
  * Otherwise, instantiating the component will produce a ClassCastException at runtime.
  */
 public class SingletonComponentCore extends ComponentCore {

@@ -48,9 +48,9 @@ import com.parrot.drone.groundsdk.stream.Stream;
  * <p>
  * This stream supports {@link Stream.State#SUSPENDED suspension}. When it is started and gets interrupted because
  * another stream starts, or because streaming gets {@link StreamServer#enableStreaming(boolean) disabled} globally,
- * then it will move to the SUSPENDED {@link #state() state}. <br/>
+ * then it will move to the SUSPENDED {@link #state() state}. <br>
  * Once the interrupting stream stops, or streaming gets enabled, then it will try and be resumed in the state it
- * was before suspension. <br/>
+ * was before suspension. <br>
  * Also, this implies that this stream may be started even while streaming is globally disabled. In such a case,
  * it will move to the SUSPENDED state until either it is {@link State#STOPPED} by client request, or streaming
  * gets enabled.

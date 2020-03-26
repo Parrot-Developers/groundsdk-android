@@ -134,7 +134,7 @@ public final class EnumSettingCore<E extends Enum<E>> extends EnumSetting<E> {
     /**
      * Constructor.
      * <p>
-     * This constructor sets the initial available values to none of the values defined in the corresponding enum. <br/>
+     * This constructor sets the initial available values to none of the values defined in the corresponding enum. <br>
      * Default value, although meaningless as long as the available values set is empty, is initialized to the first
      * value in the corresponding enum, ordinal-wise.
      *
@@ -180,8 +180,8 @@ public final class EnumSettingCore<E extends Enum<E>> extends EnumSetting<E> {
     /**
      * Updates the current setting value.
      * <p>
-     * Resets the updating flag in case it was set. <br/>
-     * Called from lower layer when the backend sends a new value for the setting. <br/>
+     * Resets the updating flag in case it was set. <br>
+     * Called from lower layer when the backend sends a new value for the setting. <br>
      * Provided value is always added to the set of currently available values, if not present already.
      *
      * @param value new setting value

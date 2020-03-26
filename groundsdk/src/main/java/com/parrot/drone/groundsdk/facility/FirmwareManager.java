@@ -137,7 +137,7 @@ public interface FirmwareManager extends Facility {
          * Tells whether any local file for this firmware update can be deleted from device's storage.
          * <p>
          * Note that this is only meaningful when {@link #state() state} is {@link State#DOWNLOADED downloaded},
-         * otherwise this method returns {@code false}. <br/>
+         * otherwise this method returns {@code false}. <br>
          * Moreover, note that application preset firmwares cannot usually be deleted from device's storage, i.e.
          * their state reports 'downloaded' since they are locally available, but this method returns {@code false}.
          *

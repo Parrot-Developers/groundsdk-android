@@ -32,9 +32,6 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.blackbox;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.Event;
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.LocationInfo;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.PilotingCommand;
@@ -45,11 +42,14 @@ import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureBattery;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureCommon;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureFollowMe;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureGeneric;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureRc;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureWifi;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 import com.parrot.drone.sdkcore.ulog.ULog;
 
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_BLACKBOX;
 
@@ -106,14 +106,14 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
             case ArsdkFeatureArdrone3.GPSSettingsState.UID:
                 ArsdkFeatureArdrone3.GPSSettingsState.decode(command, mGpsSettingsStateCallback);
                 break;
-            case ArsdkFeatureArdrone3.NetworkSettingsState.UID:
-                ArsdkFeatureArdrone3.NetworkSettingsState.decode(command, mNetworkSettingsStateCallback);
-                break;
             case ArsdkFeatureArdrone3.PilotingState.UID:
                 ArsdkFeatureArdrone3.PilotingState.decode(command, mPilotingStateCallback);
                 break;
             case ArsdkFeatureArdrone3.SettingsState.UID:
                 ArsdkFeatureArdrone3.SettingsState.decode(command, mArdrone3SettingsStateCallback);
+                break;
+            case ArsdkFeatureBattery.UID:
+                ArsdkFeatureBattery.decode(command, mBatteryCallback);
                 break;
             case ArsdkFeatureCommon.CommonState.UID:
                 ArsdkFeatureCommon.CommonState.decode(command, mCommonStateCallback);
@@ -130,11 +130,8 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
             case ArsdkFeatureFollowMe.UID:
                 ArsdkFeatureFollowMe.decode(command, mFollowMeCallback);
                 break;
-            case ArsdkFeatureBattery.UID:
-                ArsdkFeatureBattery.decode(command, mBatteryCallback);
-                break;
-            case ArsdkFeatureRc.UID:
-                ArsdkFeatureRc.decode(command, mExternalRcCallback);
+            case ArsdkFeatureWifi.UID:
+                ArsdkFeatureWifi.decode(command, mWifiCallback);
                 break;
         }
     }
@@ -244,20 +241,6 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 @Override
                 public void onGPSFixStateChanged(int fixed) {
                     mContext.addEvent(Event.gpsFixChange(fixed));
-                }
-            };
-
-    /** Callbacks called when a command of the feature ArsdkFeatureArdrone3.NetworkSettingsState is decoded. */
-    private final ArsdkFeatureArdrone3.NetworkSettingsState.Callback mNetworkSettingsStateCallback =
-            new ArsdkFeatureArdrone3.NetworkSettingsState.Callback() {
-
-                @Override
-                public void onWifiSelectionChanged(
-                        @Nullable ArsdkFeatureArdrone3.NetworksettingsstateWifiselectionchangedType type,
-                        @Nullable ArsdkFeatureArdrone3.NetworksettingsstateWifiselectionchangedBand band,
-                        int channel) {
-                    mContext.addEvent(Event.wifiBandChange(band == null ? -1 : band.value))
-                            .addEvent(Event.wifiChannelChange(channel));
                 }
             };
 
@@ -408,11 +391,6 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
                 }
 
                 @Override
-                public void onWifiSignalChanged(int rssi) {
-                    mContext.mEnvironmentInfo.setWifiSignal(rssi);
-                }
-
-                @Override
                 public void onBootId(String bootid) {
                     mBlackBox.mHeader.setBootId(bootid);
                 }
@@ -445,11 +423,6 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
             new ArsdkFeatureCommon.SettingsState.Callback() {
 
                 @Override
-                public void onCountryChanged(@NonNull String code) {
-                    mContext.addEvent(Event.countryChange(code));
-                }
-
-                @Override
                 public void onProductVersionChanged(@NonNull String software, @NonNull String hardware) {
                     mBlackBox.mHeader.setVersion(software, hardware);
                 }
@@ -465,19 +438,24 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
         }
     };
 
-    /** Callbacks called when a command of the feature ArsdkFeatureRc is decoded. */
-    private final ArsdkFeatureRc.Callback mExternalRcCallback = new ArsdkFeatureRc.Callback() {
-
-        /** {@code true} when an external radio command is both connected and enabled. */
-        private boolean mReceiverActive;
+    /** Callbacks called when a command of the feature Wifi is decoded. */
+    private final ArsdkFeatureWifi.Callback mWifiCallback = new ArsdkFeatureWifi.Callback() {
 
         @Override
-        public void onReceiverState(@Nullable ArsdkFeatureRc.ReceiverState state, String protocol, int enabled) {
-            boolean active = state == ArsdkFeatureRc.ReceiverState.CONNECTED && enabled != 0;
-            if (mReceiverActive != active) {
-                mContext.addEvent(Event.externalRcStateChange(active, protocol));
-                mReceiverActive = active;
-            }
+        public void onApChannelChanged(@Nullable ArsdkFeatureWifi.SelectionType type,
+                                       @Nullable ArsdkFeatureWifi.Band band, int channel) {
+            mContext.addEvent(Event.wifiBandChange(band == null ? -1 : band.value))
+                    .addEvent(Event.wifiChannelChange(channel));
+        }
+
+        @Override
+        public void onRssiChanged(int rssi) {
+            mContext.mEnvironmentInfo.setWifiSignal(rssi);
+        }
+
+        @Override
+        public void onCountryChanged(@Nullable ArsdkFeatureWifi.CountrySelection selectionMode, String code) {
+            mContext.addEvent(Event.countryChange(code));
         }
     };
 }

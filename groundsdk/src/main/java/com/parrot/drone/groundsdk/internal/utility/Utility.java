@@ -35,7 +35,7 @@ package com.parrot.drone.groundsdk.internal.utility;
 /**
  * A marker interface for APIs that are exposed by GroundSdk to underlying engines.
  * <p>
- * Utilities may not be available at any time or at all depending on GroundSdk configuration and/or current state. <br/>
+ * Utilities may not be available at any time or at all depending on GroundSdk configuration and/or current state. <br>
  * However, some GroundSdk utilities are guaranteed to be available at all times, which is documented in their javadoc
  * the case being.
  */

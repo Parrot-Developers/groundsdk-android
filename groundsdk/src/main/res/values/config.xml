@@ -103,6 +103,14 @@
          of all collected flight log files is lower than this quota. -->
     <integer name="gsdk_flight_log_quota">0</integer>
 
+    <!-- Tells whether GUTMA log synchronization is enabled. -->
+    <bool name="gsdk_gutma_log_enabled">true</bool>
+
+    <!-- Space quota for GUTMA log synchronization, in bytes. Value 0 disables quota.
+         Quota is checked when groundsdk first starts. Eldest GUTMA log files are deleted until the total size
+         of all collected GUTMA log files is lower than this quota. -->
+    <integer name="gsdk_gutma_log_quota">0</integer>
+
     <!-- Tells whether video decoding is enabled. -->
     <bool name="gsdk_video_decoding_enabled">true</bool>
 

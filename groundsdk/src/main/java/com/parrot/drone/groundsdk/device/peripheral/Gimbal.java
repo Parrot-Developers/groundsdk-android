@@ -390,7 +390,7 @@ public interface Gimbal extends Peripheral {
          * Communication with the gimbal is broken due to some unknown software and/or hardware
          * issue.
          * <p>
-         * Application should inform the user that the gimbal is currently inoperable. <br/>
+         * Application should inform the user that the gimbal is currently inoperable. <br>
          * However, there is nothing the application should recommend the user to do at that point: either the issue
          * will hopefully resolve itself (most likely a software issue), or it will escalate to critical level
          * (probably hardware issue) and the application should recommend the user to send back the device for repair.
@@ -417,7 +417,7 @@ public interface Gimbal extends Peripheral {
     /**
      * Reports any error that the gimbal is currently undergoing.
      * <p>
-     * When empty, the gimbal can be operated normally, otherwise, it is currently inoperable. <br/>
+     * When empty, the gimbal can be operated normally, otherwise, it is currently inoperable. <br>
      * In case the returned set contains the {@link Gimbal.Error#CRITICAL} error, then gimbal has become completely
      * inoperable until both all other reported errors are fixed and the device is restarted.
      *

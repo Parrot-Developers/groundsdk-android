@@ -227,7 +227,8 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                 new WifiAccessPointContent(mDrone),
                 new WifiScannerContent(mDrone),
                 new UpdaterContent(mDrone),
-                new DevToolboxContent(mDrone)
+                new DevToolboxContent(mDrone),
+                new BatteryGaugeUpdaterContent(mDrone)
         );
 
         RecyclerView recyclerView = findViewById(R.id.info_content);

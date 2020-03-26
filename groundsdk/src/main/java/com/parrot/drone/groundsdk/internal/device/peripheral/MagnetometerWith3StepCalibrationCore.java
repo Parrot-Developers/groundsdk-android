@@ -52,7 +52,7 @@ public class MagnetometerWith3StepCalibrationCore extends MagnetometerCore imple
             ComponentDescriptor.of(MagnetometerWith3StepCalibration.class, MagnetometerCore.DESC);
 
     /**
-     * State of the calibration process.<br/>
+     * State of the calibration process.<br>
      * Null only if calibration process has not started.
      */
     @Nullable
@@ -102,9 +102,9 @@ public class MagnetometerWith3StepCalibrationCore extends MagnetometerCore imple
     //region backend methods
 
     /**
-     * Updates the current axis to calibrate in the current calibration process.<br/>
+     * Updates the current axis to calibrate in the current calibration process.<br>
      * <p>
-     * No effect if the calibration process has not been started.<br/>
+     * No effect if the calibration process has not been started.<br>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *
      * @param axis the axis to calibrate
@@ -121,9 +121,9 @@ public class MagnetometerWith3StepCalibrationCore extends MagnetometerCore imple
     }
 
     /**
-     * Updates the set of calibrated axes in the current calibration process.<br/>
+     * Updates the set of calibrated axes in the current calibration process.<br>
      * <p>
-     * No effect if the calibration process has not been started.<br/>
+     * No effect if the calibration process has not been started.<br>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *
      * @param axes the axes that are calibrated
@@ -141,9 +141,9 @@ public class MagnetometerWith3StepCalibrationCore extends MagnetometerCore imple
     }
 
     /**
-     * Updates the failed status in the current calibration process.<br/>
+     * Updates the failed status in the current calibration process.<br>
      * <p>
-     * No effect if the calibration process has not been started.<br/>
+     * No effect if the calibration process has not been started.<br>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *
      * @param failed {@code true} if the calibration process failed, {@code false} otherwise
@@ -159,9 +159,9 @@ public class MagnetometerWith3StepCalibrationCore extends MagnetometerCore imple
     }
 
     /**
-     * Ends the calibration process.<br/>
+     * Ends the calibration process.<br>
      * <p>
-     * No effect if the calibration process has not been started.<br/>
+     * No effect if the calibration process has not been started.<br>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *
      * @return the object, to allow chain calls

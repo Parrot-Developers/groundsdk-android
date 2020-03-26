@@ -41,7 +41,7 @@ import com.parrot.drone.groundsdk.internal.session.Session;
  * Base for a component implementation class.
  * <p>
  * Concrete subclass <strong>MUST</strong> implement getProxy method to provide an implementation of the API interface
- * that is specified in the descriptor they provide. <br/>
+ * that is specified in the descriptor they provide. <br>
  * Otherwise, getting the component will produce a ClassCastException at runtime.
  */
 public abstract class ComponentCore {
@@ -139,7 +139,7 @@ public abstract class ComponentCore {
     /**
      * Called before a component change gets notified to the application.
      * <p>
-     * Subclasses may override this method to notify their own internal listeners. <br/>
+     * Subclasses may override this method to notify their own internal listeners. <br>
      * Default implementation does nothing.
      */
     @SuppressWarnings("WeakerAccess")
@@ -149,7 +149,7 @@ public abstract class ComponentCore {
     /**
      * Called when the component becomes observed, i.e. when a first observer is registered for the component.
      * <p>
-     * Subclasses may override this method to start internal tasks that are consuming resources. <br/>
+     * Subclasses may override this method to start internal tasks that are consuming resources. <br>
      * Default implementation does nothing.
      */
     protected void onObserved() {
@@ -159,7 +159,7 @@ public abstract class ComponentCore {
     /**
      * Called when the component is no more observed, i.e. when the last observer is unregistered for the component.
      * <p>
-     * Subclasses may override this method to stop internal tasks that are consuming resources. <br/>
+     * Subclasses may override this method to stop internal tasks that are consuming resources. <br>
      * Default implementation does nothing.
      */
     protected void onNoMoreObserved() {

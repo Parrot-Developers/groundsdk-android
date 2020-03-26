@@ -46,7 +46,7 @@ import java.util.EnumSet;
 /**
  * Piloting interface used to make the drone follow some (possibly moving) target.
  *
- * <h3>Availability</h3>
+ * <h2>Availability</h2>
  * <p>
  * This interface will be {@link State#UNAVAILABLE unavailable} until a specific set of conditions are met:
  * <ul>
@@ -67,13 +67,13 @@ import java.util.EnumSet;
  * Note that this interface, even while available or {@link State#ACTIVE active} may become unavailable back
  * again, as soon as any of those conditions is not satisfied anymore.
  *
- * <h3>Mode</h3>
+ * <h2>Mode</h2>
  * This interface supports different {@link Mode modes} of operation. This may be configured through the
  * {@link #mode() mode} setting, regardless of interface availability. Mode changes will be applied immediately in case
- * the interface is currently active, without the need to activate it again. <br/>
+ * the interface is currently active, without the need to activate it again. <br>
  * Note also that this setting is not persisted.
  *
- * <h3>Alerts and behavior</h3>
+ * <h2>Alerts and behavior</h2>
  * <p>
  * When available or active, this interface may also alert about specific {@link #getQualityIssues() conditions}
  * that hinders optimally accurate tracking of the target, although tracking remains feasible under such conditions:
@@ -86,15 +86,15 @@ import java.util.EnumSet;
  * {@link #getCurrentBehavior() behavior}. For example, some conditions may force the drone to remain only
  * {@link Behavior#STATIONARY stationary} instead of following the target when it moves.
  *
- * <h3><a name="movement">Movement</a></h3>
+ * <h2><a id="movement">Movement</a></h2>
  * <p>
  * When this interface is active, the drone will fly autonomously to follow the moving target as the current mode
  * permits it, unless manually instructed to move using this interface's {@link #setPitch}, {@link #setRoll} or
- * {@link #setVerticalSpeed} piloting commands. <br/>
+ * {@link #setVerticalSpeed} piloting commands. <br>
  * In any case, the drone will always try to follow the target and may thus move independently of the provided piloting
  * commands to do so.
  *
- * <h3><a name="target_selection">Target selection</a></h3>
+ * <h2><a id="target_selection">Target selection</a></h2>
  * <p>
  * In order for this interface to be available, the application must instruct the drone how to identify and track the
  * desired target. To do so, the {@link TargetTracker} peripheral must be used.
@@ -113,10 +113,10 @@ import java.util.EnumSet;
  * </ul>
  * <p>
  * Note that both controller barometer/location information and external target information may be sent to the drone at
- * the same time, provided they give coherent positioning information on the <strong>SAME</strong> target. <br/>
+ * the same time, provided they give coherent positioning information on the <strong>SAME</strong> target. <br>
  * For instance, it is possible to perform image processing on the drone video stream to identify the controller and
  * send the results to the drone, along with controller barometer/location updates, for better tracking performance.
- * <br/>
+ * <br>
  * However, care must be taken not to provide incoherent information, such as forwarding controller/barometer location
  * and, as the same time, external information on a different target than the controller; behavior is undefined in such
  * a case.
@@ -135,7 +135,7 @@ public interface FollowMePilotingItf extends PilotingItf, Activable {
 
         /**
          * Mode instructing the drone to only track the position of the target, regardless of its orientation or any
-         * change in its direction. <br/>
+         * change in its direction. <br>
          * The drone will move so that the north-drone-target angle and the distance to the target both remain constant.
          */
         GEOGRAPHIC,
@@ -144,7 +144,7 @@ public interface FollowMePilotingItf extends PilotingItf, Activable {
          * Mode instructing the drone to both track the target position and changes in the direction of the target,
          * relatively to the initial direction of the target (that is, the direction the target had when the interface
          * was activated or after manually moving the drone, using any of {@link #setPitch}, {@link #setRoll} or
-         * {@link #setVerticalSpeed} methods). <br/>
+         * {@link #setVerticalSpeed} methods). <br>
          * The drone will move so that the angle formed by the target direction vector, and the drone-target vector
          * remains constant.
          */

@@ -89,14 +89,23 @@ public class HttpSession {
 
     /**
      * Obtains a new HTTP session for communicating with a custom server.
+     * <p>
+     * The returned session automatically injects the default user agent HTTP header in all outgoing requests.
      *
-     * @param url server URL
+     * @param url               server URL
+     * @param context           application context
+     * @param additionalHeaders additional HTTP headers to inject in all outgoing HTTP requests
      *
      * @return a new HTTP session
      */
     @NonNull
-    public static HttpSession custom(@NonNull String url) {
-        return new HttpSession(url, null, Collections.emptyList());
+    public static HttpSession custom(@NonNull String url,
+                                     @NonNull Context context,
+                                     @NonNull HttpHeader... additionalHeaders) {
+        List<HttpHeader> headers = new ArrayList<>();
+        headers.add(HttpHeader.defaultUserAgent(context));
+        Collections.addAll(headers, additionalHeaders);
+        return new HttpSession(url, null, headers);
     }
 
     /** Represents a live subscription to an event web socket. */

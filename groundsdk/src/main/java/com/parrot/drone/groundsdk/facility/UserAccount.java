@@ -55,9 +55,8 @@ import androidx.annotation.NonNull;
  * The application can opt-in anonymous data upload upon {@link #clear clearing} any registered user account, by
  * specifying the desired {@link AnonymousDataPolicy policy} to observe.
  * <p>
- * <p>
  * Note that GroundSdk may <strong>always</strong> collect both anonymous and personal data from connected devices
- * and will store them on the user's device, regardless of the presence of any user account. <br/>
+ * and will store them on the user's device, regardless of the presence of any user account. <br>
  * When the application eventually {@link #set(String, String, AccountlessPersonalDataPolicy) registers} a user
  * account, it may at that point indicate what to do with personal data that were collected beforehand, by
  * specifying the desired {@link AccountlessPersonalDataPolicy policy} to observe.
@@ -86,7 +85,7 @@ public interface UserAccount extends Facility {
     /**
      * Registers a user account.
      * <p>
-     * Only one user account may be registered, calling this method erase any previously set user account. <br/>
+     * Only one user account may be registered, calling this method erase any previously set user account. <br>
      * <p>
      * In case no user account was set beforehand, the specified policy informs GroundSdk about what to do with
      * personal user data that have already been collected on the user's device.

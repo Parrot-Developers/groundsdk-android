@@ -37,88 +37,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+    android:layout_marginVertical="@dimen/activity_vertical_margin"
     tools:context="com.parrot.drone.groundsdkdemo.edit.PointOfInterestEditActivity"
     tools:ignore="AutoFill">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin">
+        android:shrinkColumns="1"
+        android:stretchColumns="0">
 
-        <TableLayout
+        <TextView
+            android:layout_marginBottom="8dp"
+            android:text="@string/location_move"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <com.parrot.drone.groundsdkdemo.edit.CustomMapView
+            android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:shrinkColumns="1"
-            android:stretchColumns="0">
+            android:layout_height="300dp"
+            android:focusableInTouchMode="true"/>
+
+        <TableRow>
 
             <TextView
-                android:layout_marginBottom="8dp"
-                android:text="@string/location_move"
+                android:layout_gravity="center_vertical|start"
+                android:labelFor="@+id/altitude_edit"
+                android:text="@string/altitude"
                 android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold"/>
 
-            <com.parrot.drone.groundsdkdemo.edit.CustomMapView
-                android:id="@+id/map"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:focusableInTouchMode="true"/>
-
-            <TableRow>
-
-                <TextView
-                    android:layout_gravity="center_vertical|start"
-                    android:labelFor="@+id/altitude_edit"
-                    android:text="@string/altitude"
-                    android:textAllCaps="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold"/>
-
-                <EditText
-                    android:id="@+id/altitude_edit"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_gravity="center_vertical|end"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:text="@string/default_altitude_value"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold"/>
-            </TableRow>
-
-            <TableRow>
-
-                <TextView
-                    android:layout_gravity="center_vertical|start"
-                    android:labelFor="@+id/mode_spinner"
-                    android:textAllCaps="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textStyle="bold"
-                    android:text="@string/mode"/>
-
-                <Spinner
-                    android:id="@+id/mode_spinner"
-                    android:layout_gravity="center_vertical|end"
-                    android:entries="@array/poi_modes"
-                    tools:listitem="@android:layout/simple_dropdown_item_1line"/>
-            </TableRow>
-
-            <Button
-                android:id="@+id/btn_start"
+            <EditText
+                android:id="@+id/altitude_edit"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:text="@string/action_start_piloted_poi"/>
+                android:layout_gravity="center_vertical|end"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="@string/default_altitude_value"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold"/>
+        </TableRow>
 
-            <Button
-                android:id="@+id/btn_stop"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:text="@string/action_stop_piloted_poi"/>
+        <TableRow>
 
-        </TableLayout>
+            <TextView
+                android:layout_gravity="center_vertical|start"
+                android:labelFor="@+id/mode_spinner"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold"
+                android:text="@string/mode"/>
 
-    </LinearLayout>
+            <Spinner
+                android:id="@+id/mode_spinner"
+                android:layout_gravity="center_vertical|end"
+                android:entries="@array/poi_modes"
+                tools:listitem="@android:layout/simple_dropdown_item_1line"/>
+        </TableRow>
+
+        <Button
+            android:id="@+id/btn_start"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/action_start_piloted_poi"/>
+
+        <Button
+            android:id="@+id/btn_stop"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/action_stop_piloted_poi"/>
+
+    </TableLayout>
 </ScrollView>

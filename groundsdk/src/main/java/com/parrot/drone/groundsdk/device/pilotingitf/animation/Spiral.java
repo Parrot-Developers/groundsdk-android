@@ -40,7 +40,7 @@ import androidx.annotation.Nullable;
  * Spiral animation interface.
  * <p>
  * This animation instructs the drone to circle around the target, possibly in a spiral shape and possibly also while
- * flying vertically (up or down). <br/>
+ * flying vertically (up or down). <br>
  * The target in question depends on the currently active
  * {@link com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf piloting interface}.
  */

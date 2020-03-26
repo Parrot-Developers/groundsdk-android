@@ -112,7 +112,7 @@ public final class BooleanSettingCore extends BooleanSetting {
     /**
      * Updates the current setting value.
      * <p>
-     * Sets the supported flag in case it wasn't, and resets the updating flag in case it was set. <br/>
+     * Sets the supported flag in case it wasn't, and resets the updating flag in case it was set. <br>
      * Called from lower layer when the backend sends a new value for the setting.
      *
      * @param value new setting value

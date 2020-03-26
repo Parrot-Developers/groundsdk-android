@@ -186,7 +186,7 @@ public interface Alarms extends Instrument {
      * <li>{@link Alarm.Kind#AUTOMATIC_LANDING_BATTERY_ISSUE}</li>
      * </ul>
      * When one of those alarms is in such a state, then this method tells when automatic landing procedure
-     * is about to start. <br/>
+     * is about to start. <br>
      * Otherwise (when all those alarms are {@link Alarm.Level#OFF off}), no automatic landing procedure is
      * currently scheduled and this method consequently returns {@code 0}.
      *

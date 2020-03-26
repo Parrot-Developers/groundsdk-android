@@ -241,7 +241,7 @@ public class Session {
      * Suspends the session.
      * <p>
      * Managed refs are not allowed to forward notification to their observers anymore, until the session is
-     * {@link #resumeObservers() resumed}. <br/>
+     * {@link #resumeObservers() resumed}. <br>
      * Refs must instead cache the latest update request they receive (if any), and forward it to their observer
      * once the session is resumed.
      */

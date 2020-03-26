@@ -42,9 +42,9 @@ import com.parrot.drone.groundsdk.internal.Maths;
 /**
  * Allows to bypass default GL texture loading step when rendering a stream using {@link GsdkStreamView}.
  * <p>
- * Client code must {@link TextureSpec specify dimensions} for the GL texture that the renderer will provide. <br/>
+ * Client code must {@link TextureSpec specify dimensions} for the GL texture that the renderer will provide. <br>
  * Then, for each frame to be rendered, {@link #loadTexture} will be called; client code must override this callback
- * to fill the GL texture according to its needs. <br/>
+ * to fill the GL texture according to its needs. <br>
  * The renderer will then scale, pad and render the loaded texture as appropriate.
  */
 public abstract class TextureLoader {

@@ -47,6 +47,7 @@ import com.parrot.drone.groundsdk.internal.engine.crashreport.CrashReportEngine;
 import com.parrot.drone.groundsdk.internal.engine.firmware.FirmwareEngine;
 import com.parrot.drone.groundsdk.internal.engine.flightdata.FlightDataEngine;
 import com.parrot.drone.groundsdk.internal.engine.flightlog.FlightLogEngine;
+import com.parrot.drone.groundsdk.internal.engine.gutmalog.GutmaLogEngine;
 import com.parrot.drone.groundsdk.internal.engine.reversegeocoder.ReverseGeocoderEngine;
 import com.parrot.drone.groundsdk.internal.engine.system.SystemEngine;
 import com.parrot.drone.groundsdk.internal.utility.UtilityRegistry;
@@ -64,8 +65,8 @@ import java.util.Set;
  * last session is closed.
  * <p>
  * Upon construction, this controller will instantiate all internal engines and also load external engines that are
- * declared in the application manifest. <br/>
- * All those engines are started when this controller starts. <br/>
+ * declared in the application manifest. <br>
+ * All those engines are started when this controller starts. <br>
  * When the controller stops, it requests all engines to stop. Each engine may decide not to stop immediately for
  * various reasons. When an engine is finally ready to stop, it notifies this controller. Then, when all engines have
  * declared being ready to stop, the controller stops them all.
@@ -124,6 +125,10 @@ public class EnginesController {
 
         if (config.isFlightDataEnabled()) {
             engines.add(new FlightDataEngine(controller));
+        }
+
+        if (config.isGutmaLogEnabled()) {
+            engines.add(new GutmaLogEngine(controller));
         }
 
         if (config.hasApplicationKey()) {

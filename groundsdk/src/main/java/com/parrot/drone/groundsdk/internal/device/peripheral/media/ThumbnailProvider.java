@@ -87,7 +87,7 @@ abstract class ThumbnailProvider {
     /**
      * Requests the thumbnail from this provider.
      * <p>
-     * {@code callback} is always called, either after success or failure. <br/>
+     * {@code callback} is always called, either after success or failure. <br>
      * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
      * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that the
      * callback will be invoked at a later time.

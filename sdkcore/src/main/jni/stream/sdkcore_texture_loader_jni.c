@@ -130,7 +130,7 @@ err:
  */
 JNIEXPORT void JNICALL
 Java_com_parrot_drone_sdkcore_stream_SdkCoreTextureLoader_nativeDestroy(
-		JNIEnv *env, jclass clazz, jobject nativePtr)
+		JNIEnv *env, jclass clazz, jlong nativePtr)
 {
 	struct sdkcore_texture_loader *self =
 			(struct sdkcore_texture_loader *) (uintptr_t) nativePtr;

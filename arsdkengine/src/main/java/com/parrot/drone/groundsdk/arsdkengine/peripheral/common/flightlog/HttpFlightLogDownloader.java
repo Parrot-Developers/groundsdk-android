@@ -49,17 +49,38 @@ import java.util.Queue;
 public final class HttpFlightLogDownloader extends FlightLogDownloadController {
 
     /**
+     * Listener notified in a background thread when flight logs files are downloaded.
+     */
+    public interface Converter {
+
+        /**
+         * Called from a background thread when a flight log file has been downloaded.
+         *
+         * @param flightLog downloaded flight log file
+         */
+        void onFlightLogDownloaded(@NonNull File flightLog);
+
+        /**
+         * A predefined callback instance that does nothing.
+         */
+        @NonNull
+        Converter IGNORE = flightLog -> {};
+    }
+
+    /**
      * Creates a new {@code HttpFlightLogDownloader} instance.
      *
      * @param controller device controller that owns this peripheral controller
+     * @param converter  converter notified in background thread when flight logs are downloaded
      *
      * @return a new {@code HttpFlightLogDownloader} instance if a {@link FlightLogStorage flight log storage utility}
      *         exists, otherwise {@code null}
      */
     @Nullable
-    public static HttpFlightLogDownloader create(@NonNull DeviceController controller) {
+    public static HttpFlightLogDownloader create(@NonNull DeviceController controller,
+                                                 @Nullable Converter converter) {
         FlightLogStorage storage = controller.getEngine().getUtility(FlightLogStorage.class);
-        return storage == null ? null : new HttpFlightLogDownloader(controller, storage);
+        return storage == null ? null : new HttpFlightLogDownloader(controller, storage, converter);
     }
 
     /** HTTP flight data record client. */
@@ -70,16 +91,23 @@ public final class HttpFlightLogDownloader extends FlightLogDownloadController {
     @NonNull
     private final Queue<HttpFdrInfo> mPendingFlightLogs;
 
+    /** Listener notified in background thread when flight logs are downloaded. */
+    @NonNull
+    private final Converter mConverter;
+
     /**
      * Constructor.
      *
-     * @param deviceController the device controller that owns this peripheral controller.
+     * @param deviceController the device controller that owns this peripheral controller
      * @param storage          flight log storage interface
+     * @param converter        converter notified in background thread when flight logs are downloaded
      */
     private HttpFlightLogDownloader(@NonNull DeviceController deviceController,
-                                    @NonNull FlightLogStorage storage) {
+                                    @NonNull FlightLogStorage storage,
+                                    @Nullable Converter converter) {
         super(deviceController, storage);
         mPendingFlightLogs = new LinkedList<>();
+        mConverter = converter != null ? converter : Converter.IGNORE;
     }
 
     @Override
@@ -128,19 +156,20 @@ public final class HttpFlightLogDownloader extends FlightLogDownloadController {
             assert url != null && name != null;
 
             File dest = new File(mStorage.getWorkDir(), mDeviceController.getUid() + "_" + name);
-            mHttpClient.downloadRecord(url, dest, (status, code) -> {
-                if (status == HttpRequest.Status.CANCELED) {
-                    onDownloadEnd(false);
-                } else {
-                    if (status == HttpRequest.Status.SUCCESS) {
-                        onDownloaded(dest);
-                    }
-                    // delete this record
-                    mHttpClient.deleteRecord(name, HttpRequest.StatusCallback.IGNORE);
-                    // process next record
-                    downloadNextFlightLog();
-                }
-            });
+            mHttpClient.downloadRecord(url, dest, mConverter::onFlightLogDownloaded,
+                    (status, code) -> {
+                        if (status == HttpRequest.Status.CANCELED) {
+                            onDownloadEnd(false);
+                        } else {
+                            if (status == HttpRequest.Status.SUCCESS) {
+                                onDownloaded(dest);
+                            }
+                            // delete this record
+                            mHttpClient.deleteRecord(name, HttpRequest.StatusCallback.IGNORE);
+                            // process next record
+                            downloadNextFlightLog();
+                        }
+                    });
             onDownloadingFlightLog();
         }
     }

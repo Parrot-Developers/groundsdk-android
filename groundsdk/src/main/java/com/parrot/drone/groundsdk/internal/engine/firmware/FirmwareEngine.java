@@ -69,7 +69,7 @@ import static com.parrot.drone.groundsdk.internal.Logging.TAG_FIRMWARE;
 /**
  * Engine that manages device firmwares.
  * <p>
- * Maintains both locally downloaded firmwares and remote firmwares available for download from the update server. <br/>
+ * Maintains both locally downloaded firmwares and remote firmwares available for download from the update server. <br>
  * Downloads firmwares from the update server if required.
  */
 public class FirmwareEngine extends EngineBase {

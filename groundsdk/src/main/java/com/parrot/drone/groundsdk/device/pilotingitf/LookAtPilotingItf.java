@@ -46,7 +46,7 @@ import java.util.EnumSet;
  * Piloting interface used to keep the drone directed towards some target, in effect making it 'looking at' such a
  * target.
  *
- * <h3>Availability</h3>
+ * <h2>Availability</h2>
  * <p>
  * This interface will be {@link Activable.State#UNAVAILABLE unavailable} until a specific set of conditions are met:
  * <ul>
@@ -67,7 +67,7 @@ import java.util.EnumSet;
  * Note that this interface, even while available or {@link Activable.State#ACTIVE active} may become unavailable back
  * again, as soon as any of those conditions is not satisfied anymore.
  *
- * <h3>Alerts</h3>
+ * <h2>Alerts</h2>
  * <p>
  * When available or active, this interface may also alert about specific {@link #getQualityIssues() conditions}
  * that hinders optimally accurate tracking of the target, although tracking remains feasible under such conditions:
@@ -76,15 +76,15 @@ import java.util.EnumSet;
  * </ul>
  * The application may use such alerts to inform the user and take appropriate measures to improve tracking performance.
  *
- * <h3>Movement</h3>
+ * <h2>Movement</h2>
  * <p>
  * When this interface is active, the drone just rotates from its standstill position to follow the moving target but
  * does not move by itself to follow the latter, unless instructed to move using this interface's {@link #setPitch},
- * {@link #setRoll} or {@link #setVerticalSpeed} piloting commands. <br/>
+ * {@link #setRoll} or {@link #setVerticalSpeed} piloting commands. <br>
  * In any case, the drone will try to maintain its orientation towards the target, and
  * thus may move independently of the provided piloting commands to do so.
  *
- * <h3><a name="target_selection">Target selection</a></h3>
+ * <h2><a id="target_selection">Target selection</a></h2>
  * <p>
  * In order for this interface to be available, the application must instruct the drone how to identify and track the
  * desired target. To do so, the {@link TargetTracker} peripheral must be used.
@@ -103,10 +103,10 @@ import java.util.EnumSet;
  * </ul>
  * <p>
  * Note that both controller barometer/location information and external target information may be sent to the drone at
- * the same time, provided they give coherent positioning information on the <strong>SAME</strong> target. <br/>
+ * the same time, provided they give coherent positioning information on the <strong>SAME</strong> target. <br>
  * For instance, it is possible to perform image processing on the drone video stream to identify the controller and
  * send the results to the drone, along with controller barometer/location updates, for better tracking performance.
- * <br/>
+ * <br>
  * However, care must be taken not to provide incoherent information, such as forwarding controller/barometer location
  * and, as the same time, external information on a different target than the controller; behavior is undefined in such
  * a case.

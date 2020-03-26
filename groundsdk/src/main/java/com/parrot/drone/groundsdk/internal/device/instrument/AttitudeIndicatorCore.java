@@ -73,7 +73,7 @@ public final class AttitudeIndicatorCore extends SingletonComponentCore implemen
     }
 
     /**
-     * Updates the current pitch angle. <br/>
+     * Updates the current pitch angle. <br>
      *
      * @param pitch new pitch angle, in degrees
      *
@@ -89,7 +89,7 @@ public final class AttitudeIndicatorCore extends SingletonComponentCore implemen
     }
 
     /**
-     * Updates the current roll angle. <br/>
+     * Updates the current roll angle. <br>
      *
      * @param roll new roll angle, in degrees
      *

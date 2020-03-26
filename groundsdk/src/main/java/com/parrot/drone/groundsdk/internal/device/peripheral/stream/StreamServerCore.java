@@ -159,7 +159,7 @@ public final class StreamServerCore extends ComponentCore {
     /**
      * Controls global streaming capability.
      * <p>
-     * All open streams are interrupted when streaming gets disabled. <br/>
+     * All open streams are interrupted when streaming gets disabled. <br>
      * Live stream is resumed (if appropriate) when streaming is enabled.
      *
      * @param enable {@code true} to enable streaming, {@code false} to disable it

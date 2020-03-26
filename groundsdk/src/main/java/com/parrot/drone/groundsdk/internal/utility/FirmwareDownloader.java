@@ -140,7 +140,7 @@ public interface FirmwareDownloader extends Utility {
          * Current progress of the ongoing firmware download.
          * <p>
          * This is {@code 0} when the task is {@link State#QUEUED queued}, {@code 100} when the task is
-         * {@link State#SUCCESS successful}. <br/>
+         * {@link State#SUCCESS successful}. <br>
          * Otherwise, this is current progress of the ongoing download if the task is {@link State#DOWNLOADING}, or the
          * latest reached progress when the task {@link State#FAILED failed} or was {@link State#CANCELED}.
          *
@@ -216,7 +216,7 @@ public interface FirmwareDownloader extends Utility {
         /**
          * Cancels the task.
          * <p>
-         * When canceled, all queued firmware download requests are discarded. <br/>
+         * When canceled, all queued firmware download requests are discarded. <br>
          * In case some firmware is currently being downloaded for this task, then, provided no other existing task
          * requested that particular firmware to be downloaded too, the download is canceled.
          * <p>
@@ -230,9 +230,9 @@ public interface FirmwareDownloader extends Utility {
      * Downloads firmwares.
      * <p>
      * The requested collection of firmwares will be downloaded as part of a single download operation, which the
-     * returned {@link Task task} represents. <br/>
+     * returned {@link Task task} represents. <br>
      * In case downloading any of the specified firmwares fails, for whatever reason, then the whole task fails, and
-     * any pending firmware downloads for this operation are discarded. <br/>
+     * any pending firmware downloads for this operation are discarded. <br>
      * <p>
      * The requested firmwares will be downloaded in the iteration order of the provided collection; duplicate elements
      * will be ignored.

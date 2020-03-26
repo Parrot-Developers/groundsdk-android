@@ -111,7 +111,7 @@ public final class ReturnHomeOnDisconnectSettingCore extends FlightPlanPilotingI
     /**
      * Updates the current setting enabled flag.
      * <p>
-     * Resets the updating flag in case it was set. <br/>
+     * Resets the updating flag in case it was set. <br>
      * Called from lower layer when the backend sends a new value for the setting.
      *
      * @param enabled {@code true} if return home on disconnect is enabled, otherwise {@code false}

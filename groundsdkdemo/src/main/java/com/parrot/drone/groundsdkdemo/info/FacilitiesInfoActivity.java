@@ -54,6 +54,7 @@ public class FacilitiesInfoActivity extends GroundSdkActivityBase {
                 new BlackBoxReporterContent(groundSdk()),
                 new CrashReporterContent(groundSdk()),
                 new FlightDataManagerContent(groundSdk()),
+                new GutmaLogManagerContent(groundSdk()),
                 new FlightLogReporterContent(groundSdk()),
                 new UserLocationContent(groundSdk()),
                 new UserHeadingContent(groundSdk()),

@@ -226,6 +226,22 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(8));
+
+        // Almost empty battery
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.ALMOST_EMPTY_BATTERY));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(9));
     }
 
     @Test
@@ -248,6 +264,22 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         // Low battery
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
                 ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.LOW_BATTERY));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(1));
+
+        // Almost empty battery
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.ALMOST_EMPTY_BATTERY));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));

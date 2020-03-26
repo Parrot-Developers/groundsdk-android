@@ -87,7 +87,6 @@ struct sdkcore_texture_loader_cbs {
 
 /**
  * Creates a new texture loader instance.
- *
  * @param[in] texture_spec: texture dimension specifications
  * @param[in] cbs: texture loader callbacks
  * @param[in] userdata: opaque pointer from caller, forwarded in callbacks

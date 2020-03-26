@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import androidx.annotation.Nullable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,6 +68,19 @@ import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_HTTP;
  * Provides methods to list, download and delete flight logs from a device.
  */
 public class HttpFdrClient extends HttpClient {
+
+    /**
+     * Converter notified in a background thread when flight logs files are downloaded.
+     */
+    public interface Converter {
+
+        /**
+         * Called from a background thread when a flight log file has been downloaded.
+         *
+         * @param fdr downloaded flight log file
+         */
+        void onFdrDownloaded(@NonNull File fdr);
+    }
 
     /**
      * Size of chunk of downloaded data. When a record is being downloaded, data is read from the network in chunks of
@@ -135,14 +149,16 @@ public class HttpFdrClient extends HttpClient {
     /**
      * Downloads a record.
      *
-     * @param url      relative url of the record as returned by {@link #listRecords}
-     * @param dest     destination file of the downloaded record
-     * @param callback listener for request completion
+     * @param url       relative url of the record as returned by {@link #listRecords}
+     * @param dest      destination file of the downloaded record
+     * @param converter converter notified in background thread when the record has been successfully downloaded
+     * @param callback  listener for request completion
      *
      * @return a cancellable request
      */
     @NonNull
     public HttpRequest downloadRecord(@NonNull String url, @NonNull File dest,
+                                      @Nullable Converter converter,
                                       @NonNull HttpRequest.StatusCallback callback) {
         // create the request to download the record
         Call<ResponseBody> downloadCall = mService.downloadLiteRecord(url);
@@ -172,6 +188,9 @@ public class HttpFdrClient extends HttpClient {
                 if (!tmpDest.renameTo(dest)) {
                     throw new IOException("Failed to rename record file [tmpDest: " + tmpDest
                                           + ", dest: " + dest + "]");
+                }
+                if (converter != null) {
+                    converter.onFdrDownloaded(dest);
                 }
                 return null;
             } catch (IOException | InterruptedException e) {

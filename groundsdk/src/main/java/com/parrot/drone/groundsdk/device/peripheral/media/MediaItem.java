@@ -277,7 +277,7 @@ public interface MediaItem extends Parcelable {
     /**
      * Retrieves the expected count of resources in this media.
      * <p>
-     * Note that it may be different from the actual count of resources provided by this media. <br/>
+     * Note that it may be different from the actual count of resources provided by this media. <br>
      * This indicates that some resources failed to be created during the production of this media.
      *
      * @return expected resource count, or {@code 0} if unknown

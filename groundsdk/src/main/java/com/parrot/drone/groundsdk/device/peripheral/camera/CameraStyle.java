@@ -103,7 +103,7 @@ public final class CameraStyle {
         /**
          * Retrieves the currently supported image styles.
          * <p>
-         * An empty set means that the whole setting is currently unsupported. <br/>
+         * An empty set means that the whole setting is currently unsupported. <br>
          * A set containing a single value means that the setting is supported, yet the application is not allowed to
          * change the style.
          * <p>

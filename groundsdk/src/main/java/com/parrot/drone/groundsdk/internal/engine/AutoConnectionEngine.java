@@ -234,7 +234,7 @@ public class AutoConnectionEngine extends EngineBase {
      * A comparator used to sort devices in appropriate auto-connection order.
      * <p>
      * Device are sorted by connector technology rank first, then in case of ambiguity, by connection rank,
-     * then if still ambiguous, the {@link #mDroneToReconnect drone to reconnect} is preferred from other drones. <br/>
+     * then if still ambiguous, the {@link #mDroneToReconnect drone to reconnect} is preferred from other drones. <br>
      * Finally, if two different devices still compare to equal by the aforementioned rules, one of them is chosen
      * randomly to be superior to the other (this point is required because a comparator used with a
      * {@link java.util.TreeSet} must be consistent with equals.
@@ -471,7 +471,7 @@ public class AutoConnectionEngine extends EngineBase {
      * Notified when a device is either added, removed or changes. Triggers an auto-connection pass.
      * <p>
      * Note: this implementation is merely an optimization to prevent immediate recursion into
-     * {@link #processDevices} while devices are connected or disconnected by that method. <br/>
+     * {@link #processDevices} while devices are connected or disconnected by that method. <br>
      * The auto-connection would (and should) work the same if {@code processDevices} was called directly.
      */
     private final DeviceStore.Monitor<DeviceCore> mStoreMonitor = new DeviceStore.Monitor<DeviceCore>() {

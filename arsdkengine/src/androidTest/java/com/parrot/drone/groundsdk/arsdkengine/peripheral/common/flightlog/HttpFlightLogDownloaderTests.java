@@ -42,12 +42,20 @@ import com.parrot.drone.groundsdk.internal.device.DroneCore;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.MockHttpSession;
 import com.parrot.drone.groundsdk.internal.utility.FlightLogStorage;
+import com.parrot.drone.groundsdk.internal.utility.GutmaLogStorage;
 import com.parrot.drone.sdkcore.arsdk.ArsdkEncoder;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState;
 import com.parrot.drone.sdkcore.arsdk.Backend;
+import com.parrot.drone.sdkcore.flightlogconverter.FlightLogConverter;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.util.Arrays;
@@ -70,6 +78,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
 
     private static final Date DATE_RECORD_1 = DateParser.parse("19700103T182145+0100");
@@ -104,7 +113,13 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
 
     private static final HttpRequest DUMMY_REQUEST = () -> {};
 
-    private static final File RECORD_STORAGE = new File("/tmp");
+
+    @Rule
+    public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
+
+    private static File mRecordStorage;
+
+    private static File mGutmaLogStorage;
 
     private DroneCore mDrone;
 
@@ -114,26 +129,45 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
 
     private int mChangeCnt;
 
-    @SuppressWarnings("unchecked")
-    private final ArgumentCaptor<HttpRequest.ResultCallback<List<HttpFdrInfo>>> mResultCallbackCaptor =
-            ArgumentCaptor.forClass(HttpRequest.ResultCallback.class);
+    @Captor
+    private ArgumentCaptor<HttpRequest.ResultCallback<List<HttpFdrInfo>>> mResultCallbackCaptor;
 
-    private final ArgumentCaptor<HttpRequest.StatusCallback> mStatusCallbackCaptor =
-            ArgumentCaptor.forClass(HttpRequest.StatusCallback.class);
+    @Captor
+    private ArgumentCaptor<HttpRequest.StatusCallback> mStatusCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<HttpFdrClient.Converter> mDownloadCallbackCaptor;
+
+    @Mock
+    private GutmaLogStorage mMockGutmaLogStorage;
+
+    @Mock
+    private FlightLogStorage mMockRecordStorage;
+
+    @Mock
+    private FlightLogConverter mFlightLogConverter;
 
     @Override
     public void setUp() {
         super.setUp();
 
-        FlightLogStorage mockStorage = mock(FlightLogStorage.class);
-        doReturn(RECORD_STORAGE).when(mockStorage).getWorkDir();
-        mUtilities.registerUtility(FlightLogStorage.class, mockStorage);
+        mRecordStorage = new File(mTemporaryFolder.getRoot(), "record");
+        mGutmaLogStorage = new File(mTemporaryFolder.getRoot(), "gutma");
+
+        doReturn(mRecordStorage).when(mMockRecordStorage).getWorkDir();
+        mUtilities.registerUtility(FlightLogStorage.class, mMockRecordStorage);
+
+        doReturn(mGutmaLogStorage).when(mMockGutmaLogStorage).getWorkDir();
+        mUtilities.registerUtility(GutmaLogStorage.class, mMockGutmaLogStorage);
 
         mClient = mock(HttpFdrClient.class);
         doReturn(DUMMY_REQUEST).when(mClient).listRecords(any());
-        doReturn(DUMMY_REQUEST).when(mClient).downloadRecord(any(), any(), any());
+        doReturn(DUMMY_REQUEST).when(mClient).downloadRecord(any(), any(), any(), any());
         doReturn(DUMMY_REQUEST).when(mClient).deleteRecord(any(), any());
         MockHttpSession.registerOnly(mClient);
+
+        doReturn(true).when(mFlightLogConverter).convertToGutma(any(), any());
+        FlightLogConverter.setInstance(mFlightLogConverter);
 
         mArsdkEngine.start();
 
@@ -207,13 +241,13 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mFlightLogDownloader, isDownloading(0));
 
-        verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"), eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+        verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"), eq(new File(mRecordStorage, "123_log-1.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock download error
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.FAILED, 500);
 
-        // evan after download failure, deletion should be requested,
+        // even after download failure, deletion should be requested
         verify(mClient).deleteRecord(eq("log-1.bin"), any());
 
         // However the overall task should continue; since there was only one record to download,
@@ -240,8 +274,8 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(new File(mRecordStorage, "123_log-1.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock download completion
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200);
@@ -299,8 +333,8 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(new File(mRecordStorage, "123_log-1.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock download cancel
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.CANCELED,
@@ -329,8 +363,8 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(new File(mRecordStorage, "123_log-1.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock download completion
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200);
@@ -368,12 +402,19 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mFlightLogDownloader, isDownloading(0));
 
+        File downloadedRecord = new File(mRecordStorage, "123_log-1.bin");
+        File gutmaLog = new File(mGutmaLogStorage, "123_log-1.gutma");
+
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(downloadedRecord),
+                mDownloadCallbackCaptor.capture(), mStatusCallbackCaptor.capture());
 
         // mock 1st download completion
+        mDownloadCallbackCaptor.getValue().onFdrDownloaded(downloadedRecord);
+        verify(mMockGutmaLogStorage).notifyGutmaLogFileReady(gutmaLog);
+
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200);
+        verify(mMockRecordStorage).notifyFlightLogReady(downloadedRecord);
 
         assertThat(mChangeCnt, is(3));
         assertThat(mFlightLogDownloader, isDownloading(1));
@@ -381,14 +422,21 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         verify(mClient).deleteRecord(eq("log-1.bin"), any());
 
         // 2nd record should not be downloaded as it is invalid
-        verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any());
+        verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any(), any());
+
+        downloadedRecord = new File(mRecordStorage, "123_log-3.bin");
+        gutmaLog = new File(mGutmaLogStorage, "123_log-3.gutma");
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-3.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-3.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(downloadedRecord),
+                mDownloadCallbackCaptor.capture(), mStatusCallbackCaptor.capture());
 
         // mock 3nd download completion
+        mDownloadCallbackCaptor.getValue().onFdrDownloaded(downloadedRecord);
+        verify(mMockGutmaLogStorage).notifyGutmaLogFileReady(gutmaLog);
+
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200);
+        verify(mMockRecordStorage).notifyFlightLogReady(downloadedRecord);
 
         assertThat(mChangeCnt, is(4));
         assertThat(mFlightLogDownloader, hasDownloadedSuccessfully(2));
@@ -414,8 +462,8 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         assertThat(mFlightLogDownloader, isDownloading(0));
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-1.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-1.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(new File(mRecordStorage, "123_log-1.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock 1st download completion
         mStatusCallbackCaptor.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200);
@@ -426,11 +474,11 @@ public class HttpFlightLogDownloaderTests extends ArsdkEngineTestBase {
         verify(mClient).deleteRecord(eq("log-1.bin"), any());
 
         // 2nd record should not be downloaded as it is invalid
-        verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any());
+        verify(mClient, never()).downloadRecord(eq("log-2.bin"), any(), any(), any());
 
         verify(mClient).downloadRecord(eq("/data/fdr/log-3.bin"),
-                eq(new File(RECORD_STORAGE, "123_log-3.bin")),
-                mStatusCallbackCaptor.capture());
+                eq(new File(mRecordStorage, "123_log-3.bin")),
+                any(), mStatusCallbackCaptor.capture());
 
         // mock data sync unavailable - make drone flying
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(

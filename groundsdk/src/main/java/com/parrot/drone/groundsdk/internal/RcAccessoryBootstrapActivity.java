@@ -59,16 +59,16 @@ import static com.parrot.drone.groundsdk.internal.Logging.TAG_INTERNAL;
  * foreground; it remains in the same state}.
  * <p>
  * The application may override declarations in {@code res/xml/gsdk_usb_rc_filter.xml} to extend or restrict the list
- * of RC devices that should trigger this activity. <br/>
+ * of RC devices that should trigger this activity. <br>
  * Note however that the device(s) in question should be in the list of {@link RemoteControl.Model} supported by
  * GroundSdk.
  * <p>
  * The application may disable this activity by overriding flag {@code gsdk_rc_accessory_bootstrap_activity_enabled} in
- * {@code res/values/config.xml} to {@code false}. <br/>
+ * {@code res/values/config.xml} to {@code false}. <br>
  * Note that by doing so, the application fully becomes responsible to handle android USB accessory plugged events
  * by itself. Most importantly, the application should forward the accessory contained in the
  * {@link UsbManager#EXTRA_ACCESSORY intent extra} of such events to {@code GroundSdk} using
- * {@link GroundSdk#manageRcAccessory} method, so that it can monitors the RC devices properly. <br/>
+ * {@link GroundSdk#manageRcAccessory} method, so that it can monitors the RC devices properly. <br>
  * Failure to do so will result in {@code GroundSdk} only being able to detect a plugged RC accessory when the
  * first session starts, and <strong>NOT</strong> whenever some RC device gets plugged while it is already started.
  */

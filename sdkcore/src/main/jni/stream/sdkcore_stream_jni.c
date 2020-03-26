@@ -102,7 +102,7 @@ static void on_playback_state(
 			SDKCORE_JNI_VERSION);
 	RETURN_IF_FAILED(env != NULL, res);
 
-	jobject jself = (jobject) (uintptr_t)  userdata;
+	jobject jself = (jobject) (uintptr_t) userdata;
 	RETURN_IF_FAILED(jself != NULL, -EINVAL);
 
 	(*env)->CallVoidMethod(env, jself, s_jni_cache.jmid_on_playback_state,

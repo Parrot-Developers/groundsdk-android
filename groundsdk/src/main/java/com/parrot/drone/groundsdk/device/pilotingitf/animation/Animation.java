@@ -191,9 +191,9 @@ public interface Animation {
     /**
      * Tells whether the animation matches some configuration.
      * <p>
-     * Mandatory parameters are matched exactly to the corresponding animation current parameters. <br/>
+     * Mandatory parameters are matched exactly to the corresponding animation current parameters. <br>
      * Optional parameters that have been forcefully customized in the provided configuration are matched exactly to
-     * the corresponding animation current parameters. <br/>
+     * the corresponding animation current parameters. <br>
      * Optional parameters that have been left to their defaults in the provided configuration are not matched.
      *
      * @param config configuration to match this animation against

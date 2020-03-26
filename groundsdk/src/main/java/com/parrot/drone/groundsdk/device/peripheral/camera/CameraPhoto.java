@@ -166,7 +166,7 @@ public final class CameraPhoto {
         /**
          * Retrieves the currently supported photo modes.
          * <p>
-         * An empty set means that the whole setting is currently unsupported. <br/>
+         * An empty set means that the whole setting is currently unsupported. <br>
          * A set containing a single value means that the setting is supported, yet the application is not allowed to
          * change the photo mode.
          * <p>
@@ -700,7 +700,7 @@ public final class CameraPhoto {
          * count increments repeatedly each time one or more photo(s) have been taken.
          * <p>
          * This mainly applies to {@link Mode#BRACKETING}, {@link Mode#BURST}, {@link Mode#TIME_LAPSE} and
-         * {@link Mode#GPS_LAPSE} modes, where multiple photos are taken. <br/>
+         * {@link Mode#GPS_LAPSE} modes, where multiple photos are taken. <br>
          * For {@link Mode#SINGLE} mode, this value will be {@code 1} after the photo has been taken.
          *
          * @return current taken photos count

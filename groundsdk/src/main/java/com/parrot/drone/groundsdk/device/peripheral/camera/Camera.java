@@ -41,7 +41,7 @@ import com.parrot.drone.groundsdk.value.OptionalBooleanSetting;
 /**
  * Base camera interface.
  * <p>
- * Provides control of drone camera in order to take pictures and to record videos. <br/>
+ * Provides control of drone camera in order to take pictures and to record videos. <br>
  * Also provides access to various camera settings, such as:
  * <ul>
  * <li>Exposure,</li>
@@ -320,7 +320,7 @@ public interface Camera {
     /**
      * Tells whether it is currently possible to start recording a video.
      *
-     * @return @return {@code true} if it is currently possible to start recording a video, otherwise {@code false}
+     * @return {@code true} if it is currently possible to start recording a video, otherwise {@code false}
      */
     boolean canStartRecording();
 
@@ -335,7 +335,7 @@ public interface Camera {
     /**
      * Tells whether it is currently possible to stop recording a video.
      *
-     * @return @return {@code true} if it is currently possible to stop recording a video, otherwise {@code false}
+     * @return {@code true} if it is currently possible to stop recording a video, otherwise {@code false}
      */
     boolean canStopRecording();
 

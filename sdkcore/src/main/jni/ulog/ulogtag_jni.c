@@ -50,7 +50,7 @@ Java_com_parrot_drone_sdkcore_ulog_ULogTag_nativeInit(
 	struct ulog_cookie *self = calloc(1, sizeof(*self));
 	RETURN_VAL_IF_FAILED(self != NULL, -ENOMEM, 0);
 
-	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+	const char *name = (*env)->GetStringUTFChars(env, jname, NULL);
 	self->name = strdup(name);
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 	GOTO_IF_FAILED(self->name != NULL, -ENOMEM, err);

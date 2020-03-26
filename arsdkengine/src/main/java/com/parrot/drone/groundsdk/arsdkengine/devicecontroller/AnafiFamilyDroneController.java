@@ -50,6 +50,7 @@ import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiGps;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiPhotoProgressIndicator;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiRadio;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiSpeedometer;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiBatteryGaugeUpdater;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiBeeper;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiGeofence;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiLeds;
@@ -71,6 +72,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.wifi.AnafiWifiAcc
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.DebugDevToolbox;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.crashml.HttpReportDownloader;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.flightlog.HttpFlightLogDownloader;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.gutmalog.GutmaLogProducer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.updater.FirmwareUpdaterProtocol;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.updater.UpdaterController;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.PilotingCommand;
@@ -142,7 +144,7 @@ public class AnafiFamilyDroneController extends DroneController {
                 UpdaterController.create(this, FirmwareUpdaterProtocol.Http::new),
                 HttpReportDownloader.create(this),
                 AnafiFlightDataDownloader.create(this),
-                HttpFlightLogDownloader.create(this),
+                HttpFlightLogDownloader.create(this, GutmaLogProducer.create(this)),
                 new AnafiWifiAccessPoint(this),
                 new AnafiCameraRouter(this),
                 new AnafiAntiFlicker(this),
@@ -152,7 +154,8 @@ public class AnafiFamilyDroneController extends DroneController {
                 new AnafiThermalControl(this),
                 new AnafiStreamServer(this),
                 new AnafiLeds(this),
-                new AnafiPilotingControl(this)
+                new AnafiPilotingControl(this),
+                new AnafiBatteryGaugeUpdater(this)
         );
     }
 

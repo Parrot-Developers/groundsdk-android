@@ -42,9 +42,7 @@ import com.parrot.drone.groundsdk.internal.tasks.TestExecutor;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
@@ -61,9 +59,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class HttpFlightLogClientTest {
-
-    @Rule
-    public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private static final File UPLOAD_FILE =
             new File(ApplicationProvider.getApplicationContext().getCacheDir(), "log-1.bin");

@@ -46,7 +46,7 @@ import java.util.Collection;
 /**
  * Thermal Control peripheral interface for drones.
  * <p>
- * This peripheral allows to control the drone's thermal feature.<br/>
+ * This peripheral allows to control the drone's thermal feature.<br>
  * When thermal mode is {@link ThermalControl#mode() enabled}, the drone sends the thermal camera video stream.
  * <p>
  * Note that this peripheral may be unsupported, depending on the drone model and firmware version.

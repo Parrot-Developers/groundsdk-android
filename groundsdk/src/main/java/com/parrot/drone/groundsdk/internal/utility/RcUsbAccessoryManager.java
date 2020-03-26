@@ -43,7 +43,7 @@ import com.parrot.drone.groundsdk.internal.RcAccessoryBootstrapActivity;
  * Utility interface to request ownership of the USB RC accessory when plugged.
  * <p>
  * As for any other utility, there may only be a single instance of this interface registered among GroundSdk
- * utilities. <br/>
+ * utilities. <br>
  * In particular, this implies that only one external engine may publish this utility interface. Loading multiple
  * engines that publish this utility will produce a crash when GroundSdk starts.
  * <p>

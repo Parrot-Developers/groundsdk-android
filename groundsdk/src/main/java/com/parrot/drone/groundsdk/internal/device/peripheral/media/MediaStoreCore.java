@@ -65,7 +65,7 @@ public final class MediaStoreCore extends ComponentCore {
         /**
          * Requests a list of the available media in the store.
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -80,7 +80,7 @@ public final class MediaStoreCore extends ComponentCore {
         /**
          * Requests download of a media resource.
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -98,7 +98,7 @@ public final class MediaStoreCore extends ComponentCore {
         /**
          * Requests deletion of a media item from device storage.
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -114,7 +114,7 @@ public final class MediaStoreCore extends ComponentCore {
         /**
          * Requests deletion of a media resource from device storage.
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
@@ -130,7 +130,7 @@ public final class MediaStoreCore extends ComponentCore {
         /**
          * Requests deletion of all media from the device storage.
          * <p>
-         * {@code callback} is always called, either after success or failure. <br/>
+         * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.

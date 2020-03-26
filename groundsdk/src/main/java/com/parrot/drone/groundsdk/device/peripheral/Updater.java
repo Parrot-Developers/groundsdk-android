@@ -376,11 +376,11 @@ public interface Updater extends Peripheral {
      * Tells why it is currently impossible to apply firmware updates.
      * <p>
      * If the returned set is not {@link Collection#isEmpty() empty}, then all firmware update methods
-     * ({@link #updateToNextFirmware()}, {@link #updateToLatestFirmware()} won't do anything but return {@code false}.
+     * ({@link #updateToNextFirmware()}, {@link #updateToLatestFirmware()}) won't do anything but return {@code false}.
      * <p>
      * In case updating becomes unavailable for some reason while an update operation is ongoing
-     * ({@link Update.State#UPLOADING uploading} or {@link Update.State#PROCESSING}), then the update will be forcefully
-     * canceled.
+     * ({@link Update.State#UPLOADING uploading} or {@link Update.State#PROCESSING processing}), then the update will be
+     * forcefully canceled.
      *
      * @return current update unavailability reasons
      */
@@ -390,7 +390,7 @@ public interface Updater extends Peripheral {
     /**
      * Requests device update to the next currently applicable firmware version.
      * <p>
-     * This method does nothing but return {@code false} if some {@link #updateUnavailabilityReasons()  reasons}
+     * This method does nothing but return {@code false} if some {@link #updateUnavailabilityReasons() reasons}
      * exists that make it impossible to apply firmware updates currently, or if there is no
      * {@link #applicableFirmwares()} available firmwares to apply}.
      *
@@ -402,7 +402,7 @@ public interface Updater extends Peripheral {
      * Requests device update to the latest applicable firmware version.
      * <p>
      * This method will update the device by applying all {@link #applicableFirmwares() applicable firmware updates}
-     * in order, until the device is up-to-date. <br/>
+     * in order, until the device is up-to-date. <br>
      * After each firmware is applied, the device will reboot. The application has the responsibility to ensure to
      * reconnect to the device after the update, so that this peripheral may proceed automatically with the next
      * firmware update, if any.

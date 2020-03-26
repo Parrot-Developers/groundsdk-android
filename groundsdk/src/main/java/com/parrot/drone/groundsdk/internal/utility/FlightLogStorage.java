@@ -62,16 +62,16 @@ public interface FlightLogStorage extends Utility {
      * <p>
      * Inside this directory, downloaders may create temporary files, that have a {@link #TMP_FILE_EXT}
      * suffix to their name, for any purpose they see fit. Those files will be cleaned up by the engine when
-     * appropriate. <br/>
+     * appropriate. <br>
      * Any file with another name is considered to be a valid flight log file by the engine, which may publish it to
-     * the application at some point.<br/>
+     * the application at some point.<br>
      * Any directory in this directory will be considered garbage by the engine, which may delete them at some
      * point.
      * <p>
      * Multiple downloaders may be assigned the same download directory. As a consequence, files that a downloader may
      * create should have a name as unique as possible to avoid collision.
      * <p>
-     * The directory in question might not be existing, and the caller as the responsibility to create it if necessary,
+     * The directory in question might not be existing, and the caller has the responsibility to create it if necessary,
      * but should ensure to do so on a background thread.
      *
      * @return a file pointing to a directory where flight log files may be downloaded.
