@@ -91,6 +91,15 @@ public final class CameraRecording {
     /** Camera recording framerate. */
     public enum Framerate {
 
+        /** 240 frames per second. */
+        FPS_240,
+
+        /** 200 frames per second. */
+        FPS_200,
+
+        /** 191.81 frames per second. */
+        FPS_192,
+
         /** 120 frames per second. */
         FPS_120,
 
@@ -117,6 +126,12 @@ public final class CameraRecording {
 
         /** 23.97 frames per second. */
         FPS_24,
+
+        /** 20 frames per second. */
+        FPS_20,
+
+        /** 15 frames per second. */
+        FPS_15,
 
         /** 9 frames per second. */
         FPS_9

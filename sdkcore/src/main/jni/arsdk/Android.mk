@@ -31,7 +31,6 @@ $(MY)_SRC_FILES := \
 	arsdk_firmware_upload_request_jni.c \
 	arsdk_firmware_version_jni.c \
 	arsdk_flightlog_download_request_jni.c \
-	arsdk_multiset_jni.c \
 	arsdk_stream_jni.c \
 	arsdk_tcp_proxy_jni.c \
 	arsdkcore.c \
@@ -52,10 +51,7 @@ $(MY)_GEN_OUT := $(NDK_OUT)/arsdk-jni-gen
 $(MY)_GEN_DONE := $($(MY)_GEN_OUT)/arsdkgen.done
 
 # list of generated files, with absolute path
-$(MY)_GEN_FILES := $(addprefix $($(MY)_GEN_OUT)/,\
-	arsdkgen.c \
-	arsdkcore_multiset.h\
-	)
+$(MY)_GEN_FILES := $(addprefix $($(MY)_GEN_OUT)/, arsdkgen.c)
 
 # arsdkgen.py in current arch product sdk
 $(MY)_ARSDKGEN := $(PRODUCT_OUT_DIR)/$(TARGET_ARCH_ABI)/sdk/host/usr/lib/arsdkgen/arsdkgen.py

@@ -96,23 +96,6 @@ public class ArsdkCommandEncoder {
         return this;
     }
 
-    ArsdkCommandEncoder writeMultiset(List<ArsdkCommand> commands) {
-        ByteBuffer commandsBuffer = ByteBuffer.allocateDirect(4096);
-
-        for (ArsdkCommand cmd : commands) {
-            @SuppressLint("RestrictedApi")
-            ByteBuffer cmdBuff = cmd.getData();
-            commandsBuffer.putShort((short) cmdBuff.limit());
-            commandsBuffer.put(cmdBuff);
-        }
-
-        mBuf.putShort((short) commandsBuffer.position());
-        commandsBuffer.flip();
-        mBuf.put(commandsBuffer);
-
-        return this;
-    }
-
     public ArsdkCommandEncoder reset() {
         mBuf.clear();
         return this;

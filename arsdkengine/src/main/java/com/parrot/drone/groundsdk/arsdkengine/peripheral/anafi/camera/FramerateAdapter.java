@@ -57,6 +57,10 @@ final class FramerateAdapter {
         switch (framerate) {
             case FPS_9:
                 return CameraRecording.Framerate.FPS_9;
+            case FPS_15:
+                return CameraRecording.Framerate.FPS_15;
+            case FPS_20:
+                return CameraRecording.Framerate.FPS_20;
             case FPS_24:
                 return CameraRecording.Framerate.FPS_24;
             case FPS_25:
@@ -75,6 +79,12 @@ final class FramerateAdapter {
                 return CameraRecording.Framerate.FPS_100;
             case FPS_120:
                 return CameraRecording.Framerate.FPS_120;
+            case FPS_192:
+                return CameraRecording.Framerate.FPS_192;
+            case FPS_200:
+                return CameraRecording.Framerate.FPS_200;
+            case FPS_240:
+                return CameraRecording.Framerate.FPS_240;
         }
         return null;
     }
@@ -91,6 +101,10 @@ final class FramerateAdapter {
         switch (framerate) {
             case FPS_9:
                 return ArsdkFeatureCamera.Framerate.FPS_9;
+            case FPS_15:
+                return ArsdkFeatureCamera.Framerate.FPS_15;
+            case FPS_20:
+                return ArsdkFeatureCamera.Framerate.FPS_20;
             case FPS_24:
                 return ArsdkFeatureCamera.Framerate.FPS_24;
             case FPS_25:
@@ -109,6 +123,12 @@ final class FramerateAdapter {
                 return ArsdkFeatureCamera.Framerate.FPS_100;
             case FPS_120:
                 return ArsdkFeatureCamera.Framerate.FPS_120;
+            case FPS_192:
+                return ArsdkFeatureCamera.Framerate.FPS_192;
+            case FPS_200:
+                return ArsdkFeatureCamera.Framerate.FPS_200;
+            case FPS_240:
+                return ArsdkFeatureCamera.Framerate.FPS_240;
         }
         return null;
     }

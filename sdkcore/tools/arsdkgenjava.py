@@ -145,87 +145,6 @@ def _cmds(msgs):
         if isinstance(msg, arsdkparser.ArCmd):
             yield msg
 
-def gen_java_feature_multiset(multiset, out):
-    out.write("    /** %s */\n", multiset.doc)
-    out.write("    public static class %s {\n", multiset.name)
-    out.write("\n")
-    if list(_evts(multiset.msgs)):
-        out.write("        public static abstract class Callback {\n")
-        for evt in _evts(multiset.msgs):
-            def formatArg(arg):
-                argStr = "%s %s" % (java_arg_type(arg, False, evt.ftr), java_arg_name(arg))
-                if isinstance(arg.argType, arsdkparser.ArEnum):
-                    argStr = "@Nullable %s" % argStr
-                return argStr
-            out.write("            public void %s(%s) {}\n\n", java_method_name("on_" + evt.name),
-                      ", ".join(formatArg(arg) for arg in evt.args))
-
-        for evt in _evts(multiset.msgs):
-            out.write("            protected void %s(%s) {\n", java_method_name(evt.name),
-                      ", ".join(java_arg_type(arg, True) + " " + java_arg_name(arg) for arg in evt.args))
-
-            for arg in filter(lambda arg: isinstance(arg.argType, arsdkparser.ArEnum), evt.args):
-                out.write("%(0)s %(1)s %(2)s = %(1)s.fromValue(%(3)s);\n"
-                          "%(0)s if (%(2)s == null) ULog.e(TAG, \"Unsupported %(1)s value \" + %(3)s);\n" % {
-                    '0': "               ",
-                    '1': "%s.%s" % (java_feature_class_name(evt.ftr.name), java_class_name(arg.argType.name)),
-                    '2': java_arg_enum_name(arg),
-                    '3': java_arg_name(arg),
-                })
-
-            def formatArg(arg):
-                if isinstance(arg.argType, arsdkparser.ArEnum):
-                    return java_arg_enum_name(arg)
-                elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                    return "ArsdkMultiset.Pool.DEFAULT.obtain(%s)" % java_arg_name(arg)
-                else:
-                    return java_arg_name(arg)
-
-            out.write("                %s(%s);\n", java_method_name("on_" + evt.name),
-                ", ".join(formatArg(arg) for arg in evt.args))
-            out.write("            }\n")
-        out.write("        }\n\n")
-
-        out.write("        static { nativeClassInit(Callback.class);}\n")
-        out.write("        public static void decode(ArsdkMultiset multiset, Callback callback) {\n")
-        out.write("            nativeDecode(multiset.getNativePtr(), callback);\n")
-        out.write("        }\n")
-        # native class init
-        out.write("        private static native void nativeClassInit(Class<Callback> callbackClass);\n")
-        # native decode
-        out.write("        private static native int nativeDecode(long nativeMset, Callback callback);\n")
-
-    for cmd in _cmds(multiset.msgs):
-        def formatArg(arg):
-                    argStr = "%s %s" % (java_arg_type(arg, False, cmd.ftr), java_arg_name(arg))
-                    if isinstance(arg.argType, arsdkparser.ArEnum):
-                        argStr = "@NonNull %s" % argStr
-                    return argStr
-        out.write("        public static void %s(ArsdkMultiset multiset, %s) {\n",
-                  java_method_name("encode_" + cmd.name), ", ".join(formatArg(arg) for arg in cmd.args))
-
-        out.write("            %s(multiset.getNativePtr()",
-                java_method_name("native_encode_" + cmd.name))
-        for arg in cmd.args:
-            if isinstance(arg.argType, arsdkparser.ArEnum):
-                out.write(", %s", java_arg_name(arg) + ".value")
-            elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                out.write(", %s", java_arg_name(arg) + ".getNativePtr()")
-            else:
-                out.write(", %s", java_arg_name(arg))
-        out.write(");\n")
-        out.write("        }\n")
-
-    for cmd in _cmds(multiset.msgs):
-        if cmd.args:
-            out.write("        private static native int %s(long nativeMset, %s);\n",
-                      java_method_name("native_encode_" + cmd.name),
-                      ", ".join(java_arg_type(arg, True) + " " + arg.name for arg in cmd.args))
-        else:
-            out.write("        private static native int %s(long nativeMset);\n",
-                      java_method_name("native_encode_" + cmd.name))
-    out.write("    }\n\n")
-
 #===============================================================================
 
 def gen_java_feature_callback(indent, evts, out):
@@ -263,8 +182,6 @@ def gen_java_feature_callback(indent, evts, out):
         def formatArg(arg):
             if isinstance(arg.argType, arsdkparser.ArEnum):
                 return java_arg_enum_name(arg)
-            elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                return "ArsdkMultiset.Pool.DEFAULT.obtain(%s)" % java_arg_name(arg)
             else:
                 return java_arg_name(arg)
 
@@ -302,8 +219,6 @@ def gen_java_feature_encode(indent, cmds, out):
         for arg in cmd.args:
            if isinstance(arg.argType, arsdkparser.ArEnum):
                out.write(", %s.value", java_arg_name(arg))
-           elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-               out.write(", %s.getNativePtr()", java_arg_name(arg))
            else:
                out.write(", %s", java_arg_name(arg))
         out.write(");\n")
@@ -371,10 +286,6 @@ def gen_java(feature, out):
 
     out.write("import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;\n")
 
-    # add multiset specific imports
-    if feature.multisets:
-        out.write("import com.parrot.drone.sdkcore.arsdk.command.ArsdkMultiset;\n")
-
     # add enum specific imports
     if feature.enums:
         out.write("import androidx.annotation.NonNull;\n");
@@ -393,10 +304,6 @@ def gen_java(feature, out):
     # Enums
     for enum in feature.enums:
         gen_java_feature_enum(enum, out)
-
-    # Multi settings
-    for mset in feature.multisets:
-        gen_java_feature_multiset(mset, out)
 
     # features
     if feature.classes:

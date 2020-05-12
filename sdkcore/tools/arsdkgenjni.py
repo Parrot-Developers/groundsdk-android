@@ -14,34 +14,9 @@ def gen_root_jni(ctx, out):
     out.write("#include <string.h>\n")
     out.write("#include <jni.h>\n")
     out.write("#include <arsdk/arsdk.h>\n")
-    out.write("#include \"arsdkcore_multiset.h\"\n")
     for featureId in sorted(ctx.featuresById.keys()):
         featureobj = ctx.featuresById[featureId]
         out.write("#include \"%s\"\n", jni_file_name(featureobj.name))
-
-#===============================================================================
-# generique multi settings file
-#===============================================================================
-
-def _walk_msets(ctx):
-    for featureId in sorted(ctx.featuresById.keys()):
-        featureobj = ctx.featuresById[featureId]
-        for mset in featureobj.multisets:
-            yield mset
-
-def gen_jni_multiset(ctx, out):
-    out.write("/** Generated, do not edit ! */\n\n")
-    out.write("#ifndef _ARSDKCORE_MULTISET_H_\n");
-    out.write("#define _ARSDKCORE_MULTISET_H_\n\n");
-    out.write("union arsdkcore_multiset {\n")
-    for ftrId in sorted(ctx.featuresById.keys()):
-        ftrobj = ctx.featuresById[ftrId]
-        for mset in ftrobj.multisets:
-            out.write("\tstruct arsdk_%s_%s %s;\n", ftrobj.name,
-                    mset.name.lower(),
-                    mset.name.lower())
-    out.write("};\n\n")
-    out.write("#endif // _ARSDKCORE_MULTISET_H_\n\n");
 
 #===============================================================================
 
@@ -87,8 +62,6 @@ def gen_jni_decode(feature, cls, evts, out):
             out.write(", ")
             if arg.argType == arsdkparser.ArArgType.STRING:
                 out.write("(*env)->NewStringUTF(env, %s)", arg.name)
-            elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                out.write("(jlong)(uintptr_t)&%s", arg.name)
             else:
                 out.write("(%s)%s", jni_arg_type(arg), arg.name)
         out.write(");\n")
@@ -125,13 +98,11 @@ def gen_jni_encode(feature, cls, cmds, out):
         for arg in cmd.args:
             if arg.argType == arsdkparser.ArArgType.STRING:
                 out.write("\tconst char* c_%s = (*env)->GetStringUTFChars(env, %s, NULL);\n", arg.name, arg.name)
-            elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                out.write("\t%s *c_%s = (%s *)(uintptr_t) %s;\n", c_arg_type(arg, feature), arg.name, c_arg_type(arg, feature), arg.name)
+
         if cmd.args:
             out.write("\tint res = arsdk_cmd_enc_%s_%s(cmd, %s);\n",
                   c_name(full_name), c_name(cmd.name),
-                  ", ".join("c_" + arg.name if arg.argType == arsdkparser.ArArgType.STRING or
-                                               isinstance(arg.argType, arsdkparser.ArMultiSetting)
+                  ", ".join("c_" + arg.name if arg.argType == arsdkparser.ArArgType.STRING
                                             else arg.name
                             for arg in cmd.args))
         else:
@@ -156,60 +127,6 @@ def _cmds(msgs):
         if isinstance(msg, arsdkparser.ArCmd):
             yield msg
 
-def gen_jni_ftr_multisets(feature, cls, multisets, out):
-    for mset in multisets:
-        full_name = feature.name + ("_" + mset.name)
-        # decode multisetting evts
-        if list(_evts(mset.msgs)):
-            # callback methods id cache
-            out.write("static struct {\n")
-            for evt in _evts(mset.msgs):
-                out.write("\tjmethodID jmid_%s;\n", evt.name)
-            out.write("} s_cb_%s_cache;\n\n", full_name)
-            # class init
-            out.write("JNIEXPORT void JNICALL\n%s_nativeClassInit(JNIEnv *env, jclass jcls, jobject callbackClass) {\n",
-                      jni_func_name(feature, mset))
-            for evt in _evts(mset.msgs):
-                out.write("\ts_cb_%s_cache.jmid_%s = (*env)->GetMethodID(env, callbackClass, \"%s\", \"(%s)V\");\n",
-                          full_name, evt.name, java_method_name(evt.name), jni_method_signature(evt.args))
-            out.write("}\n\n")
-
-        # encode multisetting cmds
-        for cmd in _cmds(mset.msgs):
-            if cmd.args:
-                out.write("JNIEXPORT jint JNICALL\n%s_nativeEncode%s(JNIEnv *env, jclass jcls, jlong nativeMSet, %s) {\n",
-                          jni_func_name(feature, mset), jni_method_name(cmd.name),
-                      ", ".join(jni_arg_type(arg) + " " + arg.name for arg in cmd.args))
-            else:
-                out.write("JNIEXPORT jint JNICALL\n%s_nativeEncode%s(JNIEnv *env, jclass jcls, jlong nativeMSet) {\n",
-                          jni_func_name(feature, mset), jni_method_name(cmd.name))
-            out.write("\tunion arsdkcore_multiset *mset = (union arsdkcore_multiset *)(uintptr_t)nativeMSet;\n")
-            for arg in cmd.args:
-                if arg.argType == arsdkparser.ArArgType.STRING:
-                    out.write("\tconst char* c_%s = (*env)->GetStringUTFChars(env, %s, NULL);\n", arg.name, arg.name)
-                    #TODO see when release the c string
-                    raise Exception("Multi settings with string argument is not yet correctly managed :"
-                            " mset: %s cmd: %s arg: %s" % ( mset.name, cmd.name, arg.name))
-                elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-                    out.write("\t%s *c_%s = (%s *)(uintptr_t) %s;\n",
-                            c_arg_type(arg, feature), arg.name,
-                            c_arg_type(arg, feature), arg.name)
-            for arg in cmd.args:
-                out.write("\tmset->%s.%s.%s = %s;\n",
-                        mset.name.lower(),
-                        "%s_%s_%s" %(cmd.ftr.name, cmd.cls.name, cmd.name) if cmd.cls
-                                else "%s_%s" %(cmd.ftr.name, cmd.name),
-                        arg.name,
-                        "c_" + arg.name if arg.argType == arsdkparser.ArArgType.STRING or
-                                            isinstance(arg.argType, arsdkparser.ArMultiSetting)
-                                        else arg.name)
-            out.write("\tmset->%s.%s.is_set = 1;\n", mset.name.lower(),
-                    "%s_%s_%s" %(cmd.ftr.name, cmd.cls.name, cmd.name) if cmd.cls
-                    else "%s_%s" %(cmd.ftr.name, cmd.name))
-
-            out.write("\treturn 0;\n")
-            out.write("}\n\n")
-
 #===============================================================================
 
 def gen_jni_feature(feature, cls, evts, cmds, out):
@@ -220,9 +137,6 @@ def gen_jni_feature(feature, cls, evts, cmds, out):
     if cmds:
         # encode cmds
         gen_jni_encode(feature, cls, cmds, out)
-    if feature.multisets:
-        # specific multi settings
-        gen_jni_ftr_multisets(feature, cls, feature.multisets, out)
 
 #===============================================================================
 
@@ -254,12 +168,6 @@ def generate_files(ctx, outdir, extra):
     with open(filepath, "w") as fileobj:
         print("generating %s" % filepath)
         gen_root_jni(ctx, Writer(fileobj))
-
-    # jni multi settings file
-    filepath = os.path.join(outdir, "arsdkcore_multiset.h")
-    with open(filepath, "w") as fileobj:
-        print("generating %s" % filepath)
-        gen_jni_multiset(ctx, Writer(fileobj))
 
     # features
     for featureId in sorted(ctx.featuresById.keys()):

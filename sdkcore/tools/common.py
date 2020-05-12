@@ -76,11 +76,6 @@ def java_arg_type(arg, jni, feature = None):
             argType = "long"
         else:
             argType = "int"
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        if jni:
-            argType = "long"
-        else:
-            argType = "ArsdkMultiset"
     else:
         argType = java_args[arg.argType]
     return argType
@@ -123,8 +118,6 @@ def jni_method_signature(args):
                 sig +="J"
             else:
                 sig +="I"
-        elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-            sig +="J"
         else:
             sig += jni_signature_args[arg.argType]
     return sig
@@ -151,8 +144,6 @@ def jni_arg_type(arg):
             type = "jlong"
         else:
             type = "jint"
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        type ="jlong"
     else:
         type = jni_args[arg.argType]
     return type;
@@ -177,8 +168,6 @@ def c_arg_type(arg, feature=None):
         type = "int32_t"
     elif isinstance(arg.argType, arsdkparser.ArBitfield):
         type = c_args[arg.argType.btfType]
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        type ="struct arsdk_%s_%s" % (feature.name, arg.argType.name.lower())
     else:
         type = c_args[arg.argType]
     return type;

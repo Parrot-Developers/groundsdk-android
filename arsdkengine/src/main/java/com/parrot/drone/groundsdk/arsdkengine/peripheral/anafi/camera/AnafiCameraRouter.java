@@ -351,21 +351,24 @@ public final class AnafiCameraRouter extends DronePeripheralController {
         /**
          * Sends selected exposure settings to the device.
          *
-         * @param mode                 exposure mode to send
-         * @param manualShutterSpeed   manual shutter speed to send
-         * @param manualIsoSensitivity manual ISO sensitivity to send
-         * @param maxIsoSensitivity    maximum ISO sensitivity to send
+         * @param mode                      exposure mode to send
+         * @param manualShutterSpeed        manual shutter speed to send
+         * @param manualIsoSensitivity      manual ISO sensitivity to send
+         * @param maxIsoSensitivity         maximum ISO sensitivity to send
+         * @param autoExposureMeteringMode  auto exposure metering mode to send
          *
          * @return {@code true} if any command was sent to the device, otherwise false
          */
         final boolean sendExposureSettings(@NonNull CameraExposure.Mode mode,
                                            @NonNull CameraExposure.ShutterSpeed manualShutterSpeed,
                                            @NonNull CameraExposure.IsoSensitivity manualIsoSensitivity,
-                                           @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity) {
+                                           @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                           @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
             return sendCommand(ArsdkFeatureCamera.encodeSetExposureSettings(mInfo.mId,
                     ExposureModeAdapter.from(mode), ShutterSpeedAdapter.from(manualShutterSpeed),
                     IsoSensitivityAdapter.from(manualIsoSensitivity),
-                    IsoSensitivityAdapter.from(maxIsoSensitivity)));
+                    IsoSensitivityAdapter.from(maxIsoSensitivity),
+                    AutoExposureMeteringModeAdapter.from(autoExposureMeteringMode)));
         }
 
         /**
@@ -610,6 +613,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
          * @param modes                      supported camera modes
          * @param exposureCompensationValues supported exposure compensation values
          * @param exposureModes              supported exposure modes
+         * @param autoExposureMeteringModes  supported auto exposure metering modes
          * @param exposureLock               {@code true} if current-values exposure lock is supported
          * @param exposureRoiLock            {@code true} if region exposure lock is supported
          * @param whiteBalanceModes          supported white balance modes
@@ -624,8 +628,10 @@ public final class AnafiCameraRouter extends DronePeripheralController {
          */
         abstract void onCameraCapabilities(@NonNull EnumSet<Camera.Mode> modes,
                                            @NonNull EnumSet<CameraEvCompensation> exposureCompensationValues,
-                                           @NonNull EnumSet<CameraExposure.Mode> exposureModes, boolean exposureLock,
-                                           boolean exposureRoiLock,
+                                           @NonNull EnumSet<CameraExposure.Mode> exposureModes,
+                                           @NonNull EnumSet<CameraExposure.AutoExposureMeteringMode>
+                                                   autoExposureMeteringModes,
+                                           boolean exposureLock, boolean exposureRoiLock,
                                            @NonNull EnumSet<CameraWhiteBalance.Mode> whiteBalanceModes,
                                            @NonNull EnumSet<CameraWhiteBalance.Temperature> whiteBalanceTemperatures,
                                            boolean whiteBalanceLock, @NonNull EnumSet<CameraStyle.Style> styles,
@@ -702,6 +708,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
          * @param shutterSpeed                    manual shutter speed
          * @param manualIsoSensitivity            manual ISO sensitivity
          * @param maxIsoSensitivity               maximum ISO sensitivity
+         * @param autoExposureMeteringMode        auto exposure metering mode
          */
         abstract void onExposureSettings(@NonNull EnumSet<CameraExposure.ShutterSpeed> supportedShutterSpeeds,
                                          @NonNull EnumSet<CameraExposure.IsoSensitivity> supportedManualIsoSensitivities,
@@ -709,7 +716,8 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                                          @NonNull CameraExposure.Mode mode,
                                          @NonNull CameraExposure.ShutterSpeed shutterSpeed,
                                          @NonNull CameraExposure.IsoSensitivity manualIsoSensitivity,
-                                         @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity);
+                                         @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                         @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode);
 
         /**
          * Notifies reception of exposure lock state.
@@ -889,7 +897,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                                          int stylesBitField, int cameraModesBitField, int hyperlapseValuesBitField,
                                          int bracketingPresetsBitField, int burstValuesBitField,
                                          int streamingModesBitField, float timelapseIntervalMin,
-                                         float gpslapseIntervalMin) {
+                                         float gpslapseIntervalMin, int autoExposureMeteringModesBitField) {
             if (camModel == null) {
                 throw new ArsdkCommand.RejectedEventException("Invalid camera model");
             }
@@ -909,6 +917,7 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                     CameraModeAdapter.from(cameraModesBitField),
                     EvCompensationAdapter.from((int) evCompensationsBitField),
                     ExposureModeAdapter.from(exposureModesBitField),
+                    AutoExposureMeteringModeAdapter.from(autoExposureMeteringModesBitField),
                     exposureLockSupported == ArsdkFeatureCamera.Supported.SUPPORTED,
                     exposureRoiLockSupported == ArsdkFeatureCamera.Supported.SUPPORTED,
                     WhiteBalanceModeAdapter.from(whiteBalanceModesBitField),
@@ -1024,9 +1033,10 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                                        @Nullable ArsdkFeatureCamera.IsoSensitivity manualIsoSensitivity,
                                        long manualIsoSensitivityCapabilitiesBitField,
                                        @Nullable ArsdkFeatureCamera.IsoSensitivity maxIsoSensitivity,
-                                       long maxIsoSensitivitiesCapabilitiesBitField) {
+                                       long maxIsoSensitivitiesCapabilitiesBitField,
+                                       @Nullable ArsdkFeatureCamera.AutoExposureMeteringMode autoExposureMeteringMode) {
             if (mode == null || manualShutterSpeed == null || manualIsoSensitivity == null
-                || maxIsoSensitivity == null) {
+                || maxIsoSensitivity == null || autoExposureMeteringMode == null) {
                 throw new ArsdkCommand.RejectedEventException("Invalid exposure settings");
             }
 
@@ -1035,7 +1045,9 @@ public final class AnafiCameraRouter extends DronePeripheralController {
                     IsoSensitivityAdapter.from((int) manualIsoSensitivityCapabilitiesBitField),
                     IsoSensitivityAdapter.from((int) maxIsoSensitivitiesCapabilitiesBitField),
                     ExposureModeAdapter.from(mode), ShutterSpeedAdapter.from(manualShutterSpeed),
-                    IsoSensitivityAdapter.from(manualIsoSensitivity), IsoSensitivityAdapter.from(maxIsoSensitivity));
+                    IsoSensitivityAdapter.from(manualIsoSensitivity), IsoSensitivityAdapter.from(maxIsoSensitivity),
+                    AutoExposureMeteringModeAdapter.from(autoExposureMeteringMode)
+                    );
         }
 
 

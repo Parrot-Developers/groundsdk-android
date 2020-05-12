@@ -86,6 +86,8 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
 
     private MultiChoiceSettingView<CameraExposure.ShutterSpeed> mManualShutterSpeedView;
 
+    private MultiChoiceSettingView<CameraExposure.AutoExposureMeteringMode> mAutoExposureMeteringModeView;
+
     private CardView mExposureLockTitleView;
 
     private CardView mExposureLockCardView;
@@ -187,6 +189,7 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
         mMaxIsoView = findViewById(R.id.exposure_max_iso);
         mManualIsoView = findViewById(R.id.exposure_manual_iso);
         mManualShutterSpeedView = findViewById(R.id.exposure_manual_shutter);
+        mAutoExposureMeteringModeView = findViewById(R.id.exposure_metering_mode);
 
         mExposureLockTitleView = findViewById(R.id.exposure_lock_title);
         mExposureLockCardView = findViewById(R.id.exposure_lock_card);
@@ -261,6 +264,10 @@ public class CameraSettingsActivity<C extends Camera & Peripheral> extends Groun
         mManualShutterSpeedView.setChoices(exposure.supportedManualShutterSpeeds())
                                .setSelection(exposure.manualShutterSpeed()).setUpdating(exposure.isUpdating())
                                .setListener(exposure::setManualShutterSpeed);
+        mAutoExposureMeteringModeView.setChoices(exposure.supportedAutoExposureMeteringModes())
+                                     .setSelection(exposure.autoExposureMeteringMode())
+                                     .setUpdating(exposure.isUpdating())
+                                     .setListener(exposure::setAutoExposureMeteringMode);
 
         CameraExposureLock exposureLock = camera.exposureLock();
 

@@ -144,6 +144,12 @@
                     android:layout_height="wrap_content"
                     app:title="@string/property_camera_exposure_manual_shutter_speed"/>
 
+                <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+                    android:id="@+id/exposure_metering_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/property_camera_exposure_metering_mode"/>
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

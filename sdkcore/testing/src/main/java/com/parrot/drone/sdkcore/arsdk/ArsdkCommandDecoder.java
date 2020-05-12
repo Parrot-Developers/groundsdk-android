@@ -109,24 +109,6 @@ public class ArsdkCommandDecoder {
         return sb.toString();
     }
 
-    public List<ArsdkCommand> readMultiset() {
-        List<ArsdkCommand> commands = new ArrayList<>(10);
-        int multiSetSize = readUnsignedShort();
-        int multiSetEnd = mBuf.position() + multiSetSize;
-        ArsdkCommandEncoder enc = new ArsdkCommandEncoder();
-
-        while (mBuf.position() < multiSetEnd) {
-            int cmdSize = readUnsignedShort();
-            byte[] dst = new byte[cmdSize];
-            mBuf.get(dst, 0, cmdSize);
-            enc.writeBuffer(dst);
-            commands.add(enc.encode());
-            enc.reset();
-        }
-
-        return commands;
-    }
-
     public void reset() {
         mBuf.clear();
     }

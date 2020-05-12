@@ -97,6 +97,18 @@ public final class CameraExposure {
     }
 
     /**
+     * Camera auto exposure metering mode.
+     */
+    public enum AutoExposureMeteringMode {
+
+        /** Default Auto Exposure metering mode. */
+        STANDARD,
+
+        /** Auto Exposure metering mode which favours the center top of the matrix. */
+        CENTER_TOP
+    }
+
+    /**
      * Camera shutter speed.
      */
     public enum ShutterSpeed {
@@ -427,6 +439,37 @@ public final class CameraExposure {
         public abstract Setting setMaxIsoSensitivity(@NonNull IsoSensitivity maxIsoSensitivity);
 
         /**
+         * Retrieves the currently supported auto exposure metering modes for use in {@link Mode#AUTOMATIC} mode.
+         * <p>
+         * The returned set is owned by the caller and can be freely modified.
+         *
+         * @return supported auto exposure metering modes
+         */
+        @NonNull
+        public abstract EnumSet<AutoExposureMeteringMode> supportedAutoExposureMeteringModes();
+
+        /**
+         * Retrieves the current auto exposure metering mode.
+         * <p>
+         *
+         * @return current auto exposure metering mode
+         */
+        @NonNull
+        public abstract AutoExposureMeteringMode autoExposureMeteringMode();
+
+        /**
+         * Sets the auto exposure metering mode to be applied in {@link Mode#AUTOMATIC},
+         * {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY} and {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED} modes.
+         * <p>
+         *
+         * @param autoExposureMeteringMode auto exposure metering mode value to set
+         *
+         * @return {@code this}, to allow chained calls
+         */
+        @NonNull
+        public abstract Setting setAutoExposureMeteringMode(@NonNull AutoExposureMeteringMode autoExposureMeteringMode);
+
+        /**
          * Switches to {@link Mode#AUTOMATIC automatic} mode and applies the given maximum ISO sensitivity value at the
          * same time.
          * <p>
@@ -438,6 +481,35 @@ public final class CameraExposure {
          * @param maxIsoSensitivity maximum ISO sensitivity value to set.
          */
         public abstract void setAutoMode(@NonNull IsoSensitivity maxIsoSensitivity);
+
+        /**
+         * Switches to {@link Mode#AUTOMATIC automatic} mode and applies the given auto exposure metering mode at the
+         * same time.
+         * <p>
+         * {@link Mode#AUTOMATIC} mode must be present in the set of {@link #supportedModes() supported modes},
+         * and the provided auto exposure metering mode must be present in the set of
+         * {@link #supportedAutoExposureMeteringModes() supported auto exposure metering modes},
+         * otherwise this method does nothing.
+         *
+         * @param autoExposureMeteringMode auto exposure metering mode value to set.
+         */
+        public abstract void setAutoMode(@NonNull AutoExposureMeteringMode autoExposureMeteringMode);
+
+        /**
+         * Switches to {@link Mode#AUTOMATIC automatic} mode and applies the given maximum ISO sensitivity and auto
+         * exposure metering mode values at the same time.
+         * <p>
+         * {@link Mode#AUTOMATIC} mode must be present in the set of {@link #supportedModes() supported modes}, the
+         * provided maximum ISO sensitivity value must be present in the set of
+         * {@link #supportedMaximumIsoSensitivities() supported maximum ISO sensitivities}, and the provided
+         * auto exposure metering mode must be present in the set of {@link #supportedAutoExposureMeteringModes()
+         * supported auto exposure metering modes}, otherwise this method does nothing.
+         *
+         * @param maxIsoSensitivity         maximum ISO sensitivity value to set.
+         * @param autoExposureMeteringMode  auto exposure metering mode value to set.
+         */
+        public abstract void setAutoMode(@NonNull IsoSensitivity maxIsoSensitivity,
+                                         @NonNull AutoExposureMeteringMode autoExposureMeteringMode);
 
         /**
          * Switches to {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED automatic} mode and applies the given maximum ISO
@@ -453,6 +525,35 @@ public final class CameraExposure {
         public abstract void setAutoPreferShutterSpeedMode(@NonNull IsoSensitivity maxIsoSensitivity);
 
         /**
+         * Switches to {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED automatic} mode and applies the given auto exposure
+         * metering mode at the same time.
+         * <p>
+         * {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED} mode must be present in the set of {@link #supportedModes()
+         * supported modes}, and the provided auto exposure metering mode must be present in the set of
+         * {@link #supportedAutoExposureMeteringModes()} () supported auto exposure metering mode},
+         * otherwise this method does nothing.
+         *
+         * @param autoExposureMeteringMode auto exposure metering mode value to set.
+         */
+        public abstract void setAutoPreferShutterSpeedMode(@NonNull AutoExposureMeteringMode autoExposureMeteringMode);
+
+        /**
+         * Switches to {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED automatic} mode and applies the given maximum ISO
+         * sensitivity and auto exposure metering mode values at the same time.
+         * <p>
+         * {@link Mode#AUTOMATIC_PREFER_SHUTTER_SPEED} mode must be present in the set of {@link #supportedModes()
+         * supported modes}, the provided maximum ISO sensitivity value must be present in the set of
+         * {@link #supportedMaximumIsoSensitivities() supported maximum ISO sensitivities}, and the provided
+         * auto exposure metering mode must be present in the set of {@link #supportedAutoExposureMeteringModes()
+         * supported auto exposure metering modes}, otherwise this method does nothing.
+         *
+         * @param maxIsoSensitivity         maximum ISO sensitivity value to set.
+         * @param autoExposureMeteringMode  auto exposure metering mode value to set.
+         */
+        public abstract void setAutoPreferShutterSpeedMode(@NonNull IsoSensitivity maxIsoSensitivity,
+                                                           @NonNull AutoExposureMeteringMode autoExposureMeteringMode);
+
+        /**
          * Switches to {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY automatic} mode and applies the given maximum ISO
          * sensitivity value at the same time.
          * <p>
@@ -464,6 +565,37 @@ public final class CameraExposure {
          * @param maxIsoSensitivity maximum ISO sensitivity value to set.
          */
         public abstract void setAutoPreferIsoSensitivityMode(@NonNull IsoSensitivity maxIsoSensitivity);
+
+        /**
+         * Switches to {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY automatic} mode and applies the given auto exposure
+         * metering mode at the same time.
+         * <p>
+         * {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY} mode must be present in the set of {@link #supportedModes()
+         * supported modes}, and the provided auto exposure metering mode must be present in the set of
+         * {@link #supportedAutoExposureMeteringModes()} () supported auto exposure metering modes},
+         * otherwise this method does nothing.
+         *
+         * @param autoExposureMeteringMode auto exposure metering mode to set.
+         */
+        public abstract void setAutoPreferIsoSensitivityMode(
+                @NonNull AutoExposureMeteringMode autoExposureMeteringMode);
+
+        /**
+         * Switches to {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY automatic} mode and applies the given maximum ISO
+         * sensitivity and auto exposure metering mode values at the same time.
+         * <p>
+         * {@link Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY} mode must be present in the set of {@link #supportedModes()
+         * supported modes}, the provided maximum ISO sensitivity value must be present in the set of
+         * {@link #supportedMaximumIsoSensitivities() supported maximum ISO sensitivities}, and the provided
+         * auto exposure metering mode must be present in the set of {@link #supportedAutoExposureMeteringModes()
+         * supported auto exposure metering modes}, otherwise this method does nothing.
+         *
+         * @param maxIsoSensitivity         maximum ISO sensitivity value to set.
+         * @param autoExposureMeteringMode  auto exposure metering mode to set.
+         */
+        public abstract void setAutoPreferIsoSensitivityMode(
+                @NonNull IsoSensitivity maxIsoSensitivity,
+                @NonNull AutoExposureMeteringMode autoExposureMeteringMode);
 
         /**
          * Switches to {@link Mode#MANUAL_SHUTTER_SPEED manual shutter speed} mode and applies the given shutter speed

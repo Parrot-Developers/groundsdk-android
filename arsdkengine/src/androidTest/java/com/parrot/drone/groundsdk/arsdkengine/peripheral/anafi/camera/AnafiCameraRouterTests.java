@@ -80,10 +80,12 @@ import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpToDat
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpdatingTo;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingSupports;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingValueIs;
+import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingAutoExposureMeteringModeIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingManualIsoIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingManualShutterSpeedIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingMaxIsoIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingModeIs;
+import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsAutoExposureMeteringMode;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsManualIsos;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsManualShutterSpeeds;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsMaxIsos;
@@ -308,11 +310,13 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.IsoSensitivity.ISO_320);
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
                 caps().exposureModes(ArsdkFeatureCamera.ExposureMode.values())
+                        .autoExposureMeteringModes(ArsdkFeatureCamera.AutoExposureMeteringMode.values())
                       .encode(),
                 ArsdkEncoder.encodeCameraExposureSettings(0, ArsdkFeatureCamera.ExposureMode.MANUAL,
                         ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10, supportedShutterSpeed,
                         ArsdkFeatureCamera.IsoSensitivity.ISO_100, supportedIsos,
-                        ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos)));
+                        ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                        ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
 
         assertThat(mChangeCnt, is(1));
 
@@ -329,12 +333,17 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE_OVER_10),
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_100),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
+                exposureSettingSupportsAutoExposureMeteringMode(EnumSet.of(
+                        CameraExposure.AutoExposureMeteringMode.STANDARD,
+                        CameraExposure.AutoExposureMeteringMode.CENTER_TOP)),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
                 settingIsUpToDate()));
 
         // change mode to automatic
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.AUTOMATIC, ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_100, ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_100, ArsdkFeatureCamera.IsoSensitivity.ISO_160,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setMode(CameraExposure.Mode.AUTOMATIC);
 
         assertThat(mChangeCnt, is(2));
@@ -346,7 +355,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_100, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(3));
         assertThat(mCamera.exposure(), allOf(
@@ -358,7 +368,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.MANUAL_SHUTTER_SPEED,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, ArsdkFeatureCamera.IsoSensitivity.ISO_100,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setManualMode(CameraExposure.ShutterSpeed.ONE_OVER_100);
 
         assertThat(mChangeCnt, is(4));
@@ -371,7 +381,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.MANUAL_SHUTTER_SPEED,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_100, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(5));
         assertThat(mCamera.exposure(), allOf(
@@ -384,7 +395,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.MANUAL_ISO_SENSITIVITY,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, ArsdkFeatureCamera.IsoSensitivity.ISO_320,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setManualMode(CameraExposure.IsoSensitivity.ISO_320);
 
         assertThat(mChangeCnt, is(6));
@@ -397,7 +408,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.MANUAL_ISO_SENSITIVITY,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(7));
         assertThat(mCamera.exposure(), allOf(
@@ -410,7 +422,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, ArsdkFeatureCamera.IsoSensitivity.ISO_320,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_320)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_320, ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setAutoMode(CameraExposure.IsoSensitivity.ISO_320);
 
         assertThat(mChangeCnt, is(8));
@@ -423,7 +435,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_100, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(9));
         assertThat(mCamera.exposure(), allOf(
@@ -436,7 +449,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.MANUAL,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10, ArsdkFeatureCamera.IsoSensitivity.ISO_200,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_320)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_320, ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setManualMode(CameraExposure.ShutterSpeed.ONE_OVER_10,
                 CameraExposure.IsoSensitivity.ISO_200);
 
@@ -451,7 +464,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.MANUAL,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_200, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_320, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(11));
         assertThat(mCamera.exposure(), allOf(
@@ -470,14 +484,23 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
                 settingIsUpToDate()));
 
-        // change mode to auto, max ISO is now sent
+        // set AE metering mode in manual mode, no command is sent
+        mCamera.exposure().setAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+        mMockArsdkCore.assertNoExpectation();
+
+        assertThat(mChangeCnt, is(13));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpToDate()));
+
+        // change mode to auto, max ISO & AE metering mode are now sent
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10, ArsdkFeatureCamera.IsoSensitivity.ISO_200,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, ArsdkFeatureCamera.AutoExposureMeteringMode.CENTER_TOP)));
         mCamera.exposure().setMode(CameraExposure.Mode.AUTOMATIC);
 
-        assertThat(mChangeCnt, is(13));
+        assertThat(mChangeCnt, is(14));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
@@ -487,7 +510,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mCamera.exposure().setManualShutterSpeed(CameraExposure.ShutterSpeed.ONE);
         mMockArsdkCore.assertNoExpectation();
 
-        assertThat(mChangeCnt, is(14));
+        assertThat(mChangeCnt, is(15));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE),
                 settingIsUpToDate()));
@@ -496,7 +519,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mCamera.exposure().setManualIsoSensitivity(CameraExposure.IsoSensitivity.ISO_100);
         mMockArsdkCore.assertNoExpectation();
 
-        assertThat(mChangeCnt, is(15));
+        assertThat(mChangeCnt, is(16));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_100),
                 settingIsUpToDate()));
@@ -505,10 +528,10 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(
                 0, ArsdkFeatureCamera.ExposureMode.MANUAL,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, ArsdkFeatureCamera.IsoSensitivity.ISO_100,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, ArsdkFeatureCamera.AutoExposureMeteringMode.CENTER_TOP)));
         mCamera.exposure().setMode(CameraExposure.Mode.MANUAL);
 
-        assertThat(mChangeCnt, is(16));
+        assertThat(mChangeCnt, is(17));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.MANUAL),
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE),
@@ -534,6 +557,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE),
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_100),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
+                exposureSettingSupportsAutoExposureMeteringMode(EnumSet.allOf(
+                        CameraExposure.AutoExposureMeteringMode.class)),
                 settingIsUpToDate()));
 
         // change shutter speed and ISO sensitivity offline
@@ -559,14 +584,18 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         // reconnect
         connectDrone(mDrone, 1, () -> mMockArsdkCore
                 .commandReceived(1,
-                        caps().exposureModes(ArsdkFeatureCamera.ExposureMode.values()).encode(),
+                        caps().exposureModes(ArsdkFeatureCamera.ExposureMode.values())
+                                .autoExposureMeteringModes(ArsdkFeatureCamera.AutoExposureMeteringMode.values())
+                                .encode(),
                         ArsdkEncoder.encodeCameraExposureSettings(0, ArsdkFeatureCamera.ExposureMode.MANUAL,
                                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, supportedShutterSpeed,
                                 ArsdkFeatureCamera.IsoSensitivity.ISO_100, supportedIsos,
-                                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos))
+                                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD))
                 .expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(0,
                         ArsdkFeatureCamera.ExposureMode.AUTOMATIC, ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1_OVER_10,
-                        ArsdkFeatureCamera.IsoSensitivity.ISO_200, ArsdkFeatureCamera.IsoSensitivity.ISO_320))));
+                        ArsdkFeatureCamera.IsoSensitivity.ISO_200, ArsdkFeatureCamera.IsoSensitivity.ISO_320,
+                        ArsdkFeatureCamera.AutoExposureMeteringMode.CENTER_TOP))));
 
         // expect no change
         assertThat(mChangeCnt, is(3)); // active state change
@@ -575,6 +604,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE_OVER_10),
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_200),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_320),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
                 settingIsUpToDate()));
     }
 
@@ -656,12 +686,14 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
                 caps().evs(ArsdkFeatureCamera.EvCompensation.EV_MINUS_1_00, ArsdkFeatureCamera.EvCompensation.EV_0_00,
                         ArsdkFeatureCamera.EvCompensation.EV_1_00)
-                      .exposureModes(ArsdkFeatureCamera.ExposureMode.values())
-                      .encode(),
+                        .exposureModes(ArsdkFeatureCamera.ExposureMode.values())
+                        .autoExposureMeteringModes(ArsdkFeatureCamera.AutoExposureMeteringMode.values())
+                        .encode(),
                 ArsdkEncoder.encodeCameraExposureSettings(0, ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                         ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, supportedShutterSpeed,
                         ArsdkFeatureCamera.IsoSensitivity.ISO_200, supportedIsos,
-                        ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos),
+                        ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                        ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD),
                 ArsdkEncoder.encodeCameraEvCompensation(0, ArsdkFeatureCamera.EvCompensation.EV_0_00)));
 
         assertThat(mChangeCnt, is(1));
@@ -692,7 +724,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.MANUAL,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_200, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         // exposure compensation setting is not available, in manual exposure mode
         assertThat(mChangeCnt, is(4));
@@ -703,7 +736,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.AUTOMATIC,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_200, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         // exposure compensation setting is available, in automatic exposure mode and when exposure lock is inactive
         assertThat(mChangeCnt, is(5));
@@ -738,14 +772,16 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                 ArsdkFeatureCamera.ExposureMode.MANUAL,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, supportedShutterSpeed,
                 ArsdkFeatureCamera.IsoSensitivity.ISO_200, supportedIsos,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_160, supportedMaxIsos,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD));
 
         assertThat(mChangeCnt, is(8));
 
         // change exposure mode to manual before disconnection
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(0,
                 ArsdkFeatureCamera.ExposureMode.MANUAL, ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_100, ArsdkFeatureCamera.IsoSensitivity.ISO_160)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_100, ArsdkFeatureCamera.IsoSensitivity.ISO_160,
+                ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setManualMode(CameraExposure.ShutterSpeed.ONE, CameraExposure.IsoSensitivity.ISO_100);
 
         // exposure compensation setting is not available, in manual exposure mode
@@ -783,8 +819,9 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         caps().evs(ArsdkFeatureCamera.EvCompensation.EV_MINUS_1_00,
                                 ArsdkFeatureCamera.EvCompensation.EV_0_00,
                                 ArsdkFeatureCamera.EvCompensation.EV_1_00)
-                              .exposureModes(ArsdkFeatureCamera.ExposureMode.values())
-                              .encode(),
+                                .exposureModes(ArsdkFeatureCamera.ExposureMode.values())
+                                .autoExposureMeteringModes(ArsdkFeatureCamera.AutoExposureMeteringMode.values())
+                                .encode(),
                         ArsdkEncoder.encodeCameraEvCompensation(0, ArsdkFeatureCamera.EvCompensation.EV_1_00))
                 .expect(new Expectation.Command(1, ExpectedCmd.cameraSetEvCompensation(0,
                         ArsdkFeatureCamera.EvCompensation.EV_0_00))));
@@ -3016,7 +3053,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         ArsdkFeatureCamera.IsoSensitivity.ISO_50,
                         ArsdkFeatureCamera.IsoSensitivity.toBitField(ArsdkFeatureCamera.IsoSensitivity.ISO_50),
                         ArsdkFeatureCamera.IsoSensitivity.ISO_50,
-                        ArsdkFeatureCamera.IsoSensitivity.toBitField(ArsdkFeatureCamera.IsoSensitivity.ISO_50)),
+                        ArsdkFeatureCamera.IsoSensitivity.toBitField(ArsdkFeatureCamera.IsoSensitivity.ISO_50),
+                        ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD),
                 ArsdkEncoder.encodeCameraEvCompensation(0, ArsdkFeatureCamera.EvCompensation.EV_0_00),
                 ArsdkEncoder.encodeCameraWhiteBalance(0,
                         ArsdkFeatureCamera.WhiteBalanceMode.AUTOMATIC,
@@ -3108,7 +3146,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetExposureSettings(0,
                 ArsdkFeatureCamera.ExposureMode.MANUAL_SHUTTER_SPEED,
                 ArsdkFeatureCamera.ShutterSpeed.SHUTTER_1, ArsdkFeatureCamera.IsoSensitivity.ISO_50,
-                ArsdkFeatureCamera.IsoSensitivity.ISO_50)));
+                ArsdkFeatureCamera.IsoSensitivity.ISO_50, ArsdkFeatureCamera.AutoExposureMeteringMode.STANDARD)));
         mCamera.exposure().setMode(CameraExposure.Mode.MANUAL_SHUTTER_SPEED);
 
         assertThat(mChangeCnt, is(3));
@@ -3164,7 +3202,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
 
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.cameraSetRecordingMode(0,
                 ArsdkFeatureCamera.RecordingMode.HIGH_FRAMERATE, ArsdkFeatureCamera.Resolution.RES_DCI_4K,
-                ArsdkFeatureCamera.Framerate.FPS_120, ArsdkFeatureCamera.HyperlapseValue.RATIO_15)));
+                ArsdkFeatureCamera.Framerate.FPS_240, ArsdkFeatureCamera.HyperlapseValue.RATIO_15)));
         mCamera.recording().setMode(CameraRecording.Mode.HIGH_FRAMERATE);
 
         assertThat(mChangeCnt, is(9));
@@ -3274,6 +3312,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
 
         private int mExposureModes;
 
+        private int mAutoExposureMeteringModes;
+
         private long mEvs;
 
         private int mWhiteBalanceModes;
@@ -3301,6 +3341,11 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
 
         CapabilitiesEncoder exposureModes(ArsdkFeatureCamera.ExposureMode... modes) {
             mExposureModes = ArsdkFeatureCamera.ExposureMode.toBitField(modes);
+            return this;
+        }
+
+        CapabilitiesEncoder autoExposureMeteringModes(ArsdkFeatureCamera.AutoExposureMeteringMode... modes) {
+            mAutoExposureMeteringModes = ArsdkFeatureCamera.AutoExposureMeteringMode.toBitField(modes);
             return this;
         }
 
@@ -3357,7 +3402,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
         ArsdkCommand encode() {
             return ArsdkEncoder.encodeCameraCameraCapabilities(0, ArsdkFeatureCamera.Model.MAIN, mExposureModes,
                     NA, NA, mEvs, mWhiteBalanceModes, mTemps, mWhiteBalanceLockSupported, mStyles, mModes,
-                    mHyperlapses, mBracketings, mBursts, 0, mMinTimelapseInterval, mMinGpslapseInterval);
+                    mHyperlapses, mBracketings, mBursts, 0, mMinTimelapseInterval, mMinGpslapseInterval,
+                    mAutoExposureMeteringModes);
         }
     }
 

@@ -40,8 +40,6 @@ def java_comparator(arg, val):
         return "(" + val + " == " + java_arg_name(arg) + ".value)"
     elif isinstance(arg.argType, arsdkparser.ArBitfield):
         return "(" + val + " == "+ java_arg_name(arg) + ")"
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        return "ExpectedCmd.cmpCmds(" + val + ", " + java_arg_name(arg) + ")"
     else:
         if (arg.argType != arsdkparser.ArArgType.STRING):
             return "(" + val + " == "+ java_arg_name(arg)+ ")"
@@ -53,45 +51,31 @@ def java_comparator2(arg):
         return "(dec.readUnsignedInt() == " + java_arg_name(arg) + ".value)"
     elif isinstance(arg.argType, arsdkparser.ArBitfield):
         return "(" + arg_reader[arg.argType.btfType] + " == " + java_arg_name(arg) + ")"
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        return "ExpectedCmd.cmpCmds(dec.readMultiset(), " + java_arg_name(arg) + ")"
     else:
         if (arg.argType != arsdkparser.ArArgType.STRING):
             return "(" + arg_reader[arg.argType] + " == " + java_arg_name(arg)+ ")"
         else:
             return "(dec.readString().equals(" + java_arg_name(arg) + "))"
 
-
 def java_arg_reader(arg):
     if isinstance(arg.argType, arsdkparser.ArEnum):
         return arg_reader[arsdkparser.ArArgType.I32]
     elif isinstance(arg.argType, arsdkparser.ArBitfield):
         return arg_reader[arg.argType.btfType]
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        return "dec.readMultiset()"
     else:
         return arg_reader[arg.argType]
-
 
 def java_arg_writer(arg, val):
     if isinstance(arg.argType, arsdkparser.ArEnum):
         return "enc.writeInt(%s == null ? -1 : %s.value)" % (val, val)
     elif isinstance(arg.argType, arsdkparser.ArBitfield):
         return arg_writer[arg.argType.btfType] % val
-    elif isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        return "enc.writeMultiset(%s)" % val
     else:
         return arg_writer[arg.argType] % val
 
-def javatests_arg_type (arg, jni, feature = None):
-    if isinstance(arg.argType, arsdkparser.ArMultiSetting):
-        return "List<ArsdkCommand>"
-    else:
-        return java_arg_type(arg, jni, feature)
-
 def java_arg_value (arg, arg_name, feature):
     if isinstance(arg.argType, arsdkparser.ArEnum):
-        return "%s.fromValue(%s)" % (javatests_arg_type(arg, False, feature), arg_name)
+        return "%s.fromValue(%s)" % (java_arg_type(arg, False, feature), arg_name)
     else:
         return arg_name
 
@@ -102,7 +86,7 @@ def gen_feature_expected_cmd(feature, cls, cmds, out):
     for cmd in sorted(cmds, key=lambda cmd: cmd.cmdId):
         out.write("    public static ExpectedCmd %s(%s) {\n",
             java_method_name(feature.name + ("_" + cls.name if cls else "") + "_" + cmd.name),
-            ", ".join("final " + javatests_arg_type(arg, False, feature) + " " + java_arg_name(arg) for arg in cmd.args))
+            ", ".join("final " + java_arg_type(arg, False, feature) + " " + java_arg_name(arg) for arg in cmd.args))
         out.write("        return new ExpectedCmd() {\n");
         out.write("            @Override\n");
         out.write("            public boolean match(ArsdkCommand cmd, boolean checkParams) {\n");
@@ -135,7 +119,7 @@ def gen_feature_expected_cmd(feature, cls, cmds, out):
         out.write("                    int i = 0;\n")
         for arg in cmd.args:
             out.write("                    %s _%s = %s;\n",
-                      javatests_arg_type(arg, True, feature), java_arg_name(arg), java_arg_reader(arg))
+                      java_arg_type(arg, True, feature), java_arg_name(arg), java_arg_reader(arg))
             out.write("                    if (!%s) {\n", java_comparator(arg, "_%s" % java_arg_name(arg)))
             out.write("                        if (i++ > 0) description.appendText(\", \");\n")
             out.write("                        description.appendText(\"%s was \").appendValue(%s);\n",
@@ -152,7 +136,7 @@ def gen_feature_encoder(feature, cls, evts, out):
     for evt in sorted(evts, key=lambda evt: evt.cmdId):
         out.write("    public static ArsdkCommand %s(%s) {\n",
                   java_method_name("encode_" + feature.name +  ("_"+ cls.name if cls else "") + "_"+ evt.name),
-                  ", ".join(javatests_arg_type(arg, False, feature) + " " + java_arg_name(arg) for arg in evt.args))
+                  ", ".join(java_arg_type(arg, False, feature) + " " + java_arg_name(arg) for arg in evt.args))
         out.write("        ArsdkCommandEncoder enc = new ArsdkCommandEncoder();\n")
         out.write("        enc.writeByte((byte)%d).writeByte((byte)%d).writeShort((short)%d);\n",
                   feature.featureId, (cls.classId if cls else 0), evt.cmdId)

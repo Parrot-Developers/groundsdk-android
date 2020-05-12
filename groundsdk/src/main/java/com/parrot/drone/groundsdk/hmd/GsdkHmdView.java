@@ -328,7 +328,7 @@ public final class GsdkHmdView extends FrameLayout {
      *
      * @return configured right lens horizontal offset
      *
-     * @see #setLeftLensOffset(double)
+     * @see #setLensesVerticalOffset(double)
      */
     public double getLensesVerticalOffset() {
         return mLensesVerticalOffset;

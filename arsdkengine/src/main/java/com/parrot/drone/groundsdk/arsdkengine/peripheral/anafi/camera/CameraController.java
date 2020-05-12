@@ -141,6 +141,11 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     private static final StorageEntry<CameraExposure.IsoSensitivity>
             MAX_ISO_SENSITIVITY_PRESET = StorageEntry.ofEnum("maxIsoSensitivity", CameraExposure.IsoSensitivity.class);
 
+    /** Auto exposure metering mode preset entry. */
+    private static final StorageEntry<CameraExposure.AutoExposureMeteringMode>
+            AUTO_EXPOSURE_METERING_MODE_PRESET = StorageEntry.ofEnum(
+            "autoExposureMeteringMode", CameraExposure.AutoExposureMeteringMode.class);
+
     /** EV compensation preset entry. */
     private static final StorageEntry<CameraEvCompensation>
             EV_COMPENSATION_PRESET = StorageEntry.ofEnum("evCompensation", CameraEvCompensation.class);
@@ -238,6 +243,11 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     private static final StorageEntry<EnumSet<CameraExposure.IsoSensitivity>>
             SUPPORTED_MAX_ISO_SENSITIVITIES_SETTING = StorageEntry.ofEnumSet(
             "maxIsoSensitivities", CameraExposure.IsoSensitivity.class);
+
+    /** Supported auto exposure metering modes device setting. */
+    private static final StorageEntry<EnumSet<CameraExposure.AutoExposureMeteringMode>>
+            SUPPORTED_AUTO_EXPOSURE_METERING_MODES_SETTING = StorageEntry.ofEnumSet(
+            "supportedAutoExposureMeteringModes", CameraExposure.AutoExposureMeteringMode.class);
 
     /** Supported EV compensation values device setting. */
     private static final StorageEntry<EnumSet<CameraEvCompensation>>
@@ -358,6 +368,10 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     /** Exposure mode. */
     @Nullable
     private CameraExposure.Mode mExposureMode;
+
+    /** Auto exposure metering mode. */
+    @Nullable
+    private CameraExposure.AutoExposureMeteringMode mAutoExposureMeteringMode;
 
     /** Manual shutter speed. */
     @Nullable
@@ -534,7 +548,10 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     @Override
     public void onCameraCapabilities(@NonNull EnumSet<Camera.Mode> modes,
                                      @NonNull EnumSet<CameraEvCompensation> exposureCompensationValues,
-                                     @NonNull EnumSet<CameraExposure.Mode> exposureModes, boolean exposureLock,
+                                     @NonNull EnumSet<CameraExposure.Mode> exposureModes,
+                                     @NonNull EnumSet<CameraExposure.AutoExposureMeteringMode>
+                                                 autoExposureMeteringModes,
+                                     boolean exposureLock,
                                      boolean exposureRoiLock,
                                      @NonNull EnumSet<CameraWhiteBalance.Mode> whiteBalanceModes,
                                      @NonNull EnumSet<CameraWhiteBalance.Temperature> whiteBalanceTemperatures,
@@ -547,6 +564,7 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         SUPPORTED_MODES_SETTING.save(mSettingsDict, modes);
         SUPPORTED_EV_COMPENSATIONS_SETTING.save(mSettingsDict, exposureCompensationValues);
         SUPPORTED_EXPOSURE_MODES_SETTING.save(mSettingsDict, exposureModes);
+        SUPPORTED_AUTO_EXPOSURE_METERING_MODES_SETTING.save(mSettingsDict, autoExposureMeteringModes);
         SUPPORTED_WHITE_BALANCE_MODES_SETTING.save(mSettingsDict, whiteBalanceModes);
         SUPPORTED_WHITE_BALANCE_TEMPERATURES_SETTING.save(mSettingsDict, whiteBalanceTemperatures);
         SUPPORTED_STYLES_SETTING.save(mSettingsDict, styles);
@@ -562,6 +580,7 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         updateCameraSupportedEVCompensationValues();
 
         mCamera.exposure().updateSupportedModes(exposureModes);
+        mCamera.exposure().updateSupportedAutoExposureMeteringModes(autoExposureMeteringModes);
 
         // TODO : exposure/ROI lock support
 
@@ -704,7 +723,8 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                                    @NonNull CameraExposure.Mode mode,
                                    @NonNull CameraExposure.ShutterSpeed manualShutterSpeed,
                                    @NonNull CameraExposure.IsoSensitivity manualIsoSensitivity,
-                                   @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity) {
+                                   @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                   @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
 
         SUPPORTED_SHUTTER_SPEEDS_SETTING.save(mSettingsDict, supportedShutterSpeeds);
         SUPPORTED_ISO_SENSITIVITIES_SETTING.save(mSettingsDict, supportedManualIsoSensitivities);
@@ -716,6 +736,7 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         setting.updateMaximumIsoSensitivities(supportedMaxIsoSensitivities);
 
         mExposureMode = mode;
+        mAutoExposureMeteringMode = autoExposureMeteringMode;
         mShutterSpeed = manualShutterSpeed;
         mIsoSensitivity = manualIsoSensitivity;
         mMaxIsoSensitivity = maxIsoSensitivity;
@@ -735,7 +756,8 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                 case AUTOMATIC:
                 case AUTOMATIC_PREFER_SHUTTER_SPEED:
                 case AUTOMATIC_PREFER_ISO_SENSITIVITY:
-                    setting.updateMaxIsoSensitivity(maxIsoSensitivity);
+                    setting.updateMaxIsoSensitivity(maxIsoSensitivity)
+                           .updateAutoExposureMeteringMode(autoExposureMeteringMode);
                     break;
             }
             updateCameraSupportedEVCompensationValues();
@@ -1077,6 +1099,12 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
             mCamera.exposure().updateMaximumIsoSensitivities(maxIsoSensitivities);
         }
 
+        EnumSet<CameraExposure.AutoExposureMeteringMode> autoExposureMeteringModes =
+                SUPPORTED_AUTO_EXPOSURE_METERING_MODES_SETTING.load(mSettingsDict);
+        if (autoExposureMeteringModes != null) {
+            mCamera.exposure().updateSupportedAutoExposureMeteringModes(autoExposureMeteringModes);
+        }
+
         EnumSet<CameraEvCompensation> supportedEvCompensations = SUPPORTED_EV_COMPENSATIONS_SETTING.load(mSettingsDict);
         if (supportedEvCompensations != null) {
             mCamera.exposureCompensation().updateAvailableValues(supportedEvCompensations);
@@ -1154,8 +1182,9 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         }
 
         applyEvCompensation(EV_COMPENSATION_PRESET.load(mPresetDict));
-        applyExposureSettings(EXPOSURE_MODE_PRESET.load(mPresetDict), SHUTTER_SPEED_PRESET.load(mPresetDict),
-                ISO_SENSITIVITY_PRESET.load(mPresetDict), MAX_ISO_SENSITIVITY_PRESET.load(mPresetDict));
+        applyExposureSettings(EXPOSURE_MODE_PRESET.load(mPresetDict),
+                SHUTTER_SPEED_PRESET.load(mPresetDict), ISO_SENSITIVITY_PRESET.load(mPresetDict),
+                MAX_ISO_SENSITIVITY_PRESET.load(mPresetDict), AUTO_EXPOSURE_METERING_MODE_PRESET.load(mPresetDict));
         applyWhiteBalanceSettings(WHITE_BALANCE_MODE_PRESET.load(mPresetDict),
                 WHITE_BALANCE_TEMPERATURE_PRESET.load(mPresetDict));
         applyStyle(STYLE_PRESET.load(mPresetDict));
@@ -1446,10 +1475,11 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
      * <li>Updates the peripheral's setting accordingly.</li>
      * </ul>
      *
-     * @param mode              exposure mode to apply
-     * @param shutterSpeed      shutter speed to apply
-     * @param isoSensitivity    manual ISO sensitivity to apply
-     * @param maxIsoSensitivity auto maximum ISO sensitivity to apply
+     * @param mode                      exposure mode to apply
+     * @param shutterSpeed              shutter speed to apply
+     * @param isoSensitivity            manual ISO sensitivity to apply
+     * @param maxIsoSensitivity         auto maximum ISO sensitivity to apply
+     * @param autoExposureMeteringMode  auto exposure metering mode to apply
      *
      * @return {@code true} if a command was sent to the device and the peripheral's setting should arm its updating
      *         flag
@@ -1457,11 +1487,13 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     private boolean applyExposureSettings(@Nullable CameraExposure.Mode mode,
                                           @Nullable CameraExposure.ShutterSpeed shutterSpeed,
                                           @Nullable CameraExposure.IsoSensitivity isoSensitivity,
-                                          @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity) {
+                                          @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                          @Nullable CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
         if ((mode = validateExposureMode(mode)) == null
             || (shutterSpeed = validateShutterSpeed(mode, shutterSpeed)) == null
             || (isoSensitivity = validateIsoSensitivity(mode, isoSensitivity)) == null
-            || (maxIsoSensitivity = validateMaximumIsoSensitivity(mode, maxIsoSensitivity)) == null) {
+            || (maxIsoSensitivity = validateMaximumIsoSensitivity(mode, maxIsoSensitivity)) == null
+            || (autoExposureMeteringMode = validateAutoExposureMeteringMode(mode, autoExposureMeteringMode)) == null) {
             return false;
         }
 
@@ -1475,19 +1507,24 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                             || ((mode == CameraExposure.Mode.AUTOMATIC
                                  || mode == CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED
                                  || mode == CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
-                                && maxIsoSensitivity != mMaxIsoSensitivity))
-                           && sendExposureSettings(mode, shutterSpeed, isoSensitivity, maxIsoSensitivity);
+                                && (maxIsoSensitivity != mMaxIsoSensitivity
+                                || autoExposureMeteringMode != mAutoExposureMeteringMode)
+                            ))
+                           && sendExposureSettings(mode, shutterSpeed, isoSensitivity, maxIsoSensitivity,
+                autoExposureMeteringMode);
 
         mExposureMode = mode;
         mShutterSpeed = shutterSpeed;
         mIsoSensitivity = isoSensitivity;
         mMaxIsoSensitivity = maxIsoSensitivity;
+        mAutoExposureMeteringMode = autoExposureMeteringMode;
 
         mCamera.exposure()
                .updateMode(mode)
                .updateShutterSpeed(shutterSpeed)
                .updateIsoSensitivity(isoSensitivity)
-               .updateMaxIsoSensitivity(maxIsoSensitivity);
+               .updateMaxIsoSensitivity(maxIsoSensitivity)
+               .updateAutoExposureMeteringMode(autoExposureMeteringMode);
 
         updateCameraSupportedEVCompensationValues();
 
@@ -2242,6 +2279,43 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
     }
 
     /**
+     * Validates an auto exposure metering mode.
+     * <p>
+     * In case the provided auto exposure metering mode is {@code null}, fallbacks on the current {@link
+     * #mAutoExposureMeteringMode auto exposure metering mode} if not {@code null}, or else on the setting's current
+     * value. <br/> If the given mode is {@link CameraExposure.Mode#AUTOMATIC},
+     * {@link CameraExposure.Mode#AUTOMATIC_PREFER_SHUTTER_SPEED}
+     * or {@link CameraExposure.Mode#AUTOMATIC_PREFER_ISO_SENSITIVITY}, then the resulting value is checked to be in the
+     * current set of auto exposure metering modes supported by the component, otherwise validation fails. For any
+     * other given mode, then any given value or any computed fallback will not be checked against the current set of
+     * available values and will pass validation as-is.
+     *
+     * @param mode                      exposure mode for which to validate the auto exposure metering mode
+     * @param autoExposureMeteringMode  auto exposure metering mode to validate
+     *
+     * @return the given auto exposure metering mode, or a usable fallback value in case it's {@code null}, if the
+     *         given value is valid or if the given mode is neither {@code AUTOMATIC} nor {@code
+     *         AUTOMATIC_PREFER_ISO_SENSITIVITY} nor {@code AUTOMATIC_PREFER_SHUTTER_SPEED}, otherwise {@code null}
+     */
+    @Nullable
+    private CameraExposure.AutoExposureMeteringMode validateAutoExposureMeteringMode(
+            @NonNull CameraExposure.Mode mode,
+            @Nullable CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if (autoExposureMeteringMode == null) {
+            if (mAutoExposureMeteringMode != null) {
+                return mAutoExposureMeteringMode;
+            }
+            autoExposureMeteringMode = mCamera.exposure().autoExposureMeteringMode();
+        }
+        if ((mode == CameraExposure.Mode.AUTOMATIC || mode == CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED
+             || mode == CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
+            && !mCamera.exposure().supportedAutoExposureMeteringModes().contains(autoExposureMeteringMode)) {
+            autoExposureMeteringMode = null;
+        }
+        return autoExposureMeteringMode;
+    }
+
+    /**
      * Validates a white balance mode.
      * <p>
      * In case the provided white balance mode is {@code null}, fallbacks on the current {@link #mWhiteBalanceMode white
@@ -2405,13 +2479,16 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         public boolean setExposure(@NonNull CameraExposure.Mode mode,
                                    @NonNull CameraExposure.ShutterSpeed manualShutterSpeed,
                                    @NonNull CameraExposure.IsoSensitivity manualIsoSensitivity,
-                                   @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity) {
-            boolean updating = applyExposureSettings(mode, manualShutterSpeed, manualIsoSensitivity, maxIsoSensitivity);
+                                   @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                   @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+            boolean updating = applyExposureSettings(mode, manualShutterSpeed, manualIsoSensitivity, maxIsoSensitivity,
+                    autoExposureMeteringMode);
 
             EXPOSURE_MODE_PRESET.save(mPresetDict, mode);
             SHUTTER_SPEED_PRESET.save(mPresetDict, manualShutterSpeed);
             ISO_SENSITIVITY_PRESET.save(mPresetDict, manualIsoSensitivity);
             MAX_ISO_SENSITIVITY_PRESET.save(mPresetDict, maxIsoSensitivity);
+            AUTO_EXPOSURE_METERING_MODE_PRESET.save(mPresetDict, autoExposureMeteringMode);
 
             if (!updating) {
                 mCamera.notifyUpdated();

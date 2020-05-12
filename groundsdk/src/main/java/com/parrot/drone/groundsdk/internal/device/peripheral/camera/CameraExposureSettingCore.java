@@ -50,17 +50,20 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         /**
          * Sets exposure settings.
          *
-         * @param mode                 exposure mode to set
-         * @param manualShutterSpeed   manual shutter speed to set
-         * @param manualIsoSensitivity manual ISO sensitivity to set
-         * @param maxIsoSensitivity    maximum ISO sensitivity to set
+         * @param mode                      exposure mode to set
+         * @param manualShutterSpeed        manual shutter speed to set
+         * @param manualIsoSensitivity      manual ISO sensitivity to set
+         * @param maxIsoSensitivity         maximum ISO sensitivity to set
+         * @param autoExposureMeteringMode  auto exposure metering mode to set
          *
          * @return {@code true} to make the setting update to the requested values and switch to the updating state
          *         now, otherwise {@code false}
          */
-        boolean setExposure(@NonNull CameraExposure.Mode mode, @NonNull CameraExposure.ShutterSpeed manualShutterSpeed,
+        boolean setExposure(@NonNull CameraExposure.Mode mode,
+                            @NonNull CameraExposure.ShutterSpeed manualShutterSpeed,
                             @NonNull CameraExposure.IsoSensitivity manualIsoSensitivity,
-                            @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity);
+                            @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode);
     }
 
     /** Backend that processes value changes from the user. */
@@ -87,6 +90,10 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @NonNull
     private final EnumSet<CameraExposure.IsoSensitivity> mMaximumIsoSensitivities;
 
+    /** Supported auto exposure metering modes. */
+    @NonNull
+    private final EnumSet<CameraExposure.AutoExposureMeteringMode> mSupportedAutoExposureMeteringModes;
+
     /** Current exposure mode. */
     @NonNull
     private CameraExposure.Mode mMode;
@@ -103,6 +110,10 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @NonNull
     private CameraExposure.IsoSensitivity mMaxIsoSensitivity;
 
+    /** Current auto exposure metering mode. */
+    @NonNull
+    private CameraExposure.AutoExposureMeteringMode mAutoExposureMeteringMode;
+
     /** Default mode. */
     private static final CameraExposure.Mode DEFAULT_MODE = CameraExposure.Mode.AUTOMATIC;
 
@@ -115,6 +126,10 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     /** Default maximum automatic ISO sensitivity. */
     private static final CameraExposure.IsoSensitivity DEFAULT_MAX_ISO_SENSITIVITY =
             CameraExposure.IsoSensitivity.ISO_3200;
+
+    /** Default auto exposure metering mode. */
+    private static final CameraExposure.AutoExposureMeteringMode DEFAULT_AUTO_EXPOSURE_METERING_MODE
+            = CameraExposure.AutoExposureMeteringMode.STANDARD;
 
     /**
      * Constructor.
@@ -129,10 +144,12 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         mSupportedShutterSpeeds = EnumSet.noneOf(CameraExposure.ShutterSpeed.class);
         mSupportedIsoSensitivities = EnumSet.noneOf(CameraExposure.IsoSensitivity.class);
         mMaximumIsoSensitivities = EnumSet.noneOf(CameraExposure.IsoSensitivity.class);
+        mSupportedAutoExposureMeteringModes = EnumSet.noneOf(CameraExposure.AutoExposureMeteringMode.class);
         mMode = DEFAULT_MODE;
         mShutterSpeed = DEFAULT_SHUTTER_SPEED;
         mIsoSensitivity = DEFAULT_ISO_SENSITIVITY;
         mMaxIsoSensitivity = DEFAULT_MAX_ISO_SENSITIVITY;
+        mAutoExposureMeteringMode = DEFAULT_AUTO_EXPOSURE_METERING_MODE;
     }
 
     @Override
@@ -156,7 +173,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @Override
     public CameraExposure.Setting setMode(@NonNull CameraExposure.Mode mode) {
         if (mMode != mode && mSupportedModes.contains(mode)) {
-            sendSettings(mode, null, null, null);
+            sendSettings(mode, null, null, null, null);
         }
         return this;
     }
@@ -177,7 +194,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @Override
     public CameraExposure.Setting setManualShutterSpeed(@NonNull CameraExposure.ShutterSpeed shutterSpeed) {
         if (mShutterSpeed != shutterSpeed && mSupportedShutterSpeeds.contains(shutterSpeed)) {
-            sendSettings(null, shutterSpeed, null, null);
+            sendSettings(null, shutterSpeed, null, null, null);
         }
         return this;
     }
@@ -198,7 +215,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @Override
     public CameraExposure.Setting setManualIsoSensitivity(@NonNull CameraExposure.IsoSensitivity isoSensitivity) {
         if (mIsoSensitivity != isoSensitivity && mSupportedIsoSensitivities.contains(isoSensitivity)) {
-            sendSettings(null, null, isoSensitivity, null);
+            sendSettings(null, null, isoSensitivity, null, null);
         }
         return this;
     }
@@ -219,7 +236,30 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     @Override
     public CameraExposure.Setting setMaxIsoSensitivity(@NonNull CameraExposure.IsoSensitivity maxIsoSensitivity) {
         if (mMaxIsoSensitivity != maxIsoSensitivity && mMaximumIsoSensitivities.contains(maxIsoSensitivity)) {
-            sendSettings(null, null, null, maxIsoSensitivity);
+            sendSettings(null, null, null, maxIsoSensitivity, null);
+        }
+        return this;
+    }
+
+    @NonNull
+    @Override
+    public EnumSet<CameraExposure.AutoExposureMeteringMode> supportedAutoExposureMeteringModes() {
+        return EnumSet.copyOf(mSupportedAutoExposureMeteringModes);
+    }
+
+    @NonNull
+    @Override
+    public CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode() {
+        return mAutoExposureMeteringMode;
+    }
+
+    @NonNull
+    @Override
+    public CameraExposure.Setting setAutoExposureMeteringMode(
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if (mAutoExposureMeteringMode != autoExposureMeteringMode
+            && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(null, null, null, null, autoExposureMeteringMode);
         }
         return this;
     }
@@ -229,7 +269,28 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         if ((mMode != CameraExposure.Mode.AUTOMATIC || mMaxIsoSensitivity != maxIsoSensitivity)
             && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC)
             && mMaximumIsoSensitivities.contains(maxIsoSensitivity)) {
-            sendSettings(CameraExposure.Mode.AUTOMATIC, null, null, maxIsoSensitivity);
+            sendSettings(CameraExposure.Mode.AUTOMATIC, null, null, maxIsoSensitivity, null);
+        }
+    }
+
+    @Override
+    public void setAutoMode(@NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if ((mMode != CameraExposure.Mode.AUTOMATIC || mAutoExposureMeteringMode != autoExposureMeteringMode)
+            && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC)
+            && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC, null, null, null, autoExposureMeteringMode);
+        }
+    }
+
+    @Override
+    public void setAutoMode(@NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+                            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if((mMode != CameraExposure.Mode.AUTOMATIC || mMaxIsoSensitivity != maxIsoSensitivity
+            || mAutoExposureMeteringMode != autoExposureMeteringMode)
+           && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC)
+           && mMaximumIsoSensitivities.contains(maxIsoSensitivity)
+           && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC, null, null, maxIsoSensitivity, autoExposureMeteringMode);
         }
     }
 
@@ -238,7 +299,33 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         if ((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED || mMaxIsoSensitivity != maxIsoSensitivity)
             && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED)
             && mMaximumIsoSensitivities.contains(maxIsoSensitivity)) {
-            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED, null, null, maxIsoSensitivity);
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED, null, null, maxIsoSensitivity,
+                    mAutoExposureMeteringMode);
+        }
+    }
+
+    @Override
+    public void setAutoPreferShutterSpeedMode(
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if ((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED
+             || mAutoExposureMeteringMode != autoExposureMeteringMode)
+            && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED)
+            && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED, null, null, null, autoExposureMeteringMode);
+        }
+    }
+
+    @Override
+    public void setAutoPreferShutterSpeedMode(
+            @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if ((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED || mMaxIsoSensitivity != maxIsoSensitivity
+             || mAutoExposureMeteringMode != autoExposureMeteringMode)
+            && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED)
+            && mMaximumIsoSensitivities.contains(maxIsoSensitivity)
+            && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED, null, null, maxIsoSensitivity,
+                    autoExposureMeteringMode);
         }
     }
 
@@ -247,7 +334,33 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         if ((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY || mMaxIsoSensitivity != maxIsoSensitivity)
             && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
             && mMaximumIsoSensitivities.contains(maxIsoSensitivity)) {
-            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY, null, null, maxIsoSensitivity);
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY, null, null, maxIsoSensitivity, null);
+        }
+    }
+
+    @Override
+    public void setAutoPreferIsoSensitivityMode(
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if ((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY
+             || mAutoExposureMeteringMode != autoExposureMeteringMode)
+            && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
+            && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY, null, null, null,
+                    autoExposureMeteringMode);
+        }
+    }
+
+    @Override
+    public void setAutoPreferIsoSensitivityMode(
+            @NonNull CameraExposure.IsoSensitivity maxIsoSensitivity,
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if((mMode != CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY || mMaxIsoSensitivity != maxIsoSensitivity
+            || mAutoExposureMeteringMode != autoExposureMeteringMode)
+        && mSupportedModes.contains(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
+        && mMaximumIsoSensitivities.contains(maxIsoSensitivity)
+        && mSupportedAutoExposureMeteringModes.contains(autoExposureMeteringMode)) {
+            sendSettings(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY, null, null, maxIsoSensitivity,
+                    autoExposureMeteringMode);
         }
     }
 
@@ -256,7 +369,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         if ((mMode != CameraExposure.Mode.MANUAL_SHUTTER_SPEED || mShutterSpeed != shutterSpeed)
             && mSupportedModes.contains(CameraExposure.Mode.MANUAL_SHUTTER_SPEED)
             && mSupportedShutterSpeeds.contains(shutterSpeed)) {
-            sendSettings(CameraExposure.Mode.MANUAL_SHUTTER_SPEED, shutterSpeed, null, null);
+            sendSettings(CameraExposure.Mode.MANUAL_SHUTTER_SPEED, shutterSpeed, null, null, null);
         }
     }
 
@@ -265,7 +378,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
         if ((mMode != CameraExposure.Mode.MANUAL_ISO_SENSITIVITY || mIsoSensitivity != isoSensitivity)
             && mSupportedModes.contains(CameraExposure.Mode.MANUAL_ISO_SENSITIVITY)
             && mSupportedIsoSensitivities.contains(isoSensitivity)) {
-            sendSettings(CameraExposure.Mode.MANUAL_ISO_SENSITIVITY, null, isoSensitivity, null);
+            sendSettings(CameraExposure.Mode.MANUAL_ISO_SENSITIVITY, null, isoSensitivity, null, null);
         }
     }
 
@@ -276,7 +389,7 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
             && mSupportedModes.contains(CameraExposure.Mode.MANUAL)
             && mSupportedShutterSpeeds.contains(shutterSpeed)
             && mSupportedIsoSensitivities.contains(isoSensitivity)) {
-            sendSettings(CameraExposure.Mode.MANUAL, shutterSpeed, isoSensitivity, null);
+            sendSettings(CameraExposure.Mode.MANUAL, shutterSpeed, isoSensitivity, null, null);
         }
     }
 
@@ -338,6 +451,23 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     public CameraExposureSettingCore updateMaximumIsoSensitivities(
             @NonNull Collection<CameraExposure.IsoSensitivity> isos) {
         if (mMaximumIsoSensitivities.retainAll(isos) | mMaximumIsoSensitivities.addAll(isos)) {
+            mController.notifyChange(false);
+        }
+        return this;
+    }
+
+    /**
+     * Updates supported auto exposure metering modes.
+     *
+     * @param autoExposureMeteringModes supported auto exposure metering modes
+     *
+     * @return {@code this}, to allow chained calls
+     */
+    @NonNull
+    public CameraExposureSettingCore updateSupportedAutoExposureMeteringModes(
+            @NonNull Collection<CameraExposure.AutoExposureMeteringMode> autoExposureMeteringModes) {
+        if (mSupportedAutoExposureMeteringModes.retainAll(autoExposureMeteringModes)
+            | mSupportedAutoExposureMeteringModes.addAll(autoExposureMeteringModes)) {
             mController.notifyChange(false);
         }
         return this;
@@ -409,6 +539,23 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     }
 
     /**
+     * Updates current auto exposure metering mode.
+     *
+     * @param autoExposureMeteringMode auto exposure metering mode
+     *
+     * @return {@code this}, to allow chained calls
+     */
+    @NonNull
+    public CameraExposureSettingCore updateAutoExposureMeteringMode(
+            @NonNull CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
+        if (mController.cancelRollback() || mAutoExposureMeteringMode != autoExposureMeteringMode) {
+            mAutoExposureMeteringMode = autoExposureMeteringMode;
+            mController.notifyChange(false);
+        }
+        return this;
+    }
+
+    /**
      * Cancels any pending rollback.
      */
     void cancelRollback() {
@@ -420,26 +567,31 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
     /**
      * Sends exposure settings to backend.
      *
-     * @param mode              exposure mode to set, {@code null} to use {@link #mMode current mode}
-     * @param shutterSpeed      manual shutter speed to set, {@code null} to use
-     *                          {@link #mShutterSpeed current manual shutter speed}
-     * @param isoSensitivity    manual ISO sensitivity to set, {@code null} to use
-     *                          {@link #mIsoSensitivity current manual ISO sensitivity}
-     * @param maxIsoSensitivity maximum ISO sensitivity to set, {@code null} to use
-     *                          {@link #mMaxIsoSensitivity current maximum ISO sensitivity}
+     * @param mode                      exposure mode to set, {@code null} to use {@link #mMode current mode}
+     * @param shutterSpeed              manual shutter speed to set, {@code null} to use
+     *                                  {@link #mShutterSpeed current manual shutter speed}
+     * @param isoSensitivity            manual ISO sensitivity to set, {@code null} to use
+     *                                  {@link #mIsoSensitivity current manual ISO sensitivity}
+     * @param maxIsoSensitivity         maximum ISO sensitivity to set, {@code null} to use
+     *                                  {@link #mMaxIsoSensitivity current maximum ISO sensitivity}
+     * @param autoExposureMeteringMode  auto exposure metering mode to set, {@code null} to use
+     *                                  {@link #mAutoExposureMeteringMode current auto exposure metering mode}
      */
     private void sendSettings(@Nullable CameraExposure.Mode mode,
                               @Nullable CameraExposure.ShutterSpeed shutterSpeed,
                               @Nullable CameraExposure.IsoSensitivity isoSensitivity,
-                              @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity) {
+                              @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity,
+                              @Nullable CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
         CameraExposure.Mode rollbackMode = mMode;
+        CameraExposure.AutoExposureMeteringMode rollbackAutoExposureMeteringMode = mAutoExposureMeteringMode;
         CameraExposure.ShutterSpeed rollbackShutterSpeed = mShutterSpeed;
         CameraExposure.IsoSensitivity rollbackIsoSensitivity = mIsoSensitivity;
         CameraExposure.IsoSensitivity rollbackMaxIsoSensitivity = mMaxIsoSensitivity;
         if (mBackend.setExposure(mode == null ? mMode : mode,
                 shutterSpeed == null ? mShutterSpeed : shutterSpeed,
                 isoSensitivity == null ? mIsoSensitivity : isoSensitivity,
-                maxIsoSensitivity == null ? mMaxIsoSensitivity : maxIsoSensitivity)) {
+                maxIsoSensitivity == null ? mMaxIsoSensitivity : maxIsoSensitivity,
+                autoExposureMeteringMode == null ? mAutoExposureMeteringMode : autoExposureMeteringMode)) {
             if (mode != null) {
                 mMode = mode;
             }
@@ -452,11 +604,15 @@ public final class CameraExposureSettingCore extends CameraExposure.Setting {
             if (maxIsoSensitivity != null) {
                 mMaxIsoSensitivity = maxIsoSensitivity;
             }
+            if (autoExposureMeteringMode != null) {
+                mAutoExposureMeteringMode = autoExposureMeteringMode;
+            }
             mController.postRollback(() -> {
                 mMode = rollbackMode;
                 mShutterSpeed = rollbackShutterSpeed;
                 mIsoSensitivity = rollbackIsoSensitivity;
                 mMaxIsoSensitivity = rollbackMaxIsoSensitivity;
+                mAutoExposureMeteringMode = rollbackAutoExposureMeteringMode;
             });
         }
     }

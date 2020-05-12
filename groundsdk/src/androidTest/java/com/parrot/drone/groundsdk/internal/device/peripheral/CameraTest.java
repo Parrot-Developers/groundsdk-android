@@ -90,10 +90,12 @@ import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpToDat
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpdatingTo;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingSupports;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingValueIs;
+import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingAutoExposureMeteringModeIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingManualIsoIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingManualShutterSpeedIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingMaxIsoIs;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingModeIs;
+import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsAutoExposureMeteringMode;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsManualIsos;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsManualShutterSpeeds;
 import static com.parrot.drone.groundsdk.ExposureSettingMatcher.exposureSettingSupportsMaxIsos;
@@ -262,7 +264,10 @@ public class CameraTest {
                    .updateSupportedIsoSensitivities(EnumSet.of(CameraExposure.IsoSensitivity.ISO_50,
                            CameraExposure.IsoSensitivity.ISO_200, CameraExposure.IsoSensitivity.ISO_1200))
                    .updateMaximumIsoSensitivities(EnumSet.of(CameraExposure.IsoSensitivity.ISO_64,
-                           CameraExposure.IsoSensitivity.ISO_160, CameraExposure.IsoSensitivity.ISO_1600));
+                           CameraExposure.IsoSensitivity.ISO_160, CameraExposure.IsoSensitivity.ISO_1600))
+                   .updateSupportedAutoExposureMeteringModes(EnumSet.of(
+                           CameraExposure.AutoExposureMeteringMode.STANDARD,
+                           CameraExposure.AutoExposureMeteringMode.CENTER_TOP));
 
         mCameraImpl.publish();
 
@@ -278,14 +283,18 @@ public class CameraTest {
                 exposureSettingSupportsManualIsos(EnumSet.of(CameraExposure.IsoSensitivity.ISO_50,
                         CameraExposure.IsoSensitivity.ISO_200, CameraExposure.IsoSensitivity.ISO_1200)),
                 exposureSettingSupportsMaxIsos(EnumSet.of(CameraExposure.IsoSensitivity.ISO_64,
-                        CameraExposure.IsoSensitivity.ISO_160, CameraExposure.IsoSensitivity.ISO_1600))));
+                        CameraExposure.IsoSensitivity.ISO_160, CameraExposure.IsoSensitivity.ISO_1600)),
+                exposureSettingSupportsAutoExposureMeteringMode(
+                        EnumSet.of(CameraExposure.AutoExposureMeteringMode.STANDARD,
+                        CameraExposure.AutoExposureMeteringMode.CENTER_TOP))));
 
         // test backend change notification
         mCameraImpl.exposure()
                    .updateMode(CameraExposure.Mode.MANUAL)
                    .updateShutterSpeed(CameraExposure.ShutterSpeed.ONE_OVER_1000)
                    .updateIsoSensitivity(CameraExposure.IsoSensitivity.ISO_200)
-                   .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_1600);
+                   .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_1600)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
         mCameraImpl.notifyUpdated();
 
         assertThat(mComponentChangeCnt, is(2));
@@ -294,6 +303,7 @@ public class CameraTest {
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE_OVER_1000),
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_200),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_1600),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
                 settingIsUpToDate()));
 
         // test individual setters
@@ -386,7 +396,7 @@ public class CameraTest {
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_1200),
                 settingIsUpToDate()));
 
-        // move to automatic to test maximum iso sensitivity
+        // move to automatic to test maximum iso sensitivity & automatic exposure metering mode
         mCamera.exposure().setMode(CameraExposure.Mode.AUTOMATIC);
 
         assertThat(mComponentChangeCnt, is(11));
@@ -422,14 +432,52 @@ public class CameraTest {
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_64),
                 settingIsUpToDate()));
 
+        // automatic exposure metering mode
+        mCamera.exposure().setAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.STANDARD);
+
+        assertThat(mComponentChangeCnt, is(15));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.STANDARD));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure().updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.STANDARD);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(16));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpToDate()));
+
+        // unsupported value
+        mCameraImpl.exposure().updateSupportedAutoExposureMeteringModes(EnumSet.of(
+                CameraExposure.AutoExposureMeteringMode.STANDARD));
+        mCameraImpl.publish();
+        assertThat(mComponentChangeCnt, is(17));
+        mCamera.exposure().setAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+
+        assertThat(mComponentChangeCnt, is(17));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.STANDARD));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpToDate()));
+
+        // adding AutoExposureMeteringMode#CENTER_TOP capability
+        mCameraImpl.exposure().updateSupportedAutoExposureMeteringModes(EnumSet.of(
+                CameraExposure.AutoExposureMeteringMode.STANDARD, CameraExposure.AutoExposureMeteringMode.CENTER_TOP));
+        mCameraImpl.publish();
+
+        assertThat(mComponentChangeCnt, is(18));
+
+
         // test global setters
 
-        // auto mode
+        // auto mode with max iso sensitivity
         mBackend.mExposureMode = null;
         mBackend.mMaxIso = null;
         mCamera.exposure().setAutoMode(CameraExposure.IsoSensitivity.ISO_160);
 
-        assertThat(mComponentChangeCnt, is(15));
+        assertThat(mComponentChangeCnt, is(19));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC));
         assertThat(mBackend.mMaxIso, is(CameraExposure.IsoSensitivity.ISO_160));
         assertThat(mCamera.exposure(), allOf(
@@ -442,18 +490,72 @@ public class CameraTest {
                    .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_160);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(16));
+        assertThat(mComponentChangeCnt, is(20));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
                 settingIsUpToDate()));
 
-        // auto prefer iso mode
+        // auto mode with auto exposure metering mode
+        mBackend.mExposureMode = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+
+        assertThat(mComponentChangeCnt, is(21));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.CENTER_TOP));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(22));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpToDate()));
+
+        // auto mode with both (max iso sensitivity and auto exposure metering mode)
+        mBackend.mExposureMode = null;
+        mBackend.mMaxIso = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoMode(CameraExposure.IsoSensitivity.ISO_160,
+                CameraExposure.AutoExposureMeteringMode.STANDARD);
+
+        assertThat(mComponentChangeCnt, is(23));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC));
+        assertThat(mBackend.mMaxIso, is(CameraExposure.IsoSensitivity.ISO_160));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.STANDARD));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC)
+                   .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_160)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.STANDARD);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(24));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_160),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpToDate()));
+
+        // auto prefer iso mode with max iso sensitivity
         mBackend.mExposureMode = null;
         mBackend.mMaxIso = null;
         mCamera.exposure().setAutoPreferIsoSensitivityMode(CameraExposure.IsoSensitivity.ISO_1600);
 
-        assertThat(mComponentChangeCnt, is(17));
+        assertThat(mComponentChangeCnt, is(25));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY));
         assertThat(mBackend.mMaxIso, is(CameraExposure.IsoSensitivity.ISO_1600));
         assertThat(mCamera.exposure(), allOf(
@@ -466,18 +568,72 @@ public class CameraTest {
                    .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_1600);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(18));
+        assertThat(mComponentChangeCnt, is(26));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_1600),
                 settingIsUpToDate()));
 
-        // auto prefer shutter speed mode
+        // auto prefer iso mode with auto exposure metering mode
+        mBackend.mExposureMode = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoPreferIsoSensitivityMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+
+        assertThat(mComponentChangeCnt, is(27));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.CENTER_TOP));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(28));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpToDate()));
+
+        // auto prefer iso mode with both (max iso sensitivity and auto exposure metering mode)
+        mBackend.mExposureMode = null;
+        mBackend.mMaxIso = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoPreferIsoSensitivityMode(CameraExposure.IsoSensitivity.ISO_64,
+                CameraExposure.AutoExposureMeteringMode.STANDARD);
+
+        assertThat(mComponentChangeCnt, is(29));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY));
+        assertThat(mBackend.mMaxIso, is(CameraExposure.IsoSensitivity.ISO_64));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.STANDARD));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_64),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY)
+                   .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_64)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(30));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_ISO_SENSITIVITY),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_64),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpToDate()));
+
+        // auto prefer shutter speed mode with max iso sensitivity
         mBackend.mExposureMode = null;
         mBackend.mMaxIso = null;
         mCamera.exposure().setAutoPreferShutterSpeedMode(CameraExposure.IsoSensitivity.ISO_64);
 
-        assertThat(mComponentChangeCnt, is(19));
+        assertThat(mComponentChangeCnt, is(31));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED));
         assertThat(mBackend.mMaxIso, is(CameraExposure.IsoSensitivity.ISO_64));
         assertThat(mCamera.exposure(), allOf(
@@ -490,18 +646,72 @@ public class CameraTest {
                    .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_64);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(20));
+        assertThat(mComponentChangeCnt, is(32));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED),
                 exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_64),
                 settingIsUpToDate()));
+
+        // auto prefer shutter speed mode with auto exposure metering mode
+        mBackend.mExposureMode = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoPreferShutterSpeedMode(CameraExposure.AutoExposureMeteringMode.STANDARD);
+
+        assertThat(mComponentChangeCnt, is(33));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.STANDARD));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.STANDARD);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(34));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.STANDARD),
+                settingIsUpToDate()));
+
+        // auto prefer shutter speed mode with both (max iso sensitivity and auto exposure metering mode)
+        mBackend.mExposureMode = null;
+        mBackend.mMaxIso = null;
+        mBackend.mAutoExposureMeteringMode = null;
+        mCamera.exposure().setAutoPreferShutterSpeedMode(CameraExposure.IsoSensitivity.ISO_1600,
+                CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+
+        assertThat(mComponentChangeCnt, is(35));
+        assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED));
+        assertThat(mBackend.mAutoExposureMeteringMode, is(CameraExposure.AutoExposureMeteringMode.CENTER_TOP));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_1600),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpdating()));
+
+        mCameraImpl.exposure()
+                   .updateMode(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED)
+                   .updateMaxIsoSensitivity(CameraExposure.IsoSensitivity.ISO_1600)
+                   .updateAutoExposureMeteringMode(CameraExposure.AutoExposureMeteringMode.CENTER_TOP);
+        mCameraImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(36));
+        assertThat(mCamera.exposure(), allOf(
+                exposureSettingModeIs(CameraExposure.Mode.AUTOMATIC_PREFER_SHUTTER_SPEED),
+                exposureSettingMaxIsoIs(CameraExposure.IsoSensitivity.ISO_1600),
+                exposureSettingAutoExposureMeteringModeIs(CameraExposure.AutoExposureMeteringMode.CENTER_TOP),
+                settingIsUpToDate()));
+
 
         // manual shutter speed mode
         mBackend.mExposureMode = null;
         mBackend.mShutterSpeed = null;
         mCamera.exposure().setManualMode(CameraExposure.ShutterSpeed.ONE_OVER_10000);
 
-        assertThat(mComponentChangeCnt, is(21));
+        assertThat(mComponentChangeCnt, is(37));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.MANUAL_SHUTTER_SPEED));
         assertThat(mBackend.mShutterSpeed, is(CameraExposure.ShutterSpeed.ONE_OVER_10000));
         assertThat(mCamera.exposure(), allOf(
@@ -514,7 +724,7 @@ public class CameraTest {
                    .updateShutterSpeed(CameraExposure.ShutterSpeed.ONE_OVER_10000);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(22));
+        assertThat(mComponentChangeCnt, is(38));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.MANUAL_SHUTTER_SPEED),
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE_OVER_10000),
@@ -527,14 +737,14 @@ public class CameraTest {
                 CameraExposure.Mode.MANUAL_ISO_SENSITIVITY));
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(23));
+        assertThat(mComponentChangeCnt, is(39));
 
         // manual iso sensitivity mode
         mBackend.mExposureMode = null;
         mBackend.mIso = null;
         mCamera.exposure().setManualMode(CameraExposure.IsoSensitivity.ISO_50);
 
-        assertThat(mComponentChangeCnt, is(24));
+        assertThat(mComponentChangeCnt, is(40));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.MANUAL_ISO_SENSITIVITY));
         assertThat(mBackend.mIso, is(CameraExposure.IsoSensitivity.ISO_50));
         assertThat(mCamera.exposure(), allOf(
@@ -547,7 +757,7 @@ public class CameraTest {
                    .updateIsoSensitivity(CameraExposure.IsoSensitivity.ISO_50);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(25));
+        assertThat(mComponentChangeCnt, is(41));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.MANUAL_ISO_SENSITIVITY),
                 exposureSettingManualIsoIs(CameraExposure.IsoSensitivity.ISO_50),
@@ -560,7 +770,7 @@ public class CameraTest {
         mCamera.exposure().setManualMode(CameraExposure.ShutterSpeed.ONE_OVER_1000,
                 CameraExposure.IsoSensitivity.ISO_200);
 
-        assertThat(mComponentChangeCnt, is(26));
+        assertThat(mComponentChangeCnt, is(42));
         assertThat(mBackend.mExposureMode, is(CameraExposure.Mode.MANUAL));
         assertThat(mBackend.mShutterSpeed, is(CameraExposure.ShutterSpeed.ONE_OVER_1000));
         assertThat(mBackend.mIso, is(CameraExposure.IsoSensitivity.ISO_200));
@@ -576,7 +786,7 @@ public class CameraTest {
                    .updateIsoSensitivity(CameraExposure.IsoSensitivity.ISO_200);
         mCameraImpl.notifyUpdated();
 
-        assertThat(mComponentChangeCnt, is(27));
+        assertThat(mComponentChangeCnt, is(43));
         assertThat(mCamera.exposure(), allOf(
                 exposureSettingModeIs(CameraExposure.Mode.MANUAL),
                 exposureSettingManualShutterSpeedIs(CameraExposure.ShutterSpeed.ONE_OVER_1000),
@@ -4915,6 +5125,9 @@ public class CameraTest {
                 CameraRecording.Resolution.RES_480P));
 
         assertThat(EnumSet.allOf(CameraRecording.Framerate.class), contains(
+                CameraRecording.Framerate.FPS_240,
+                CameraRecording.Framerate.FPS_200,
+                CameraRecording.Framerate.FPS_192,
                 CameraRecording.Framerate.FPS_120,
                 CameraRecording.Framerate.FPS_100,
                 CameraRecording.Framerate.FPS_96,
@@ -4924,6 +5137,8 @@ public class CameraTest {
                 CameraRecording.Framerate.FPS_30,
                 CameraRecording.Framerate.FPS_25,
                 CameraRecording.Framerate.FPS_24,
+                CameraRecording.Framerate.FPS_20,
+                CameraRecording.Framerate.FPS_15,
                 CameraRecording.Framerate.FPS_9));
 
         assertThat(EnumSet.allOf(CameraRecording.HyperlapseValue.class), contains(
@@ -4979,6 +5194,8 @@ public class CameraTest {
         private CameraExposure.IsoSensitivity mIso;
 
         private CameraExposure.IsoSensitivity mMaxIso;
+
+        private CameraExposure.AutoExposureMeteringMode mAutoExposureMeteringMode;
 
         private CameraExposureLock.Mode mExposureLockMode;
 
@@ -5056,11 +5273,13 @@ public class CameraTest {
         public boolean setExposure(@NonNull CameraExposure.Mode mode,
                                    @Nullable CameraExposure.ShutterSpeed manualShutterSpeed,
                                    @Nullable CameraExposure.IsoSensitivity manualIsoSensitivity,
-                                   @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity) {
+                                   @Nullable CameraExposure.IsoSensitivity maxIsoSensitivity,
+                                   @Nullable CameraExposure.AutoExposureMeteringMode autoExposureMeteringMode) {
             mExposureMode = mode;
             mShutterSpeed = manualShutterSpeed;
             mIso = manualIsoSensitivity;
             mMaxIso = maxIsoSensitivity;
+            mAutoExposureMeteringMode = autoExposureMeteringMode;
             return true;
         }
 

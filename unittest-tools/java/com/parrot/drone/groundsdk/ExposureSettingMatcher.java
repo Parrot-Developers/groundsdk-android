@@ -67,6 +67,12 @@ public final class ExposureSettingMatcher {
                 CameraExposure.Setting::supportedMaximumIsoSensitivities);
     }
 
+    public static Matcher<CameraExposure.Setting> exposureSettingSupportsAutoExposureMeteringMode(
+            @NonNull Set<CameraExposure.AutoExposureMeteringMode> modes) {
+        return enumSetFeatureMatcher(modes, "autoExposureMeteringModes",
+                CameraExposure.Setting::supportedAutoExposureMeteringModes);
+    }
+
     public static Matcher<CameraExposure.Setting> exposureSettingModeIs(
             @NonNull CameraExposure.Mode mode) {
         return MatcherBuilders.valueMatcher(mode, "mode", CameraExposure.Setting::mode);
@@ -85,6 +91,12 @@ public final class ExposureSettingMatcher {
     public static Matcher<CameraExposure.Setting> exposureSettingMaxIsoIs(
             @NonNull CameraExposure.IsoSensitivity iso) {
         return MatcherBuilders.valueMatcher(iso, "maxIso", CameraExposure.Setting::maxIsoSensitivity);
+    }
+
+    public static Matcher<CameraExposure.Setting> exposureSettingAutoExposureMeteringModeIs(
+            @NonNull CameraExposure.AutoExposureMeteringMode mode) {
+        return MatcherBuilders.valueMatcher(mode, "autoExposureMeteringMode",
+                CameraExposure.Setting::autoExposureMeteringMode);
     }
 
     private ExposureSettingMatcher() {
