@@ -94,39 +94,39 @@ public class SkyControllerMagnetometerTests extends ArsdkEngineTestBase {
     @Test
     public void testCalibrationState() {
         connectRemoteControl(mRemoteControl, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.CALIBRATED, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(true));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.CALIBRATED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 0, 0, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.ASSESSING, 0, 0, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.CALIBRATED, 0, 0, 0));
         assertThat(mChangeCnt, is(4));
-        assertThat(mMagnetometer.isCalibrated(), is(true));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.CALIBRATED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
     }
 
     @Test
     public void testCalibrationProcess() {
         connectRemoteControl(mRemoteControl, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -135,70 +135,70 @@ public class SkyControllerMagnetometerTests extends ArsdkEngineTestBase {
                 ExpectedCmd.skyctrlCalibrationEnableMagnetoCalibrationQualityUpdates(1), true));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(0, 0, 0)));
 
         // starting it again should not send a new command
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(0, 0, 0)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(0, 0, 0)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 128, 0, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(50, 0, 0)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 128, 128, 0));
         assertThat(mChangeCnt, is(4));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(50, 50, 0)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 128, 128, 128));
         assertThat(mChangeCnt, is(5));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(50, 50, 50)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, -1, 256, 1234));
         assertThat(mChangeCnt, is(6));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.isInRange()));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.UNRELIABLE, 255, 255, 255));
         assertThat(mChangeCnt, is(7));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(100, 100, 100)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.ASSESSING, 255, 255, 255));
         assertThat(mChangeCnt, is(7));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(100, 100, 100)));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeSkyctrlCalibrationStateMagnetoCalibrationState(
                 ArsdkFeatureSkyctrl.CalibrationstateMagnetocalibrationstateStatus.CALIBRATED, 255, 255, 255));
         assertThat(mChangeCnt, is(8));
-        assertThat(mMagnetometer.isCalibrated(), is(true));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.CALIBRATED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(100, 100, 100)));
     }
@@ -206,7 +206,7 @@ public class SkyControllerMagnetometerTests extends ArsdkEngineTestBase {
     @Test
     public void testCalibrationProcessCancel() {
         connectRemoteControl(mRemoteControl, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -215,7 +215,7 @@ public class SkyControllerMagnetometerTests extends ArsdkEngineTestBase {
                 ExpectedCmd.skyctrlCalibrationEnableMagnetoCalibrationQualityUpdates(1), true));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer1StepCalibrationProcessStateMatcher.is(0, 0, 0)));
 
@@ -223,7 +223,7 @@ public class SkyControllerMagnetometerTests extends ArsdkEngineTestBase {
                 ExpectedCmd.skyctrlCalibrationEnableMagnetoCalibrationQualityUpdates(0), true));
         mMagnetometer.cancelCalibrationProcess();
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
     }
 }

@@ -39,11 +39,11 @@ import android.view.LayoutInflater;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.parrot.drone.groundsdkdemo.R;
 
 public class ToggleSettingView extends LinearLayout {
@@ -55,7 +55,7 @@ public class ToggleSettingView extends LinearLayout {
 
     private final TextView mTitleText;
 
-    private final Switch mEnableSwitch;
+    private final SwitchMaterial mEnableSwitch;
 
     private final ProgressBar mUpdatingView;
 

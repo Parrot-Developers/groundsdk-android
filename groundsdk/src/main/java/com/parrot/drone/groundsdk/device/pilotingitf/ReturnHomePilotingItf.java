@@ -40,6 +40,7 @@ import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.device.Drone;
+import com.parrot.drone.groundsdk.value.BooleanSetting;
 import com.parrot.drone.groundsdk.value.EnumSetting;
 import com.parrot.drone.groundsdk.value.IntSetting;
 import com.parrot.drone.groundsdk.value.OptionalDoubleSetting;
@@ -60,11 +61,11 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
      */
     enum Target {
 
+        /** No target. This might be because the drone does not have a gps fix. */
+        NONE,
+
         /** Return to take-off position. */
         TAKE_OFF_POSITION,
-
-        /** Return to current controller position. */
-        CONTROLLER_POSITION,
 
         /**
          * Return to latest tracked target position after FollowMe piloting interface has been activated.
@@ -72,7 +73,13 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
          * @see com.parrot.drone.groundsdk.device.peripheral.TargetTracker
          * @see com.parrot.drone.groundsdk.device.pilotingitf.FollowMePilotingItf
          */
-        TRACKED_TARGET_POSITION
+        TRACKED_TARGET_POSITION,
+
+        /** Return to custom location. */
+        CUSTOM_LOCATION,
+
+        /** Return to current controller position. */
+        CONTROLLER_POSITION,
     }
 
     /**
@@ -128,6 +135,18 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
     }
 
     /**
+     * Describes the drone behavior at the end of the RTH.
+     */
+    enum EndingBehavior {
+
+        /** The drone terminates the RTH hovering. */
+        HOVERING,
+
+        /** The drone terminates the RTH landing. */
+        LANDING
+    }
+
+    /**
      * Activates this piloting interface.
      * <p>
      * If successful, the currently active piloting interface (if any) is deactivated and this one is activated.
@@ -147,6 +166,8 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
 
     /**
      * Gets the current home location.
+     * <p>
+     * The location altitude is relative to the take off point.
      *
      * @return the current home location, or {@code null} if unknown presently.
      */
@@ -198,6 +219,17 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
     EnumSetting<Target> getPreferredTarget();
 
     /**
+     * Gets the return home ending behavior setting.
+     * <p>
+     * This setting allows the user to select whether the drone should land or stay hovering
+     * after returning home.
+     *
+     * @return the ending behavior
+     */
+    @NonNull
+    EnumSetting<EndingBehavior> getEndingBehavior();
+
+    /**
      * Gets the return home automatic activation upon disconnection delay setting (value in seconds).
      * <p>
      * This setting allows the user to setup the delay the drone will wait before activating return home, when the
@@ -207,6 +239,17 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
      */
     @NonNull
     IntSetting getAutoStartOnDisconnectDelay();
+
+    /**
+     * Gets the return home ending hovering altitude setting, above ground level, in meters.
+     * <p>
+     * This setting is used only if {@link #getEndingBehavior() ending behavior} is set to
+     * {@link EndingBehavior#HOVERING HOVERING}.
+     *
+     * @return the hovering altitude setting
+     */
+    @NonNull
+    OptionalDoubleSetting getEndingHoveringAltitude();
 
     /**
      * Gets the return home minimum altitude setting, relative to the take off point, in meters.
@@ -247,4 +290,28 @@ public interface ReturnHomePilotingItf extends PilotingItf, Activable {
      * cancels the planned return home.
      */
     void cancelAutoTrigger();
+
+    /**
+     * Gets the return home auto trigger setting.
+     * <p>
+     * This setting allows the user to enable or disable the automatic trigger of a return to home.
+     * <p>
+     * Note that even if this setting is set to {@code false}, the user can ask for a manual return to home.
+     *
+     * @return the auto trigger switch setting
+     */
+    @NonNull
+    BooleanSetting autoTrigger();
+
+    /**
+     * Sets the custom home location.
+     * <p>
+     * This location is used only if {@link #getCurrentTarget() current target} is on
+     * {@link Target#CUSTOM_LOCATION CUSTOM_LOCATION}.
+     *
+     * @param latitude latitude of the custom location
+     * @param longitude longitude of the custom location
+     * @param altitude altitude of the custom location, relative to the take off point
+     */
+    void setCustomLocation(double latitude, double longitude, double altitude);
 }

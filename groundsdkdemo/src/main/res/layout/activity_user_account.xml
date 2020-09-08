@@ -109,7 +109,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold"/>
 
-            <Switch
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/enable_accountless_data"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -156,7 +156,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold"/>
 
-            <Switch
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/enable_anonymous_data"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

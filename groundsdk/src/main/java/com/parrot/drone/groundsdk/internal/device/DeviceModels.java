@@ -245,11 +245,14 @@ public final class DeviceModels {
         TECHNOLOGY_FILTERS = new EnumMap<>(DeviceConnector.Technology.class);
 
         TECHNOLOGY_FILTERS.put(DeviceConnector.Technology.USB,
-                model -> model == RemoteControl.Model.SKY_CONTROLLER_3);
+                model -> model == RemoteControl.Model.SKY_CONTROLLER_3
+                         || model == RemoteControl.Model.SKY_CONTROLLER_UA);
 
         TECHNOLOGY_FILTERS.put(DeviceConnector.Technology.WIFI,
                 model -> model == Drone.Model.ANAFI_4K
-                         || model == Drone.Model.ANAFI_THERMAL);
+                        || model == Drone.Model.ANAFI_THERMAL
+                        || model == Drone.Model.ANAFI_UA
+                        || model == Drone.Model.ANAFI_USA);
     }
 
     /**

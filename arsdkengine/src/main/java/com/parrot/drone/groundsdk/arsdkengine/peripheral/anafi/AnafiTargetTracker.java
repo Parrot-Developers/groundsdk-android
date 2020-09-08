@@ -41,9 +41,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.DronePeripheralControll
 import com.parrot.drone.groundsdk.device.peripheral.TargetTracker;
 import com.parrot.drone.groundsdk.internal.device.peripheral.tracking.TargetTrackerCore;
 import com.parrot.drone.groundsdk.internal.engine.EngineBase;
-import com.parrot.drone.groundsdk.internal.utility.SystemBarometer;
 import com.parrot.drone.groundsdk.internal.utility.SystemLocation;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureControllerInfo;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureFollowMe;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 
@@ -126,8 +124,8 @@ public class AnafiTargetTracker extends DronePeripheralController {
     /**
      * Controls forwarding of controller info to the drone.
      * <p>
-     * When enabled, system barometer will be monitored and sent to the drone, if available; if system location
-     * monitoring is also available, then this method will force WIFI network usage for location monitoring if possible
+     * When enabled, if system location monitoring is available, then this method will force WIFI network usage for
+     * location monitoring if possible
      * (note that sending location measurements is the responsibility of the {@link DroneController}).
      *
      * @param enable {@code true} to start forwarding controller info, {@code false} to stop
@@ -141,15 +139,6 @@ public class AnafiTargetTracker extends DronePeripheralController {
                 location.enforceWifiUsage(this);
             } else {
                 location.revokeWifiUsageEnforcement(this);
-            }
-        }
-
-        SystemBarometer barometer = engine.getUtility(SystemBarometer.class);
-        if (barometer != null) {
-            if (enable) {
-                barometer.monitorWith(mBarometerMonitor);
-            } else {
-                barometer.disposeMonitor(mBarometerMonitor);
             }
         }
     }
@@ -228,13 +217,5 @@ public class AnafiTargetTracker extends DronePeripheralController {
                     (float) info.getTargetElevation(), (float) info.getChangeOfScale(), confidence,
                     info.isNewTarget() ? 1 : 0, info.getTimestamp()));
         }
-    };
-
-    /** Processes system atmospheric pressure measurements and sends them to the drone. */
-    private final SystemBarometer.Monitor mBarometerMonitor = (pressure, measureTimeStamp) -> {
-        // same as Free Flight 4
-        // TODO : what relationship with other timestamps ( time we send to the drone, pcmd timestamps,
-        // TODO   barometer timestamps, etc.) ?
-        sendCommand(ArsdkFeatureControllerInfo.encodeBarometer((float) pressure, measureTimeStamp));
     };
 }

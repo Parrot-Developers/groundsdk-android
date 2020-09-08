@@ -67,7 +67,7 @@
         android:textStyle="bold"
         tools:text="true"/>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@android:id/edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

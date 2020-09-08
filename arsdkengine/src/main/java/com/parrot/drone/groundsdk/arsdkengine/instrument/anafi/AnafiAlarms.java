@@ -42,6 +42,7 @@ import com.parrot.drone.groundsdk.internal.device.instrument.AlarmsCore;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureBattery;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureCommon;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureControllerInfo;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureGeneric;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 
@@ -100,6 +101,8 @@ public class AnafiAlarms extends DroneInstrumentController {
             ArsdkFeatureBattery.decode(command, mBatteryCallback);
         } else if (featureId == ArsdkFeatureCommon.CommonState.UID) {
             ArsdkFeatureCommon.CommonState.decode(command, mCommonStateCallback);
+        } else if (featureId == ArsdkFeatureControllerInfo.UID) {
+            ArsdkFeatureControllerInfo.decode(command, mControllerInfoCallback);
         }
     }
 
@@ -151,6 +154,10 @@ public class AnafiAlarms extends DroneInstrumentController {
                             }
                             mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
                                    .updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                           Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                           Alarms.Alarm.Level.OFF)
                                    .notifyUpdated();
                             break;
                         case CRITICAL_BATTERY:
@@ -160,6 +167,10 @@ public class AnafiAlarms extends DroneInstrumentController {
                                 mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
                                        .updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
                                        .updateAlarmLevel(Alarms.Alarm.Kind.POWER, Alarms.Alarm.Level.CRITICAL)
+                                       .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                               Alarms.Alarm.Level.OFF)
+                                       .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                               Alarms.Alarm.Level.OFF)
                                        .notifyUpdated();
                             } // else, do nothing, the drone as sent battery alarms using battery feature
                             break;
@@ -169,6 +180,10 @@ public class AnafiAlarms extends DroneInstrumentController {
                                 mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
                                        .updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
                                        .updateAlarmLevel(Alarms.Alarm.Kind.POWER, Alarms.Alarm.Level.WARNING)
+                                       .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                               Alarms.Alarm.Level.OFF)
+                                       .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                               Alarms.Alarm.Level.OFF)
                                        .notifyUpdated();
                             } // else, do nothing, the drone as sent battery alarms using battery feature
                             break;
@@ -176,6 +191,10 @@ public class AnafiAlarms extends DroneInstrumentController {
                             // remove only non-persistent alarms
                             mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
                                    .updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.CRITICAL)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                           Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                           Alarms.Alarm.Level.OFF)
                                    .notifyUpdated();
                             break;
                         case TOO_MUCH_ANGLE:
@@ -185,6 +204,30 @@ public class AnafiAlarms extends DroneInstrumentController {
                             // remove only non-persistent alarms
                             mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
                                    .updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.CRITICAL)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                           Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                           Alarms.Alarm.Level.OFF)
+                                   .notifyUpdated();
+                            break;
+                        case MAGNETO_PERTUBATION:
+                            // remove only non-persistent alarms
+                            mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                           Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                           Alarms.Alarm.Level.CRITICAL)
+                                   .notifyUpdated();
+                            break;
+                        case MAGNETO_LOW_EARTH_FIELD:
+                            // remove only non-persistent alarms
+                            mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.USER_EMERGENCY, Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MOTOR_CUT_OUT, Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION,
+                                           Alarms.Alarm.Level.OFF)
+                                   .updateAlarmLevel(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD,
+                                           Alarms.Alarm.Level.CRITICAL)
                                    .notifyUpdated();
                             break;
                     }
@@ -358,6 +401,18 @@ public class AnafiAlarms extends DroneInstrumentController {
                         Alarms.Alarm.Level.OFF : Alarms.Alarm.Level.CRITICAL;
                 mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.VERTICAL_CAMERA, alarmLevel).notifyUpdated();
             }
+        }
+    };
+
+    /** Callbacks called when a command of the feature ArsdkFeatureControllerInfo is decoded. */
+    private final ArsdkFeatureControllerInfo.Callback mControllerInfoCallback =
+            new ArsdkFeatureControllerInfo.Callback() {
+
+        @Override
+        public void onValidityFromDrone(int isValid) {
+            mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.UNRELIABLE_CONTROLLER_LOCATION,
+                    isValid == 1 ? Alarms.Alarm.Level.OFF : Alarms.Alarm.Level.WARNING)
+                   .notifyUpdated();
         }
     };
 }

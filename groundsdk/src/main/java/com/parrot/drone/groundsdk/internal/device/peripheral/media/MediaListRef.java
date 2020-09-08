@@ -35,6 +35,7 @@ package com.parrot.drone.groundsdk.internal.device.peripheral.media;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore;
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem;
 import com.parrot.drone.groundsdk.internal.session.Session;
 
@@ -54,18 +55,25 @@ final class MediaListRef extends Session.RefBase<List<MediaItem>> {
     @Nullable
     private MediaRequest mRequest;
 
+    /** Storage type targeted. */
+    @Nullable
+    private final MediaStore.StorageType mStorageType;
+
     /**
      * Constructor.
      *
-     * @param session  session that will manage this ref
-     * @param observer observer that will be notified when the referenced object is updated
-     * @param store    media store to query the media list from
+     * @param session       session that will manage this ref
+     * @param observer      observer that will be notified when the referenced object is updated
+     * @param store         media store to query the media list from
+     * @param storageType   storage type targeted
      */
     MediaListRef(@NonNull Session session, @NonNull Observer<? super List<MediaItem>> observer,
-                 @NonNull MediaStoreCore store) {
+                 @NonNull MediaStoreCore store, @Nullable MediaStore.StorageType storageType) {
         super(session, observer);
         mStore = store;
         mStore.registerObserver(mStoreObserver);
+        mStorageType = storageType;
+
         requestList();
     }
 
@@ -87,11 +95,12 @@ final class MediaListRef extends Session.RefBase<List<MediaItem>> {
         if (mRequest != null) {
             mRequest.cancel();
         }
-        mRequest = mStore.mBackend.browse((status, list) -> {
+        MediaRequest.ResultCallback<List<? extends MediaItemCore>> callback = (status, list) -> {
             if (status != MediaRequest.Status.CANCELED) {
                 update(list == null ? Collections.emptyList() : Collections.unmodifiableList(list));
             }
-        });
+        };
+        mRequest = mStore.mBackend.browse(mStorageType, callback);
     }
 
     /** Notified when the media store changes, triggers a new list request. */

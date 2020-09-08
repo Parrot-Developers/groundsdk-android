@@ -5122,7 +5122,9 @@ public class CameraTest {
                 CameraRecording.Resolution.RES_1080P_4_3,
                 CameraRecording.Resolution.RES_720P,
                 CameraRecording.Resolution.RES_720P_4_3,
-                CameraRecording.Resolution.RES_480P));
+                CameraRecording.Resolution.RES_480P,
+                CameraRecording.Resolution.RES_UHD_8K,
+                CameraRecording.Resolution.RES_5K));
 
         assertThat(EnumSet.allOf(CameraRecording.Framerate.class), contains(
                 CameraRecording.Framerate.FPS_240,
@@ -5139,7 +5141,9 @@ public class CameraTest {
                 CameraRecording.Framerate.FPS_24,
                 CameraRecording.Framerate.FPS_20,
                 CameraRecording.Framerate.FPS_15,
-                CameraRecording.Framerate.FPS_9));
+                CameraRecording.Framerate.FPS_10,
+                CameraRecording.Framerate.FPS_9,
+                CameraRecording.Framerate.FPS_8_6));
 
         assertThat(EnumSet.allOf(CameraRecording.HyperlapseValue.class), contains(
                 CameraRecording.HyperlapseValue.RATIO_15,

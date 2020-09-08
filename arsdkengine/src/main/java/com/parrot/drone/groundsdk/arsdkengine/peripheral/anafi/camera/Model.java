@@ -43,7 +43,10 @@ enum Model {
     MAIN,
 
     /** Thermal camera. */
-    THERMAL;
+    THERMAL,
+
+    /** Thermal blended camera. */
+    THERMAL_BLENDED;
 
     /**
      * Converts a {@code ArsdkFeatureCamera.Model} to its {@code Model} equivalent.
@@ -59,6 +62,8 @@ enum Model {
                 return MAIN;
             case THERMAL:
                 return THERMAL;
+            case THERMAL_BLENDED:
+                return THERMAL_BLENDED;
         }
         return null;
     }

@@ -113,6 +113,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(2));
 
         // UserEmergency
@@ -129,6 +133,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(3));
 
         // Cut out
@@ -145,6 +153,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(4));
 
         // Critical battery
@@ -161,6 +173,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(5));
 
         // Motor error
@@ -177,6 +193,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(6));
 
         // Alert none
@@ -193,6 +213,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(7));
 
         // Motor error gone
@@ -209,6 +233,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(8));
 
         // Too much angle should not change any alarms
@@ -225,6 +253,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(8));
 
         // Almost empty battery
@@ -241,7 +273,71 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(9));
+
+        // Magnetometer perturbation
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.MAGNETO_PERTUBATION));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(10));
+
+        // Magnetometer low earth field
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.MAGNETO_LOW_EARTH_FIELD));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mChangeCnt, is(11));
+
+        // Alert none
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.NONE));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(12));
     }
 
     @Test
@@ -460,6 +556,66 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(10));
+
+        // Magnetometer perturbation
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.MAGNETO_PERTUBATION));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.WARNING));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(11));
+
+        // Magnetometer low earth field
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.MAGNETO_LOW_EARTH_FIELD));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.WARNING));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mChangeCnt, is(12));
+
+        // Alert none
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateAlertStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateAlertstatechangedState.NONE));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.POWER).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_ERROR).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MOTOR_CUT_OUT).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.USER_EMERGENCY).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_HOT).getLevel(), is(Alarms.Alarm.Level.WARNING));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.BATTERY_TOO_COLD).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_HIGH).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mChangeCnt, is(13));
     }
 
     @Test
@@ -486,6 +642,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(1));
 
         // hovering warning event, too high and too dark, flying
@@ -502,6 +662,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.WARNING));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(2));
 
         // hovering warning event, too high and too dark, hovering
@@ -518,6 +682,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.WARNING));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(2));
 
         // hovering warning event, too high and too dark, landing
@@ -534,6 +702,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(3));
 
         // hovering warning event, too dark only, landing
@@ -565,6 +737,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.WARNING));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(4));
 
         // hovering warning event, too dark only, flying
@@ -596,6 +772,10 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HOVERING_DIFFICULTIES_NO_GPS_TOO_DARK).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.VERTICAL_CAMERA).getLevel(), is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_PERTURBATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.MAGNETOMETER_LOW_EARTH_FIELD).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
         assertThat(mChangeCnt, is(5));
     }
 
@@ -736,5 +916,29 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
 
         assertThat(mChangeCnt, is(4));
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.STRONG_VIBRATIONS).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+    }
+
+    @Test
+    public void testControllerLocationUnreliable() {
+        connectDrone(mDrone, 1);
+
+        // check default value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.UNRELIABLE_CONTROLLER_LOCATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
+
+        // drone sends controller location unreliable
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeControllerInfoValidityFromDrone(0));
+
+        assertThat(mChangeCnt, is(2));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.UNRELIABLE_CONTROLLER_LOCATION).getLevel(),
+                is(Alarms.Alarm.Level.WARNING));
+
+        // drone sends controller location reliable
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeControllerInfoValidityFromDrone(1));
+
+        assertThat(mChangeCnt, is(3));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.UNRELIABLE_CONTROLLER_LOCATION).getLevel(),
+                is(Alarms.Alarm.Level.OFF));
     }
 }

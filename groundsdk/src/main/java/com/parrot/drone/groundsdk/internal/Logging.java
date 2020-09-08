@@ -81,6 +81,9 @@ public final class Logging {
     /** Tag for MAVLink logs. */
     public static final ULogTag TAG_MAVLINK = new ULogTag("gsdk.mavlink");
 
+    /** Tag for HMD logs. */
+    public static final ULogTag TAG_HMD = new ULogTag("gsdk.hmd");
+
     /**
      * Private constructor for static utility class.
      */

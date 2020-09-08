@@ -51,9 +51,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
-/**
- * Drone matcher
- */
 @SuppressWarnings({"unused", "UtilityClassWithoutPrivateConstructor"})
 public final class Sc3MappingEntryMatcher {
 

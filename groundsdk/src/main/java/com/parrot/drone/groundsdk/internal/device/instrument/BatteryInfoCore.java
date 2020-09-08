@@ -33,6 +33,7 @@
 package com.parrot.drone.groundsdk.internal.device.instrument;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.device.instrument.BatteryInfo;
 import com.parrot.drone.groundsdk.device.instrument.Instrument;
@@ -41,6 +42,8 @@ import com.parrot.drone.groundsdk.internal.component.ComponentStore;
 import com.parrot.drone.groundsdk.internal.component.SingletonComponentCore;
 import com.parrot.drone.groundsdk.internal.value.OptionalIntCore;
 import com.parrot.drone.groundsdk.value.OptionalInt;
+
+import java.util.Objects;
 
 /** Core class for the BatteryInfo instrument. */
 public final class BatteryInfoCore extends SingletonComponentCore implements BatteryInfo {
@@ -58,6 +61,14 @@ public final class BatteryInfoCore extends SingletonComponentCore implements Bat
     @NonNull
     private final OptionalIntCore mHealth;
 
+    /** Current battery cycle count. */
+    @NonNull
+    private final OptionalIntCore mCycleCount;
+
+    /** Battery serial number. */
+    @Nullable
+    private String mSerial;
+
     /**
      * Constructor.
      *
@@ -66,6 +77,7 @@ public final class BatteryInfoCore extends SingletonComponentCore implements Bat
     public BatteryInfoCore(@NonNull ComponentStore<Instrument> instrumentStore) {
         super(DESC, instrumentStore);
         mHealth = new OptionalIntCore();
+        mCycleCount = new OptionalIntCore();
     }
 
     @Override
@@ -82,6 +94,18 @@ public final class BatteryInfoCore extends SingletonComponentCore implements Bat
     @Override
     public OptionalInt getBatteryHealth() {
         return mHealth;
+    }
+
+    @NonNull
+    @Override
+    public OptionalInt getBatteryCycleCount() {
+        return mCycleCount;
+    }
+
+    @Nullable
+    @Override
+    public String getSerial() {
+        return mSerial;
     }
 
     /**
@@ -126,6 +150,35 @@ public final class BatteryInfoCore extends SingletonComponentCore implements Bat
     @NonNull
     public BatteryInfoCore updateHealth(int health) {
         mChanged |= mHealth.setValue(health);
+        return this;
+    }
+
+    /**
+     * Updates the current battery cycle count.
+     *
+     * @param cycleCount new battery cycle count
+     *
+     * @return this object to allow chain calls
+     */
+    @NonNull
+    public BatteryInfoCore updateCycleCount(int cycleCount) {
+        mChanged |= mCycleCount.setValue(cycleCount);
+        return this;
+    }
+
+    /**
+     * Updates battery serial number.
+     *
+     * @param serial new battery serial
+     *
+     * @return this object to allow chain calls
+     */
+    @NonNull
+    public BatteryInfoCore updateSerial(@NonNull String serial) {
+        if (!Objects.equals(mSerial, serial)) {
+            mSerial = serial;
+            mChanged = true;
+        }
         return this;
     }
 }

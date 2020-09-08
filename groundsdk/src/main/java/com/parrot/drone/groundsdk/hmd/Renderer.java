@@ -43,12 +43,11 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
 
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;
-import com.parrot.drone.groundsdk.internal.value.DoubleRangeCore;
 import com.parrot.drone.groundsdk.internal.view.GlView;
 import com.parrot.drone.groundsdk.stream.Overlayer;
-import com.parrot.drone.groundsdk.value.DoubleRange;
 
 import java.util.function.Consumer;
 
@@ -61,22 +60,6 @@ import static android.opengl.GLES30.*;
  * Custom {@link GlView.Renderer} which handles rendering of both lenses of the HMD view.
  */
 abstract class Renderer extends GlView.Renderer {
-
-    // region lens-specific config
-
-    /** Physical width/height (mesh is square), in millimeters, of the lens mesh as defined in lens gl resources. */
-    private static final float LENS_MESH_SIZE_MM = 62.780696f;
-
-    /** Maximal width, in millimeters, allowed for lens content rendering. */
-    private static final float LENS_MAX_RENDER_HEIGHT_MM = 41;
-
-    /** Maximal height, in millimeters, allowed for lens content rendering. */
-    private static final float LENS_MAX_RENDER_WIDTH_MM = 54;
-
-    /** Range of supported half-interpupillary distance, in millimeters. */
-    private static final DoubleRange IPD_RANGE = DoubleRange.of(31, 34);
-
-    // endregion
 
     /** {@code true} to enable debug mode where lens projection is disabled (renders to flat squares). */
     private static final boolean DEBUG_FLAT_RENDERING = false;
@@ -137,6 +120,10 @@ abstract class Renderer extends GlView.Renderer {
     @Nullable
     private Surface mOverlaySurface;
 
+    /** HMD model used for rendering. */
+    @Nullable
+    private HmdModel mHmdModel;
+
     /**
      * Constructor.
      *
@@ -146,43 +133,31 @@ abstract class Renderer extends GlView.Renderer {
         super(GLSurfaceView.RENDERMODE_CONTINUOUSLY, GLES_V3);
         mContext = view.getContext();
         mCompositor = new Compositor();
-        mGeometryComputer = new Geometry.Computer(mContext.getResources().getDisplayMetrics(),
-                LENS_MAX_RENDER_WIDTH_MM, LENS_MAX_RENDER_HEIGHT_MM, LENS_MESH_SIZE_MM);
-        mGeometryComputer.setLeftLensOffset(0);
-        mGeometryComputer.setRightLensOffset(0);
+        mGeometryComputer = new Geometry.Computer(mContext.getResources().getDisplayMetrics());
         mGeometryComputer.setVerticalLensesOffset(0);
         mGeometry = mGeometryComputer.compute();
         mStreamConfig = new StreamLayer.Config();
         view.launchRendering(this);
     }
 
-
     /**
-     * Configures left lens horizontal offset.
-     * <p>
-     * Defines how to horizontally offset left lens projection center from the center of GsdkHmdView. Value in linear
-     * range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by used lenses model.
+     * Configures HMD model to be used for rendering.
      *
-     * @param offset left lens horizontal offset
+     * @param dataPackRes resource containing HMD model definitions
+     * @param modelName   identifies the model to use from the provided data pack
      */
-    final void setLeftLensOffset(@FloatRange(from = 0, to = 1) float offset) {
-        mGeometryComputer.setLeftLensOffset((float) IPD_RANGE.scaleFrom(offset, DoubleRangeCore.RATIO));
-        mComputeGeometry = true;
-        runOnGlThread(this::computeGeometry);
-    }
+    final void setHmdModel(@RawRes int dataPackRes, @NonNull String modelName) {
+        runOnGlThread(() -> {
+            mHmdModel = HmdModel.DataPack.fromResources(mContext.getResources(), dataPackRes).loadModel(modelName);
 
-    /**
-     * Configures right lens horizontal offset.
-     * <p>
-     * Defines how to horizontally offset right lens projection center from the center of GsdkHmdView. Value in linear
-     * range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by used lenses model.
-     *
-     * @param offset right lens horizontal offset
-     */
-    final void setRightLensOffset(@FloatRange(from = 0, to = 1) float offset) {
-        mGeometryComputer.setRightLensOffset((float) IPD_RANGE.scaleFrom(offset, DoubleRangeCore.RATIO));
-        mComputeGeometry = true;
-        runOnGlThread(this::computeGeometry);
+            mGeometryComputer.setHmdModel(mHmdModel);
+            mComputeGeometry = true;
+            computeGeometry();
+
+            if (mLensProjection != null) {
+                mLensProjection.setHmdModel(mHmdModel);
+            }
+        });
     }
 
     /**
@@ -366,6 +341,9 @@ abstract class Renderer extends GlView.Renderer {
         mCompositor.onGlContextCreate();
 
         mLensProjection = new LensProjection(resources);
+        if (mHmdModel != null) {
+            mLensProjection.setHmdModel(mHmdModel);
+        }
     }
 
     @Override

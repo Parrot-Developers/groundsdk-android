@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,12 +57,14 @@ import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.PasswordDialogFragment;
 import com.parrot.drone.groundsdkdemo.PickConnectorDialog;
 import com.parrot.drone.groundsdkdemo.R;
+import com.parrot.drone.groundsdkdemo.StoragePasswordFragment;
 import com.parrot.drone.groundsdkdemo.animation.Animations;
 import com.parrot.drone.groundsdkdemo.animation.PickAnimationDialog;
 import com.parrot.drone.groundsdkdemo.animation.PickFlipDirectionDialog;
 import com.parrot.drone.groundsdkdemo.hud.CopterHudActivity;
 import com.parrot.drone.groundsdkdemo.hud.HmdActivity;
 
+import java.io.File;
 import java.util.EnumSet;
 
 import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
@@ -69,7 +72,9 @@ import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
 public class DroneInfoActivity extends GroundSdkActivityBase
         implements PasswordDialogFragment.PasswordAcquiredListener, PickConnectorDialog.Listener,
                    AnimationContent.OnAnimationConfigRequestListener, PickAnimationDialog.Listener,
-                   PickFlipDirectionDialog.Listener, RemovableUserStorageContent.OnUserStorageFormatRequestListener {
+                   PickFlipDirectionDialog.Listener, RemovableUserStorageContent.OnUserStorageFormatRequestListener,
+                   RemovableUserStorageContent.OnUserStorageEnterPasswordListener,
+                   OnPickFileRequestListener, PickFileDialog.Listener {
 
     private Button mHudButton;
 
@@ -91,7 +96,9 @@ public class DroneInfoActivity extends GroundSdkActivityBase
     @Nullable
     private DeviceConnector mChosenConnector;
 
-    private Response mAnimResponse;
+    private AnimationContent.OnAnimationConfigRequestListener.Response mAnimResponse;
+
+    private OnPickFileRequestListener.Response mFileResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +118,8 @@ public class DroneInfoActivity extends GroundSdkActivityBase
         switch (mDrone.getModel()) {
             case ANAFI_4K:
             case ANAFI_THERMAL:
+            case ANAFI_UA:
+            case ANAFI_USA:
                 mHudIntent = new Intent(this, CopterHudActivity.class);
                 flyingIndicatorsContent = new FlyingIndicatorsContent(mDrone);
                 break;
@@ -212,6 +221,7 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                 new LiveStreamContent(mDrone),
                 CameraContent.main(mDrone),
                 CameraContent.thermal(mDrone),
+                CameraContent.blendedThermal(mDrone),
                 new AntiFlickerContent(mDrone),
                 new GimbalContent(mDrone),
                 new GeofenceContent(mDrone),
@@ -228,7 +238,9 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                 new WifiScannerContent(mDrone),
                 new UpdaterContent(mDrone),
                 new DevToolboxContent(mDrone),
-                new BatteryGaugeUpdaterContent(mDrone)
+                new BatteryGaugeUpdaterContent(mDrone),
+                new DriContent(mDrone),
+                new CertificateUploaderContent(mDrone)
         );
 
         RecyclerView recyclerView = findViewById(R.id.info_content);
@@ -254,7 +266,7 @@ public class DroneInfoActivity extends GroundSdkActivityBase
     }
 
     @Override
-    public void onAnimationConfigRequest(@NonNull Response response) {
+    public void onAnimationConfigRequest(@NonNull AnimationContent.OnAnimationConfigRequestListener.Response response) {
         mAnimResponse = response;
         PickAnimationDialog.newInstance(mDrone.getUid()).show(getSupportFragmentManager(), null);
     }
@@ -276,10 +288,31 @@ public class DroneInfoActivity extends GroundSdkActivityBase
 
     @Override
     public void onUserStorageFormatRequest(@Nullable FormatDialogFragment.Listener listener,
-                                           @NonNull EnumSet<RemovableUserStorage.FormattingType> supportedTypes) {
+                                           @NonNull EnumSet<RemovableUserStorage.FormattingType> supportedTypes,
+                                           boolean isEncryptionSupported) {
         FormatDialogFragment formatDialog = new FormatDialogFragment();
         formatDialog.setListener(listener);
         formatDialog.setSupportedFormattedTypes(supportedTypes);
+        formatDialog.setEncryptionSupported(isEncryptionSupported);
         formatDialog.show(getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void onUserStorageEnterPassword(@Nullable StoragePasswordFragment.Listener listener) {
+        StoragePasswordFragment passwordDialog = new StoragePasswordFragment();
+        passwordDialog.setListener(listener);
+        passwordDialog.show(getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void onPickFileRequest(@StringRes int title, @Nullable String extensionFilter,
+                                  @NonNull OnPickFileRequestListener.Response response) {
+        mFileResponse = response;
+        PickFileDialog.newInstance(title, extensionFilter).show(getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void onFileSelected(@NonNull File file) {
+        mFileResponse.setFile(file);
     }
 }

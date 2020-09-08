@@ -100,9 +100,6 @@ public final class AnafiGeofence extends DronePeripheralController {
     @Nullable
     private Geofence.Mode mMode;
 
-    /** {@code true} when onGeofenceCenterChanged has been called at least once while connected. */
-    private boolean mGeofenceCenterReceived;
-
     /**
      * Constructor.
      *
@@ -127,8 +124,6 @@ public final class AnafiGeofence extends DronePeripheralController {
 
     @Override
     protected void onDisconnected() {
-        mGeofenceCenterReceived = false;
-
         mGeofence.cancelSettingsRollbacks();
 
         if (isPersisted()) {
@@ -428,38 +423,17 @@ public final class AnafiGeofence extends DronePeripheralController {
 
                 @Override
                 public void onGeofenceCenterChanged(double latitude, double longitude) {
-                    mGeofenceCenterReceived = true;
-                    updateGeofenceCenter(latitude, longitude);
-                }
-
-                @Override
-                public void onHomeChanged(double latitude, double longitude, double altitude) {
-                    if (!mGeofenceCenterReceived) { // home only used as a fallback until we receive geofence center
-                        updateGeofenceCenter(latitude, longitude);
-                    }
-                }
-
-                /** Special value sent by the drone when either latitude or longitude is not known. */
-                private static final double UNKNOWN_COORDINATE = 500;
-
-                /**
-                 * Updates geofence center.
-                 * <p>
-                 * Clears current peripheral geofence center in case any of the coordinate is
-                 * {@link #UNKNOWN_COORDINATE invalid}
-                 *
-                 * @param latitude  geofence center latitude
-                 * @param longitude geofence center longitude
-                 */
-                private void updateGeofenceCenter(double latitude, double longitude) {
                     if (Double.compare(latitude, UNKNOWN_COORDINATE) != 0
-                        && Double.compare(longitude, UNKNOWN_COORDINATE) != 0) {
+                            && Double.compare(longitude, UNKNOWN_COORDINATE) != 0) {
                         mGeofence.updateCenter(latitude, longitude);
                     } else {
                         mGeofence.resetCenter();
                     }
                     mGeofence.notifyUpdated();
                 }
+
+                /** Special value sent by the drone when either latitude or longitude is not known. */
+                private static final double UNKNOWN_COORDINATE = 500;
             };
 
     /** Callbacks called when a command of the feature ArsdkFeatureArdrone3.PilotingSettingsState is decoded. */

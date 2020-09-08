@@ -36,14 +36,11 @@ import android.content.res.Resources;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
 
 import com.parrot.drone.groundsdk.R;
 import com.parrot.drone.groundsdk.internal.io.Files;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import static android.opengl.GLES30.*;
 
@@ -73,8 +70,17 @@ final class LensProjection {
     /** GL Vertex Array Object. */
     private final int mGlVao;
 
-    /** Count of elements to draw. */
-    private final int mGlElementCount;
+    /** Mesh positions GL Vertex Buffer Object. */
+    private final int mGlVboMeshPositions;
+
+    /** Texture coordinates GL Vertex Buffer Object. */
+    private final int mGlVboTexCoords;
+
+    /** Color filter data GL Vertex Buffer Object. */
+    private final int mGlVboColorFilter;
+
+    /** Triangle draw indices GL Vertex Buffer Object. */
+    private final int mGlVboIndices;
 
     /** Render width, in pixels. */
     @IntRange(from = 0)
@@ -95,6 +101,18 @@ final class LensProjection {
 
     /** Vertical scale factor to fit projected content to the available render height. */
     private float mTexScaleY;
+
+    /** Chromatic aberration correction factor for red color channel. */
+    private float mChromaCorrectionRed;
+
+    /** Chromatic aberration correction factor for green color channel. */
+    private float mChromaCorrectionGreen;
+
+    /** Chromatic aberration correction factor for blue color channel. */
+    private float mChromaCorrectionBlue;
+
+    /** Count of elements to draw. */
+    private int mGlElementCount;
 
     /**
      * Constructor.
@@ -124,42 +142,76 @@ final class LensProjection {
         glGenVertexArrays(1, names, 0);
         mGlVao = names[0];
 
+        glGenBuffers(4, names, 0);
+        mGlVboMeshPositions = names[0];
+        mGlVboTexCoords = names[1];
+        mGlVboColorFilter = names[2];
+        mGlVboIndices = names[3];
+
+        mChromaCorrectionRed = mChromaCorrectionGreen = mChromaCorrectionBlue = 1.0f;
+    }
+
+    /**
+     * Sets HMD model to use for projection.
+     *
+     * @param model HMD model
+     */
+    void setHmdModel(@NonNull HmdModel model) {
         glBindVertexArray(mGlVao);
 
         ByteBuffer buffer;
 
-        glGenBuffers(4, names, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, mGlVboMeshPositions);
+        buffer = model.loadMeshPositions();
+        if (buffer == null) {
+            glBufferData(GL_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
+            glDisableVertexAttribArray(0);
+        } else {
+            glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(0);
+        }
 
-        buffer = loadFloatBuffer(resources, R.raw.gsdk_internal_hmd_lens_positions);
+        glBindBuffer(GL_ARRAY_BUFFER, mGlVboTexCoords);
+        buffer = model.loadTexCoords();
+        if (buffer == null) {
+            glBufferData(GL_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
+            glDisableVertexAttribArray(1);
+        } else {
+            glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(1);
+        }
 
-        glBindBuffer(GL_ARRAY_BUFFER, names[0]);
-        glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, mGlVboColorFilter);
+        buffer = model.loadColorFilter();
+        if (buffer == null) {
+            glBufferData(GL_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
+            glDisableVertexAttribArray(2);
+        } else {
+            glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
+            glVertexAttribPointer(2, 4, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(2);
+        }
 
-        buffer = loadFloatBuffer(resources, R.raw.gsdk_internal_hmd_lens_texcoords);
-
-        glBindBuffer(GL_ARRAY_BUFFER, names[1]);
-        glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(1);
-
-        buffer = loadFloatBuffer(resources, R.raw.gsdk_internal_hmd_lens_fade);
-
-        glBindBuffer(GL_ARRAY_BUFFER, names[2]);
-        glBufferData(GL_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(2, 1, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(2);
-
-        buffer = loadIntBuffer(resources, R.raw.gsdk_internal_hmd_lens_indices);
-        mGlElementCount = buffer.asIntBuffer().limit();
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, names[3]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGlVboIndices);
+        buffer = model.loadIndices();
+        if (buffer == null) {
+            mGlElementCount = 0;
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
+        } else {
+            mGlElementCount = buffer.asIntBuffer().limit();
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer.limit(), buffer, GL_STATIC_DRAW);
+        }
 
         glBindVertexArray(0);
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        mChromaCorrectionRed = model.chromaCorrection().red();
+        mChromaCorrectionGreen = model.chromaCorrection().green();
+        mChromaCorrectionBlue = model.chromaCorrection().blue();
     }
 
     /**
@@ -215,11 +267,17 @@ final class LensProjection {
 
         glBindVertexArray(mGlVao);
 
+        // configure default colorFilter (no filter)
+        glVertexAttrib4f(2, 1, 1, 1, 1);
+
         // configure meshScale uniform
         glUniform2f(1, mMeshScaleX, mMeshScaleY);
 
         // configure texScale uniform
         glUniform2f(2, mTexScaleX, mTexScaleY);
+
+        // configure chroma correction
+        glUniform3f(3, mChromaCorrectionRed, mChromaCorrectionGreen, mChromaCorrectionBlue);
 
         // configure texture
         glActiveTexture(GL_TEXTURE0);
@@ -247,58 +305,5 @@ final class LensProjection {
      */
     int getFrameBuffer() {
         return mGlFBo;
-    }
-
-    /**
-     * Loads an integer buffer from a binary raw resource.
-     * <p>
-     * Stored data is expected to have big endian ordering.
-     *
-     * @param resources   android resources
-     * @param bufferResId raw resource id of the binary buffer to be loaded
-     *
-     * @return a byte buffer containing loaded data, with native endianness
-     */
-    @NonNull
-    private static ByteBuffer loadIntBuffer(@NonNull Resources resources, @RawRes int bufferResId) {
-        ByteBuffer buffer = loadRawBuffer(resources, bufferResId);
-        buffer.order(ByteOrder.nativeOrder()).asIntBuffer().put(buffer.duplicate().asIntBuffer()); // fix endianness
-        return buffer;
-    }
-
-    /**
-     * Loads a float buffer from a binary raw resource.
-     * <p>
-     * Stored data is expected to have big endian ordering.
-     *
-     * @param resources   android resources
-     * @param bufferResId raw resource id of the binary buffer to be loaded
-     *
-     * @return a byte buffer containing loaded data, with native endianness
-     */
-    @NonNull
-    private static ByteBuffer loadFloatBuffer(@NonNull Resources resources, @RawRes int bufferResId) {
-        ByteBuffer buffer = loadRawBuffer(resources, bufferResId);
-        buffer.order(ByteOrder.nativeOrder()).asFloatBuffer().put(buffer.duplicate().asFloatBuffer()); // fix endianness
-        return buffer;
-    }
-
-    /**
-     * Loads a buffer from a binary raw resource.
-     * <p>
-     * Stored data is expected to have big endian ordering.
-     *
-     * @param resources   android resources
-     * @param bufferResId raw resource id of the binary buffer to be loaded
-     *
-     * @return a byte buffer containing loaded data
-     */
-    @NonNull
-    private static ByteBuffer loadRawBuffer(@NonNull Resources resources, @RawRes int bufferResId) {
-        try {
-            return Files.readRawResource(resources, bufferResId).order(ByteOrder.BIG_ENDIAN);
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -77,7 +77,21 @@
 
         <TableRow>
 
-            <TextView android:text="@string/property_return_home_reason"/>
+            <TextView
+                android:text="@string/property_auto_trigger"/>
+
+            <TextView
+                android:id="@+id/autoTriggerSwitch"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="ON"/>
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_return_home_reason"/>
 
             <TextView
                 android:id="@+id/reason"
@@ -130,6 +144,19 @@
                 tools:text="TAKE_OFF_POSITION"/>
         </TableRow>
 
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_ending_behaviour"/>
+
+            <TextView
+                android:id="@+id/endingBehavior"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="LANDING"/>
+        </TableRow>
+
         <TableRow>
 
             <TextView android:text="@string/property_autostart_on_disconnect_delay"/>
@@ -154,7 +181,20 @@
 
         <TableRow>
 
-            <TextView android:text="@string/property_home_reachability"/>
+            <TextView
+                android:text="@string/property_hovering_altitude"/>
+
+            <TextView
+                android:id="@+id/hovering_altitude"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="20 m"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_home_reachability"/>
 
             <TextView
                 android:id="@+id/reachability"

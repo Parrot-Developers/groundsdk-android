@@ -52,4 +52,7 @@
     <!-- period during which an ephemeris is considered valid and can be uploaded to a drone, in hours -->
     <integer name="ephemeris_validity_period">96</integer>
 
+    <!-- Capacity of the blackbox recorder circular buffers, in seconds. -->
+    <integer name="blackbox_buffer_capacity">60</integer>
+
 </resources>

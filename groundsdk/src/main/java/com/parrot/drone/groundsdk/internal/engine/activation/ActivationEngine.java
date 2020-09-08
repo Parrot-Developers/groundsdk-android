@@ -161,7 +161,8 @@ public class ActivationEngine extends EngineBase {
         return device.getDeviceStateCore().isPersisted()
                && !mRegisteredDevices.contains(uid)
                && !uid.equals(device.getModel().defaultDeviceUid())
-               && !uid.equals(ArsdkDevice.SIMULATOR_UID);
+               && !uid.equals(ArsdkDevice.SIMULATOR_UID)
+               && hasRegistrableBoardId(device);
     }
 
     /**
@@ -239,6 +240,24 @@ public class ActivationEngine extends EngineBase {
             mHttpClient = null;
         }
     };
+
+    /**
+     * Tells whether the given device may be registered based on his board id.
+     *
+     * @param device device to test
+     *
+     * @return {@code true} if the device may be registered, otherwise {@code false}
+     */
+    private static boolean hasRegistrableBoardId(@NonNull DeviceCore device) {
+        String boardId = device.getBoardId();
+        if (boardId == null) return false;
+        if (!boardId.startsWith("0x")) return true;
+        try {
+            return Integer.parseInt(boardId.substring(2), 16) == 0;
+        } catch (NumberFormatException e) {
+            return true;
+        }
+    }
 
     /** Listens to changes on known drones. */
     @NonNull

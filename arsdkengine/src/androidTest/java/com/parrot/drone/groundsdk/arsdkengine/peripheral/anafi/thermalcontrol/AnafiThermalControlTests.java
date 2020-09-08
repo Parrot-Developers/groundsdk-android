@@ -182,7 +182,7 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
                 enumSettingValueIs(ThermalControl.Mode.DISABLED),
                 settingIsUpToDate()));
 
-        // change mode
+        // change mode to standard
         mMockArsdkCore.expect(new Expectation.Command(1,
                 ExpectedCmd.thermalSetMode(ArsdkFeatureThermal.Mode.STANDARD)));
         mThermal.mode().setValue(ThermalControl.Mode.STANDARD);
@@ -203,15 +203,36 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
                 settingIsUpToDate()));
 
+        // change mode to embedded
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.thermalSetMode(ArsdkFeatureThermal.Mode.BLENDED)));
+        mThermal.mode().setValue(ThermalControl.Mode.EMBEDDED);
+
+        assertThat(mChangeCnt, is(4));
+        assertThat(mThermal.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
+                enumSettingValueIs(ThermalControl.Mode.EMBEDDED),
+                settingIsUpdating()));
+
+        // mock drone ack
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeThermalMode(
+                ArsdkFeatureThermal.Mode.BLENDED));
+
+        assertThat(mChangeCnt, is(5));
+        assertThat(mThermal.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
+                enumSettingValueIs(ThermalControl.Mode.EMBEDDED),
+                settingIsUpToDate()));
+
         // disconnect
         disconnectDrone(mDrone, 1);
         resetEngine();
 
-        // check still in standard mode
+        // check still in embedded mode
         assertThat(mChangeCnt, is(0));
         assertThat(mThermal.mode(), allOf(
                 enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
-                enumSettingValueIs(ThermalControl.Mode.STANDARD),
+                enumSettingValueIs(ThermalControl.Mode.EMBEDDED),
                 settingIsUpToDate()));
 
         // change mode offline
@@ -228,7 +249,7 @@ public class AnafiThermalControlTests extends ArsdkEngineTestBase {
                 .commandReceived(1,
                         ArsdkEncoder.encodeThermalCapabilities(
                                 ArsdkFeatureThermal.Mode.toBitField(ArsdkFeatureThermal.Mode.values())),
-                        ArsdkEncoder.encodeThermalMode(ArsdkFeatureThermal.Mode.STANDARD))
+                        ArsdkEncoder.encodeThermalMode(ArsdkFeatureThermal.Mode.BLENDED))
                 // disabled mode should be sent to drone
                 .expect(new Expectation.Command(1, ExpectedCmd.thermalSetMode(ArsdkFeatureThermal.Mode.DISABLED))));
 

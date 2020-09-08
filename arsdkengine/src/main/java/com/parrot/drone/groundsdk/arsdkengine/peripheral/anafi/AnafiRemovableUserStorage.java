@@ -54,7 +54,7 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
     @NonNull
     private final RemovableUserStorageCore mRemovableUserStorage;
 
-    /** {@code true} if formatting is allowed in state {@link RemovableUserStorage.State#READY}. */
+    /** {@code true} if formatting is allowed in state {@link RemovableUserStorage.FileSystemState#READY}. */
     private boolean mFormatWhenReadyAllowed;
 
     /** {@code true} if formatting result event is supported by the drone. */
@@ -62,6 +62,9 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
 
     /** {@code true} if formatting progress event is supported. */
     private boolean mFormattingProgressSupported;
+
+    /** {@code true} if removable storage encryption is supported. */
+    private boolean mEncryptionSupported;
 
     /** {@code true} when a format request was sent and a formatting result event is expected. */
     private boolean mWaitingFormatResult;
@@ -71,11 +74,11 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
 
     /** Latest state received from device. */
     @Nullable
-    private RemovableUserStorage.State mLatestState;
+    private RemovableUserStorage.FileSystemState mLatestState;
 
     /** State received during formatting, that will be notified after formatting result. */
     @Nullable
-    private RemovableUserStorage.State mPendingState;
+    private RemovableUserStorage.FileSystemState mPendingState;
 
     /**
      * Constructor.
@@ -107,15 +110,16 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
     }
 
     /**
-     * Updates the media state.
+     * Updates the media file system state.
      *
-     * @param state new media state
+     * @param state new media file system state
      */
-    private void updateState(@NonNull RemovableUserStorage.State state) {
-        mRemovableUserStorage.updateState(state)
-                             .updateCanFormat(state == RemovableUserStorage.State.NEED_FORMAT
-                                              || (mFormatWhenReadyAllowed && state == RemovableUserStorage.State.READY))
-                             .notifyUpdated();
+    private void updateFileSystemState(@NonNull RemovableUserStorage.FileSystemState state) {
+        mRemovableUserStorage.updateFileSystemState(state)
+                             .updateCanFormat(state == RemovableUserStorage.FileSystemState.NEED_FORMAT
+                                              || (mFormatWhenReadyAllowed
+                                                  && (state == RemovableUserStorage.FileSystemState.READY
+                                                      || state == RemovableUserStorage.FileSystemState.PASSWORD_NEEDED)));
     }
 
     /** Callbacks called when a command of the feature ArsdkFeatureUserStorage is decoded. */
@@ -129,9 +133,13 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
                     ArsdkFeatureUserStorage.Feature.FORMAT_WHEN_READY_ALLOWED.inBitField(supportedFeaturesBitField);
             mFormattingProgressSupported =
                     ArsdkFeatureUserStorage.Feature.FORMAT_PROGRESS_EVT_SUPPORTED.inBitField(supportedFeaturesBitField);
+            mEncryptionSupported =
+                    ArsdkFeatureUserStorage.Feature.ENCRYPTION_SUPPORTED.inBitField(supportedFeaturesBitField);
+            mRemovableUserStorage.updateIsEncryptionSupported(mEncryptionSupported);
             if (mLatestState != null) {
-                updateState(mLatestState);
+                updateFileSystemState(mLatestState);
             }
+            mRemovableUserStorage.notifyUpdated();
         }
 
         @Override
@@ -157,72 +165,60 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
         public void onState(@Nullable ArsdkFeatureUserStorage.PhyState physicalState,
                             @Nullable ArsdkFeatureUserStorage.FsState fileSystemState, int attributeBitField,
                             int monitorEnabled, int monitorPeriod) {
-            RemovableUserStorage.State state = null;
-            if (physicalState != null) switch (physicalState) {
-                case UNDETECTED:
-                    state = RemovableUserStorage.State.NO_MEDIA;
-                    break;
-                case TOO_SMALL:
-                    state = RemovableUserStorage.State.MEDIA_TOO_SMALL;
-                    break;
-                case TOO_SLOW:
-                    state = RemovableUserStorage.State.MEDIA_TOO_SLOW;
-                    break;
-                case USB_MASS_STORAGE:
-                    state = RemovableUserStorage.State.USB_MASS_STORAGE;
-                    break;
-                case AVAILABLE:
-                    if (fileSystemState != null) switch (fileSystemState) {
-                        case UNKNOWN:
-                            state = RemovableUserStorage.State.MOUNTING;
-                            break;
-                        case FORMAT_NEEDED:
-                            state = RemovableUserStorage.State.NEED_FORMAT;
-                            break;
-                        case FORMATTING:
-                            state = RemovableUserStorage.State.FORMATTING;
-                            break;
-                        case READY:
-                            state = RemovableUserStorage.State.READY;
-                            break;
-                        case ERROR:
-                            state = RemovableUserStorage.State.ERROR;
-                            break;
-                    }
-                    break;
+            if (physicalState != null) {
+                mRemovableUserStorage.updatePhysicalState(convert(physicalState));
             }
-            if (state == null) {
+            RemovableUserStorage.FileSystemState fsState = null;
+            if (fileSystemState != null) {
+                fsState = convert(fileSystemState);
+            }
+
+            boolean encrypted = ArsdkFeatureUserStorage.Attribute.fromBitfield(attributeBitField)
+                                                                 .contains(ArsdkFeatureUserStorage.Attribute.ENCRYPTED);
+            mRemovableUserStorage.updateIsEncrypted(encrypted);
+
+            if (fsState == null) {
                 // Ignore event
-                ULog.w(TAG, "Unknown user storage state physicalState: " + physicalState
-                            + " fileSystemState: " + fileSystemState);
+                ULog.w(TAG, "Unknown user storage state fileSystemState: " + fileSystemState);
             } else {
-                if (!mFormatResultEvtSupported && mLatestState == RemovableUserStorage.State.FORMATTING) {
+                if (!mFormatResultEvtSupported && mLatestState == RemovableUserStorage.FileSystemState.FORMATTING) {
                     // format result when the drone does not support the format result event
-                    if (state == RemovableUserStorage.State.READY) {
-                        updateState(RemovableUserStorage.State.FORMATTING_SUCCEEDED);
-                    } else if (state == RemovableUserStorage.State.NEED_FORMAT
-                               || state == RemovableUserStorage.State.ERROR) {
-                        updateState(RemovableUserStorage.State.FORMATTING_FAILED);
+                    if (fsState == RemovableUserStorage.FileSystemState.READY) {
+                        updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED);
+                        mRemovableUserStorage.notifyUpdated();
+                    } else if (fsState == RemovableUserStorage.FileSystemState.NEED_FORMAT
+                               || fsState == RemovableUserStorage.FileSystemState.ERROR) {
+                        updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_FAILED);
+                        mRemovableUserStorage.notifyUpdated();
                     }
                 }
-                if (mWaitingFormatResult && state != RemovableUserStorage.State.FORMATTING) {
+                if (mWaitingFormatResult && fsState != RemovableUserStorage.FileSystemState.FORMATTING) {
                     // new state will be notified after reception of formatting result
-                    mPendingState = state;
+                    mPendingState = fsState;
                 } else {
-                    updateState(state);
+                    updateFileSystemState(fsState);
                 }
-                mLatestState = state;
+                mLatestState = fsState;
                 // memory monitoring
-                if ((state == RemovableUserStorage.State.READY)
+                if ((fsState == RemovableUserStorage.FileSystemState.READY)
                     && (monitorEnabled == 0)) {
                     // Start free memory monitoring when media is ready
                     sendCommand(ArsdkFeatureUserStorage.encodeStartMonitoring(0));
-                } else if ((state != RemovableUserStorage.State.READY)
+                } else if ((fsState != RemovableUserStorage.FileSystemState.READY)
                            && (monitorEnabled == 1)) {
                     // Stop free memory monitoring when media is not ready
                     sendCommand(ArsdkFeatureUserStorage.encodeStopMonitoring());
                 }
             }
+            mRemovableUserStorage.notifyUpdated();
+        }
+
+        @Override
+        public void onSdcardUuid(@Nullable String uuid) {
+            if (uuid == null) {
+                return;
+            }
+            mRemovableUserStorage.updateUuid(uuid).notifyUpdated();
         }
 
         @Override
@@ -232,26 +228,64 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
             }
             switch (result) {
                 case ERROR:
-                    updateState(RemovableUserStorage.State.FORMATTING_FAILED);
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_FAILED);
+                    mRemovableUserStorage.notifyUpdated();
                     break;
                 case DENIED:
-                    updateState(RemovableUserStorage.State.FORMATTING_DENIED);
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_DENIED);
+                    mRemovableUserStorage.notifyUpdated();
                     if (mLatestState != null) {
                         // since in that case the device will not send another state,
                         // restore latest state received before formatting
-                        updateState(mLatestState);
+                        updateFileSystemState(mLatestState);
+                        mRemovableUserStorage.notifyUpdated();
                     }
                     break;
                 case SUCCESS:
-                    updateState(RemovableUserStorage.State.FORMATTING_SUCCEEDED);
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED);
+                    mRemovableUserStorage.notifyUpdated();
                     break;
             }
             if (mPendingState != null) {
                 // notify pending state received before formatting result
-                updateState(mPendingState);
+                updateFileSystemState(mPendingState);
+                mRemovableUserStorage.notifyUpdated();
                 mPendingState = null;
             }
             mWaitingFormatResult = false;
+        }
+
+        @Override
+        public void onDecryption(@Nullable ArsdkFeatureUserStorage.PasswordResult result) {
+            if (result == null) {
+                return;
+            }
+            switch (result) {
+                case WRONG_USAGE:
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_USAGE);
+                    mRemovableUserStorage.notifyUpdated();
+                    if (mLatestState != null) {
+                        // since in that case the device will not send another state,
+                        // restore latest state received before decryption
+                        updateFileSystemState(mLatestState);
+                        mRemovableUserStorage.notifyUpdated();
+                    }
+                    break;
+                case WRONG_PASSWORD:
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD);
+                    mRemovableUserStorage.notifyUpdated();
+                    if (mLatestState != null) {
+                        // since in that case the device will not send another state,
+                        // restore latest state received before decryption
+                        updateFileSystemState(mLatestState);
+                        mRemovableUserStorage.notifyUpdated();
+                    }
+                    break;
+                case SUCCESS:
+                    updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_SUCCEEDED);
+                    mRemovableUserStorage.notifyUpdated();
+                    break;
+            }
         }
 
         @Override
@@ -287,18 +321,101 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
             }
 
             if (sent) {
-                if (mFormattingProgressSupported) {
-                    mRemovableUserStorage.initFormattingState();
-                }
-                if (mFormatResultEvtSupported) {
-                    mWaitingFormatResult = true;
-                    updateState(RemovableUserStorage.State.FORMATTING);
-                }
-                mRemovableUserStorage.notifyUpdated();
+                formattingInitiated();
+            }
+            return sent;
+        }
+
+        @Override
+        public boolean formatWithEncryption(@NonNull String password, @NonNull RemovableUserStorage.FormattingType type,
+                                            @NonNull String name) {
+            boolean sent = false;
+            if (mEncryptionSupported) {
+                sent = sendCommand(
+                        ArsdkFeatureUserStorage.encodeFormatWithEncryption(name, password,
+                                FormattingTypeAdapter.from(type)));
+            }
+            if (sent) {
+                formattingInitiated();
+            }
+            return sent;
+        }
+
+        @Override
+        public boolean sendPassword(@NonNull String password, @NonNull RemovableUserStorage.PasswordUsage usage) {
+            boolean sent = false;
+            if (mEncryptionSupported && mLatestState == RemovableUserStorage.FileSystemState.PASSWORD_NEEDED) {
+                sent = sendCommand(ArsdkFeatureUserStorage.encodeEncryptionPassword(password,
+                        PasswordUsageAdapter.from(usage)));
             }
             return sent;
         }
     };
+
+    private void formattingInitiated() {
+        if (mFormattingProgressSupported) {
+            mRemovableUserStorage.initFormattingState();
+        }
+        if (mFormatResultEvtSupported) {
+            mWaitingFormatResult = true;
+            updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING);
+        }
+        mRemovableUserStorage.notifyUpdated();
+    }
+
+    /**
+     * Utility method, transforms arsdk's {@link ArsdkFeatureUserStorage.PhyState PhyState}
+     * into a groundsdk {@link RemovableUserStorage.PhysicalState}.
+     *
+     * @param physicalState state of the physical media
+     *
+     * @return the groundsdk equivalent state
+     */
+    private static RemovableUserStorage.PhysicalState convert(@Nullable ArsdkFeatureUserStorage.PhyState physicalState) {
+        if (physicalState != null) switch (physicalState) {
+            case UNDETECTED:
+                return RemovableUserStorage.PhysicalState.NO_MEDIA;
+            case TOO_SMALL:
+                return RemovableUserStorage.PhysicalState.MEDIA_TOO_SMALL;
+            case TOO_SLOW:
+                return RemovableUserStorage.PhysicalState.MEDIA_TOO_SLOW;
+            case USB_MASS_STORAGE:
+                return RemovableUserStorage.PhysicalState.USB_MASS_STORAGE;
+            case AVAILABLE:
+                return RemovableUserStorage.PhysicalState.AVAILABLE;
+        }
+        return null;
+    }
+
+    /**
+     * Utility method, transforms arsdk's {@link ArsdkFeatureUserStorage.FsState FsState} into a groundsdk
+     * {@link RemovableUserStorage.FileSystemState}.
+     *
+     * @param fileSystemState state of the data stored on media
+     *
+     * @return the groundsdk equivalent state
+     */
+    private static RemovableUserStorage.FileSystemState convert(@Nullable ArsdkFeatureUserStorage.FsState fileSystemState) {
+        if (fileSystemState != null) switch (fileSystemState) {
+            case UNKNOWN:
+                return RemovableUserStorage.FileSystemState.MOUNTING;
+            case FORMAT_NEEDED:
+                return RemovableUserStorage.FileSystemState.NEED_FORMAT;
+            case FORMATTING:
+                return RemovableUserStorage.FileSystemState.FORMATTING;
+            case READY:
+                return RemovableUserStorage.FileSystemState.READY;
+            case ERROR:
+                return RemovableUserStorage.FileSystemState.ERROR;
+            case PASSWORD_NEEDED:
+                return RemovableUserStorage.FileSystemState.PASSWORD_NEEDED;
+            case CHECKING:
+                return RemovableUserStorage.FileSystemState.CHECKING;
+            case EXTERNAL_ACCESS_OK:
+                return RemovableUserStorage.FileSystemState.EXTERNAL_ACCESS_OK;
+        }
+        return null;
+    }
 
     /**
      * Utility class to adapt {@link ArsdkFeatureUserStorage.FormattingType user storage feature} to {@link
@@ -358,6 +475,51 @@ public class AnafiRemovableUserStorage extends DronePeripheralController {
                     EnumSet.noneOf(RemovableUserStorage.FormattingType.class);
             ArsdkFeatureUserStorage.FormattingType.each(bitfield, arsdk -> types.add(from(arsdk)));
             return types;
+        }
+    }
+
+    /**
+     * Utility class to adapt {@link ArsdkFeatureUserStorage.PasswordUsage user storage feature} to {@link
+     * RemovableUserStorage.PasswordUsage groundsdk} password usage.
+     */
+    private static final class PasswordUsageAdapter {
+
+        /**
+         * Converts a {@code ArsdkFeatureUserStorage.PasswordUsage} to its {@code RemovableUserStorage.PasswordUsage}
+         * equivalent.
+         *
+         * @param usage password usage to convert
+         *
+         * @return the groundsdk password usage equivalent
+         */
+        @NonNull
+        static RemovableUserStorage.PasswordUsage from(@NonNull ArsdkFeatureUserStorage.PasswordUsage usage) {
+            switch (usage) {
+                case RECORD:
+                    return RemovableUserStorage.PasswordUsage.RECORD;
+                case USB:
+                    return RemovableUserStorage.PasswordUsage.USB;
+            }
+            return null;
+        }
+
+        /**
+         * Converts a {@code RemovableUserStorage.PasswordUsage} to its {@code ArsdkFeatureUserStorage.PasswordUsage}
+         * equivalent.
+         *
+         * @param usage groundsdk password usage to convert
+         *
+         * @return user storage feature password usage equivalent of the given value
+         */
+        @NonNull
+        static ArsdkFeatureUserStorage.PasswordUsage from(@NonNull RemovableUserStorage.PasswordUsage usage) {
+            switch (usage) {
+                case RECORD:
+                    return ArsdkFeatureUserStorage.PasswordUsage.RECORD;
+                case USB:
+                    return ArsdkFeatureUserStorage.PasswordUsage.USB;
+            }
+            return null;
         }
     }
 }

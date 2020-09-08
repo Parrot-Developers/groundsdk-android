@@ -122,6 +122,14 @@
              See com.parrot.drone.groundsdk.hmd.GsdkHmdView#setLensesVerticalOffset.-->
         <attr name="gsdk_lensesVerticalOffset" format="float"/>
 
+        <!-- Defines the Head Mounted Display data pack where the selected HMD model to be used for
+             rendering can be found.
+             Default value is 0: no data pack is provided, nothing will be rendered. -->
+        <attr name="gsdk_hmdDataPack" format="reference"/>
+
+        <!-- Identifies Head Mounted Display model to select from HMD data pack and use for rendering.
+             Default value is null: no model is selected, nothing will be rendered. -->
+        <attr name="gsdk_hmdModelName" format="string"/>
     </declare-styleable>
 
 </resources>

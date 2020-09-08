@@ -44,8 +44,10 @@ import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationD
 import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.RelativeMoveDirective;
 import com.parrot.drone.groundsdk.internal.device.DroneCore;
 import com.parrot.drone.sdkcore.arsdk.ArsdkEncoder;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingMovetoOrientationMode;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedOrientationMode;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureMove;
 import com.parrot.drone.sdkcore.arsdk.Backend;
 import com.parrot.drone.sdkcore.arsdk.Expectation;
 import com.parrot.drone.sdkcore.arsdk.ExpectedCmd;
@@ -55,14 +57,12 @@ import org.junit.Test;
 import static com.parrot.drone.groundsdk.FinishedRelativeMoveFlightInfoMatcher.matchesFinishedRelativeMoveFlightInfo;
 import static com.parrot.drone.groundsdk.LocationDirectiveMatcher.matchesLocationDirective;
 import static com.parrot.drone.groundsdk.RelativeMoveDirectiveMatcher.matchesRelativeMoveDirective;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingeventMovebyendError.INTERRUPTED;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingeventMovebyendError.OK;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.LANDED;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.CANCELED;
+
 import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.DONE;
-import static com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.RUNNING;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -91,15 +91,6 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         });
 
         mChangeCnt = 0;
-    }
-
-    @Override
-    public void teardown() {
-        if (mDrone.getDeviceStateCore().getConnectionState() != DeviceState.ConnectionState.DISCONNECTED) {
-            disconnectDrone(mDrone, 1);
-        }
-        mArsdkEngine.requestStop(null);
-        super.teardown();
     }
 
     @Test
@@ -137,7 +128,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
 
         // should be idle as the drone is flying now
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING));
         assertThat(mChangeCnt, is(2));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
 
@@ -156,7 +148,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         // notify location move is running, changing directive values
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeArdrone3PilotingStateMoveToChanged(48.0, 2.0, 10,
-                        PilotingstateMovetochangedOrientationMode.HEADING_START, 95, RUNNING));
+                        PilotingstateMovetochangedOrientationMode.HEADING_START, 95,
+                        ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.RUNNING));
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         // the current directive should match the new parameters
@@ -180,12 +173,14 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(flightInfo.wasSuccessful(), is(true));
 
         // interface becomes unavailable as the drone is landed
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(LANDED));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.LANDED));
         assertThat(mChangeCnt, is(6));
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
 
         // put back as available
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING));
         assertThat(mChangeCnt, is(7));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
 
@@ -193,10 +188,84 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         disconnectDrone(mDrone, 1);
         assertThat(mChangeCnt, is(8));
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(
-                1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING)));
+                1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                        ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING)));
 
         assertThat(mChangeCnt, is(9));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+    }
+
+    @Test
+    public void testLocationMoveWithUnavailabilityReasons() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(
+                1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                        ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING))
+                        .commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                                ArsdkFeatureMove.Indicator.DRONE_MIN_ALTITUDE))));
+
+        // should be unavailable
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND));
+
+        // starting a location move in unavailable state should not change anything
+        mPilotingItf.moveToLocation(48.88, 2.33, 7, Orientation.NONE);
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND));
+
+        // no unavailability indicator, interface becomes idle
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(0));
+        assertThat(mChangeCnt, is((2)));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+
+        // start location move, interface becomes immediately active
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.ardrone3PilotingMoveTo(48.8795, 2.3675, 5,
+                        PilotingMovetoOrientationMode.HEADING_DURING, 90), true));
+        mPilotingItf.moveToLocation(48.8795, 2.3675, 5, Orientation.headingDuring(90));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+        // the current directive should match the parameters sent
+        assertThat(mPilotingItf.getCurrentDirective(), instanceOf(LocationDirective.class));
+        assertThat((LocationDirective) mPilotingItf.getCurrentDirective(),
+                matchesLocationDirective(48.8795, 2.3675, 5, Orientation.headingDuring(90)));
+
+        // drone out of geofence indicator, interface becomes unavailable
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_GEOFENCE)));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE));
+
+        // notify location move stop, interface remains unavailable
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStateMoveToChanged(48.0, 2.0, 10,
+                        PilotingstateMovetochangedOrientationMode.HEADING_START, 95,
+                        ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.ERROR));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE));
+        // the current directive should be null, and the latest flight info should be updated accordingly
+        assertThat(mPilotingItf.getCurrentDirective(), nullValue());
+        assertThat(mPilotingItf.getLatestFinishedFlightInfo(), instanceOf(FinishedLocationFlightInfo.class));
+        FinishedLocationFlightInfo flightInfo = (FinishedLocationFlightInfo) mPilotingItf.getLatestFinishedFlightInfo();
+        assert flightInfo != null;
+        assertThat(flightInfo.getDirective(),
+                matchesLocationDirective(48.0, 2.0, 10, Orientation.headingStart(95)));
+        assertThat(flightInfo.wasSuccessful(), is(false));
+
+        // no unavailability indicator, interface becomes idle
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(0));
+        assertThat(mChangeCnt, is((6)));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
     }
 
     @Test
@@ -208,7 +277,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
 
         // should be idle as the drone is flying now
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING));
         assertThat(mChangeCnt, is(2));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
 
@@ -227,7 +297,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         // notify location move is running, nothing should change
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeArdrone3PilotingStateMoveToChanged(48.0, 2.0, 10,
-                        PilotingstateMovetochangedOrientationMode.TO_TARGET, 0, RUNNING));
+                        PilotingstateMovetochangedOrientationMode.TO_TARGET, 0,
+                        ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.RUNNING));
         assertThat(mChangeCnt, is(3));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         assertThat(mPilotingItf.getCurrentDirective(), instanceOf(LocationDirective.class));
@@ -247,7 +318,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         // notify location move is cancelled, interface becomes idle
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeArdrone3PilotingStateMoveToChanged(48.0, 2.0, 10,
-                        PilotingstateMovetochangedOrientationMode.TO_TARGET, 0, CANCELED));
+                        PilotingstateMovetochangedOrientationMode.TO_TARGET, 0,
+                        ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus.CANCELED));
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         // the current directive should be null, and the latest flight info should be updated accordingly
@@ -274,7 +346,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
 
         // should be idle as the drone is flying now
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING));
         assertThat(mChangeCnt, is(2));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
 
@@ -291,7 +364,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
 
         // notify relative move is done, interface becomes idle
         mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(10.01f, 2.48f, -5.03f, 0.7854023f, OK));
+                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(10.01f, 2.48f, -5.03f, 0.7854023f,
+                        ArsdkFeatureArdrone3.PilotingeventMovebyendError.OK));
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         // the current directive should be null, and the latest flight info should be updated accordingly
@@ -306,9 +380,78 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
                 matchesFinishedRelativeMoveFlightInfo(true, 10.01f, 2.48f, -5.03f, 0.7854023f));
 
         // interface becomes unavailable as the drone is landed
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(LANDED));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.LANDED));
         assertThat(mChangeCnt, is(5));
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+    }
+
+    @Test
+    public void testRelativeMoveWithUnavailabilityReasons() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(
+                1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                        ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING))
+                        .commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                                ArsdkFeatureMove.Indicator.DRONE_MIN_ALTITUDE))));
+
+        // should be unavailable
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND));
+
+        // starting a relative move in unavailable state should not change anything
+        mPilotingItf.moveToRelativePosition(1.0, 2.0, 3.0, 4.0);
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+
+        // no unavailability indicator, interface becomes idle
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(0));
+        assertThat(mChangeCnt, is((2)));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+
+        // start relative move, interface becomes immediately active
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.ardrone3PilotingMoveBy(10.0f, 2.5f, -5.0f, 0.7853982f), true));
+        mPilotingItf.moveToRelativePosition(10.0, 2.5, -5.0, 45.0);
+        assertThat(mChangeCnt, is(3));
+        assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
+        // the current directive should match the parameters sent
+        assertThat(mPilotingItf.getCurrentDirective(), instanceOf(RelativeMoveDirective.class));
+        assertThat((RelativeMoveDirective) mPilotingItf.getCurrentDirective(),
+                matchesRelativeMoveDirective(10.0, 2.5, -5.0, 45.0));
+
+        // drone out of geofence indicator, interface becomes unavailable
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_GEOFENCE)));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE));
+
+        // notify relative move stop, interface remains unavailable
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(10.01f, 2.48f, -5.03f, 0.7854023f,
+                        ArsdkFeatureArdrone3.PilotingeventMovebyendError.NOTAVAILABLE));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
+        // the current directive should be null, and the latest flight info should be updated accordingly
+        assertThat(mPilotingItf.getCurrentDirective(), nullValue());
+        assertThat(mPilotingItf.getLatestFinishedFlightInfo(), instanceOf(FinishedRelativeMoveFlightInfo.class));
+        FinishedRelativeMoveFlightInfo flightInfo =
+                (FinishedRelativeMoveFlightInfo) mPilotingItf.getLatestFinishedFlightInfo();
+        assert flightInfo != null;
+        assertThat(flightInfo.getDirective(),
+                matchesRelativeMoveDirective(10.0, 2.5, -5.0, 45.0));
+        assertThat(flightInfo,
+                matchesFinishedRelativeMoveFlightInfo(false, 10.01f, 2.48f, -5.03f, 0.7854023f));
+
+        // no unavailability indicator, interface becomes idle
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(0));
+        assertThat(mChangeCnt, is((6)));
+        assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
     }
 
     @Test
@@ -320,7 +463,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getState(), is(Activable.State.UNAVAILABLE));
 
         // should be idle as the drone is flying now
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(FLYING));
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING));
         assertThat(mChangeCnt, is(2));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
 
@@ -348,7 +492,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
 
         // notify that the first relative move is interrupted
         mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(5.0f, 1.25f, -2.5f, 0.7853982f, INTERRUPTED));
+                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(5.0f, 1.25f, -2.5f, 0.7853982f,
+                        ArsdkFeatureArdrone3.PilotingeventMovebyendError.INTERRUPTED));
         assertThat(mChangeCnt, is(5));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         // the current directive should not change
@@ -378,7 +523,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
 
         // notify that the second relative move is interrupted
         mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(43.2f, -0.89f, 0.49f, -0.01f, INTERRUPTED));
+                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(43.2f, -0.89f, 0.49f, -0.01f,
+                        ArsdkFeatureArdrone3.PilotingeventMovebyendError.INTERRUPTED));
         assertThat(mChangeCnt, is(6));
         assertThat(mPilotingItf.getState(), is(Activable.State.ACTIVE));
         // the current directive should be null
@@ -394,7 +540,8 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
 
         // notify that the second relative move has actually stopped
         mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(0.01f, -0.01f, 0.02f, 0.0f, OK));
+                ArsdkEncoder.encodeArdrone3PilotingEventMoveByEnd(0.01f, -0.01f, 0.02f, 0.0f,
+                        ArsdkFeatureArdrone3.PilotingeventMovebyendError.OK));
         assertThat(mChangeCnt, is(7));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         // the current directive should still be null
@@ -407,5 +554,90 @@ public class AnafiGuidedPilotingItfTests extends ArsdkEngineTestBase {
                 matchesRelativeMoveDirective(50.0, -1.0, 0.5, 0.0));
         assertThat(flightInfo,
                 matchesFinishedRelativeMoveFlightInfo(false, 43.2f, -0.89f, 0.49f, -0.01f));
+    }
+
+    @Test
+    public void testUnavailabilityReasons() {
+        connectDrone(mDrone, 1);
+
+        // should be empty
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+        assertThat(mChangeCnt, is(1));
+
+        // drone not flying indicator
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_FLYING)));
+        assertThat(mPilotingItf.getUnavailabilityReasons(),
+                contains(GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING));
+        assertThat(mChangeCnt, is(2));
+
+        // disconnect and connect, should reset unavailability reasons
+        disconnectDrone(mDrone, 1);
+        connectDrone(mDrone, 1);
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+        assertThat(mChangeCnt, is(4));
+
+        // mock unavailability indicators
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_FLYING, ArsdkFeatureMove.Indicator.DRONE_MAGNETO,
+                ArsdkFeatureMove.Indicator.DRONE_GPS, ArsdkFeatureMove.Indicator.DRONE_GEOFENCE,
+                ArsdkFeatureMove.Indicator.DRONE_MIN_ALTITUDE, ArsdkFeatureMove.Indicator.DRONE_MAX_ALTITUDE)));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
+                GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_ABOVE_MAX_ALTITUDE,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE));
+        assertThat(mChangeCnt, is(5));
+
+        // same indicators
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_FLYING, ArsdkFeatureMove.Indicator.DRONE_MAGNETO,
+                ArsdkFeatureMove.Indicator.DRONE_GPS, ArsdkFeatureMove.Indicator.DRONE_GEOFENCE,
+                ArsdkFeatureMove.Indicator.DRONE_MIN_ALTITUDE, ArsdkFeatureMove.Indicator.DRONE_MAX_ALTITUDE)));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), containsInAnyOrder(
+                GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_ABOVE_MAX_ALTITUDE,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND,
+                GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE));
+        assertThat(mChangeCnt, is(5));
+
+        // all other indicators
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeMoveInfo(ArsdkFeatureMove.Indicator.toBitField(
+                ArsdkFeatureMove.Indicator.DRONE_TARGET_DISTANCE_MIN,
+                ArsdkFeatureMove.Indicator.DRONE_TARGET_DISTANCE_MAX,
+                ArsdkFeatureMove.Indicator.TARGET_ALTITUDE_ACCURACY,
+                ArsdkFeatureMove.Indicator.TARGET_HORIZ_SPEED, ArsdkFeatureMove.Indicator.TARGET_IMAGE_DETECTION,
+                ArsdkFeatureMove.Indicator.TARGET_POSITION_ACCURACY, ArsdkFeatureMove.Indicator.TARGET_VERT_SPEED)));
+        assertThat(mPilotingItf.getUnavailabilityReasons(), empty());
+        assertThat(mChangeCnt, is(6));
+    }
+
+    @Test
+    public void testLocationMoveWithSpeed() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                        ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING)));
+
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.moveExtendedMoveTo(1, 2, 3,
+                        ArsdkFeatureMove.OrientationMode.HEADING_DURING, 4, 5, 6 ,7), true));
+        mPilotingItf.move(new LocationDirective(1, 2, 3, Orientation.headingDuring(
+                4), new GuidedPilotingItf.Directive.Speed(5, 6 ,7)));
+    }
+
+    @Test
+    public void testRelativeMoveWithSpeed() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeArdrone3PilotingStateFlyingStateChanged(
+                        ArsdkFeatureArdrone3.PilotingstateFlyingstatechangedState.FLYING)));
+
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.moveExtendedMoveBy(1, 2, 3,(float) Math.toRadians(4), 5, 6 ,7), true));
+        mPilotingItf.move(new RelativeMoveDirective(1, 2, 3, 4,
+                new GuidedPilotingItf.Directive.Speed(5, 6 ,7)));
     }
 }

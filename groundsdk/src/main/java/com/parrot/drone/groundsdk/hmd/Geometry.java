@@ -33,10 +33,12 @@
 package com.parrot.drone.groundsdk.hmd;
 
 import android.util.DisplayMetrics;
+import android.util.SizeF;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * HMD lens rendering geometry data.
@@ -55,21 +57,9 @@ final class Geometry {
         @NonNull
         private final DisplayMetrics mDisplayMetrics;
 
-        /** Lens mesh fixed width, in pixels. */
-        @IntRange(from = 0)
-        private final int mLensMeshWidthPx;
-
-        /** Lens mesh fixed height, in pixels. */
-        @IntRange(from = 0)
-        private final int mLensMeshHeightPx;
-
-        /** Maximum available width to render a lens, in pixels. */
-        @IntRange(from = 0)
-        private final int mMaxRenderWidthPx;
-
-        /** Maximum available height to render a lens, in pixels. */
-        @IntRange(from = 0)
-        private final int mMaxRenderHeightPx;
+        /** Head Mounted Display model to compute geometry for. */
+        @Nullable
+        private HmdModel mHmdModel;
 
         /** Total available rendering width, in pixels. */
         @IntRange(from = 0)
@@ -79,14 +69,6 @@ final class Geometry {
         @IntRange(from = 0)
         private int mSurfaceHeightPx;
 
-        /** Left lens horizontal offset from rendering surface center, in pixels. */
-        @IntRange(from = 0)
-        private int mLeftLensOffsetPx;
-
-        /** Right lens horizontal offset from rendering surface center, in pixels. */
-        @IntRange(from = 0)
-        private int mRightLensOffsetPx;
-
         /** Both lenses vertical offset from rendering surface center, in pixels. */
         private int mLensVerticalOffsetPx;
 
@@ -94,37 +76,18 @@ final class Geometry {
          * Constructor.
          *
          * @param displayMetrics    device display metrics
-         * @param maxRenderWidthMm  maximum available width to render a lens, in millimeters
-         * @param maxRenderHeightMm maximum available height to render a lens, in millimeters
-         * @param lensMeshSizeMm    lens mesh fixed size (width/height, mesh is square), in millimeters
          */
-        Computer(@NonNull DisplayMetrics displayMetrics,
-                 @FloatRange(from = 0) float maxRenderWidthMm,
-                 @FloatRange(from = 0) float maxRenderHeightMm,
-                 @FloatRange(from = 0) float lensMeshSizeMm) {
+        Computer(@NonNull DisplayMetrics displayMetrics) {
             mDisplayMetrics = displayMetrics;
-            mLensMeshWidthPx = mmToHorizontalPx(lensMeshSizeMm);
-            mLensMeshHeightPx = mmToVerticalPx(lensMeshSizeMm);
-            mMaxRenderWidthPx = Math.min(mLensMeshWidthPx, mmToHorizontalPx(maxRenderWidthMm));
-            mMaxRenderHeightPx = Math.min(mLensMeshHeightPx, mmToVerticalPx(maxRenderHeightMm));
         }
 
         /**
-         * Configures left lens center horizontal offset from rendering surface center.
+         * Configures HMD model to compute geometry for.
          *
-         * @param offset left lens horizontal offset, in millimeters
+         * @param model HMD model
          */
-        void setLeftLensOffset(@FloatRange(from = 0) float offset) {
-            mLeftLensOffsetPx = mmToHorizontalPx(offset);
-        }
-
-        /**
-         * Configures right lens center horizontal offset from rendering surface center.
-         *
-         * @param offset right lens horizontal offset, in millimeters
-         */
-        void setRightLensOffset(@FloatRange(from = 0) float offset) {
-            mRightLensOffsetPx = mmToHorizontalPx(offset);
+        void setHmdModel(@NonNull HmdModel model) {
+            mHmdModel = model;
         }
 
         /**
@@ -260,20 +223,37 @@ final class Geometry {
     private Geometry(@NonNull Computer computer) {
         surfaceWidthPx = computer.mSurfaceWidthPx;
         surfaceHeightPx = computer.mSurfaceHeightPx;
-        int leftOffsetPx = computer.mLeftLensOffsetPx;
-        int rightOffsetPx = computer.mRightLensOffsetPx;
+
+        HmdModel hmdModel = computer.mHmdModel;
+
+        int leftOffsetPx = 0, rightOffsetPx = 0;
+        int maxRenderWidthPx = Integer.MAX_VALUE, maxRenderHeightPx = Integer.MAX_VALUE;
+        float meshSizeMm = 0;
+
+        if (hmdModel != null) {
+            leftOffsetPx = computer.mmToHorizontalPx(hmdModel.defaultIpd() / 2);
+            rightOffsetPx = leftOffsetPx;
+
+            SizeF maxRenderSize = hmdModel.maxRenderSize();
+            maxRenderWidthPx = computer.mmToHorizontalPx(maxRenderSize.getWidth());
+            maxRenderHeightPx = computer.mmToVerticalPx(maxRenderSize.getHeight());
+
+            meshSizeMm = hmdModel.meshSize();
+        }
+
+        lensMeshWidthPx = computer.mmToHorizontalPx(meshSizeMm);
+        lensMeshHeightPx = computer.mmToVerticalPx(meshSizeMm);
+
+        maxRenderWidthPx = Math.min(maxRenderWidthPx, lensMeshWidthPx);
+        maxRenderHeightPx = Math.min(maxRenderHeightPx, lensMeshHeightPx);
+
         int verticalOffsetPx = computer.mLensVerticalOffsetPx;
         int halfSurfaceWidthPx = surfaceWidthPx / 2;
 
-        lensMeshWidthPx = computer.mLensMeshWidthPx;
-        lensMeshHeightPx = computer.mLensMeshHeightPx;
-
-        lensRenderWidthPx = Math.max(0, Math.min(computer.mMaxRenderWidthPx,
-                halfSurfaceWidthPx - Math.max(
+        lensRenderWidthPx = Math.max(0, Math.min(maxRenderWidthPx, halfSurfaceWidthPx - Math.max(
                         Math.abs(2 * leftOffsetPx - halfSurfaceWidthPx),
                         Math.abs(2 * rightOffsetPx - halfSurfaceWidthPx))));
-        lensRenderHeightPx = Math.max(0, Math.min(computer.mMaxRenderHeightPx,
-                surfaceHeightPx - 2 * Math.abs(verticalOffsetPx)));
+        lensRenderHeightPx = Math.max(0, Math.min(maxRenderHeightPx, surfaceHeightPx));
 
         lensRenderWidthMm = computer.pxToHorizontalMm(lensRenderWidthPx);
         lensRenderHeightMm = computer.pxToVerticalMm(lensRenderHeightPx);

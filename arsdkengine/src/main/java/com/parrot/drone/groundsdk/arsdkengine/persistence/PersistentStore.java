@@ -66,6 +66,9 @@ public class PersistentStore {
     /** Json key of the device firmware version (String). */
     public static final String KEY_DEVICE_FIRMWARE_VERSION = "firmware";
 
+    /** Json key of the device board identifier (String). */
+    public static final String KEY_DEVICE_BOARD_ID = "boardId";
+
     /** Json key of the device preset key (String). */
     public static final String KEY_DEVICE_PRESET_KEY = "preset";
 

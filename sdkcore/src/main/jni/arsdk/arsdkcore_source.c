@@ -77,11 +77,14 @@ static int source_open(const struct sdkcore_source *source, struct pdraw *pdraw)
 
 	char *url = NULL;
 	if (   info->type == ARSDK_DEVICE_TYPE_ANAFI4K
-	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_THERMAL) {
+	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_THERMAL
+	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_UA
+	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_USA) {
 		res = asprintf(&url, "rtsp://%s/%s", info->addr, self->url) == -1 ?
 				-ENOMEM : 0;
 		GOTO_IF_ERR(res, out);
-	} else if (info->type == ARSDK_DEVICE_TYPE_SKYCTRL_3) {
+	} else if (info->type == ARSDK_DEVICE_TYPE_SKYCTRL_3
+		|| info->type == ARSDK_DEVICE_TYPE_SKYCTRL_UA) {
 		res = arsdk_device_create_tcp_proxy(device, info->type, 554,
 				&self->rtsp_proxy);
 		GOTO_IF_FAILED(self->rtsp_proxy != NULL, res, out);

@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DroneController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.DronePeripheralController;
+import com.parrot.drone.groundsdk.device.peripheral.Magnetometer;
 import com.parrot.drone.groundsdk.device.peripheral.MagnetometerWith3StepCalibration;
 import com.parrot.drone.groundsdk.internal.device.peripheral.MagnetometerWith3StepCalibrationCore;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureCommon;
@@ -86,6 +87,27 @@ public final class AnafiMagnetometer extends DronePeripheralController {
         }
     }
 
+    /**
+     * Translates an integer into its groundsdk {@link Magnetometer.MagnetometerCalibrationState} representation.
+     *
+     * @param calibrationState represents if the calibration is required
+     *
+     * @return the corresponding Magnetometer.MagnetometerCalibrationState
+     */
+    @NonNull
+    static Magnetometer.MagnetometerCalibrationState from(int calibrationState) {
+        switch (calibrationState) {
+            case 0:
+                return Magnetometer.MagnetometerCalibrationState.CALIBRATED;
+            case 1:
+                return Magnetometer.MagnetometerCalibrationState.REQUIRED;
+            case 2:
+                return Magnetometer.MagnetometerCalibrationState.RECOMMENDED;
+        }
+        return Magnetometer.MagnetometerCalibrationState.REQUIRED;
+    }
+
+
     /** Callbacks called when a command of the feature ArsdkFeatureCommon.CalibrationState is decoded. */
     private final ArsdkFeatureCommon.CalibrationState.Callback mCalibrationStateCallback =
             new ArsdkFeatureCommon.CalibrationState.Callback() {
@@ -115,7 +137,7 @@ public final class AnafiMagnetometer extends DronePeripheralController {
 
                 @Override
                 public void onMagnetoCalibrationRequiredState(int required) {
-                    mMagnetometer.updateIsCalibrated(required == 0).notifyUpdated();
+                    mMagnetometer.updateCalibrationState(from(required)).notifyUpdated();
                 }
 
                 @Override

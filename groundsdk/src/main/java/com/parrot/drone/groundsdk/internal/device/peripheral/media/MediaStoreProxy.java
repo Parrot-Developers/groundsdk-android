@@ -101,7 +101,14 @@ class MediaStoreProxy implements MediaStore {
     @NonNull
     @Override
     public Ref<List<MediaItem>> browse(@NonNull Ref.Observer<List<MediaItem>> observer) {
-        return new MediaListRef(mSession, observer, mStore);
+        return new MediaListRef(mSession, observer, mStore, null);
+    }
+
+    @NonNull
+    @Override
+    public Ref<List<MediaItem>> browse(@NonNull StorageType storageType,
+                                       @NonNull Ref.Observer<List<MediaItem>> observer) {
+        return new MediaListRef(mSession, observer, mStore, storageType);
     }
 
     @NonNull

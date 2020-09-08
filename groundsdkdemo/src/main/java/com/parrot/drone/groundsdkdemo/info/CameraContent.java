@@ -47,6 +47,7 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.parrot.drone.groundsdk.device.Drone;
+import com.parrot.drone.groundsdk.device.peripheral.BlendedThermalCamera;
 import com.parrot.drone.groundsdk.device.peripheral.MainCamera;
 import com.parrot.drone.groundsdk.device.peripheral.Peripheral;
 import com.parrot.drone.groundsdk.device.peripheral.ThermalCamera;
@@ -93,6 +94,11 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
     @NonNull
     static CameraContent<ThermalCamera> thermal(@NonNull Drone drone) {
         return new CameraContent<>(drone, ThermalCamera.class);
+    }
+
+    @NonNull
+    static CameraContent<BlendedThermalCamera> blendedThermal(@NonNull Drone drone) {
+        return new CameraContent<>(drone, BlendedThermalCamera.class);
     }
 
     private CameraContent(@NonNull Drone drone, @NonNull Class<C> cameraClass) {
@@ -256,6 +262,8 @@ final class CameraContent<C extends Camera & Peripheral> extends PeripheralConte
                 nameRes = R.string.peripheral_camera_main;
             } else if (cameraClass == ThermalCamera.class) {
                 nameRes = R.string.peripheral_camera_thermal;
+            } else if (cameraClass == BlendedThermalCamera.class) {
+                nameRes = R.string.peripheral_camera_thermal_blended;
             } else {
                 throw new IllegalArgumentException("Unsupported camera class");
             }

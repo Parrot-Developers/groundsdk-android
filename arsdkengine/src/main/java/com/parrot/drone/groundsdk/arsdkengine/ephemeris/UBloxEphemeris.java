@@ -56,7 +56,12 @@ import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_EPHEMERIS;
 /**
  * Implementation class for u-blox ephemerides.
  * <p>
- * U-blox ephemerides are uploaded to {@link Drone.Model#ANAFI_4K} and {@link Drone.Model#ANAFI_THERMAL} drones.
+ * U-blox ephemerides are uploaded to the following drone models: <ul>
+ *     <li>{@link Drone.Model#ANAFI_4K},</li>
+ *     <li>{@link Drone.Model#ANAFI_THERMAL},</li>
+ *     <li>{@link Drone.Model#ANAFI_UA},</li>
+ *     <li>{@link Drone.Model#ANAFI_USA}.</li>
+ * </ul>
  */
 class UBloxEphemeris extends EphemerisStore.Ephemeris {
 

@@ -283,18 +283,19 @@ public class AnafiFollowMePilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getQualityIssues(), containsInAnyOrder(
                 TrackingIssue.DRONE_TOO_CLOSE_TO_TARGET));
 
-        // mock drone not high enough quality issue
+        // mock target speed too high quality issue
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeFollowMeModeInfo(
                 ArsdkFeatureFollowMe.Mode.RELATIVE,
                 noneMissing(),
-                missing(ArsdkFeatureFollowMe.Input.DRONE_HIGH_ENOUGH)));
+                missing(ArsdkFeatureFollowMe.Input.TARGET_GOOD_SPEED)));
 
         assertThat(mChangeCnt, is(6));
         assertThat(mPilotingItf.getState(), is(Activable.State.IDLE));
         assertThat(mPilotingItf.getAvailabilityIssues(), empty());
         assertThat(mPilotingItf.getQualityIssues(), containsInAnyOrder(
                 TrackingIssue.DRONE_TOO_CLOSE_TO_TARGET,
-                TrackingIssue.DRONE_TOO_CLOSE_TO_GROUND));
+                TrackingIssue.TARGET_HORIZONTAL_SPEED_TOO_HIGH,
+                TrackingIssue.TARGET_VERTICAL_SPEED_TOO_HIGH));
 
         // mock follow me start
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeFollowMeState(ArsdkFeatureFollowMe.Mode.GEOGRAPHIC,
@@ -306,9 +307,10 @@ public class AnafiFollowMePilotingItfTests extends ArsdkEngineTestBase {
         assertThat(mPilotingItf.getAvailabilityIssues(), empty());
         assertThat(mPilotingItf.getQualityIssues(), containsInAnyOrder(
                 TrackingIssue.DRONE_TOO_CLOSE_TO_TARGET,
-                TrackingIssue.DRONE_TOO_CLOSE_TO_GROUND));
+                TrackingIssue.TARGET_HORIZONTAL_SPEED_TOO_HIGH,
+                TrackingIssue.TARGET_VERTICAL_SPEED_TOO_HIGH));
 
-        // mock drone high enough
+        // mock target speed ok
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeFollowMeModeInfo(
                 ArsdkFeatureFollowMe.Mode.RELATIVE,
                 noneMissing(),

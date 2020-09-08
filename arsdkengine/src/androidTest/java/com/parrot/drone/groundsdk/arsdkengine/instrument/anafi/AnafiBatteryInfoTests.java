@@ -130,4 +130,40 @@ public class AnafiBatteryInfoTests extends ArsdkEngineTestBase {
         assertThat(mBatteryInfo.getBatteryHealth(), optionalIntValueIs(75));
         assertThat(mChangeCnt, is(3));
     }
+
+    @Test
+    public void testCycleCount() {
+        connectDrone(mDrone, 1);
+
+        // check default value
+        assertThat(mBatteryInfo.getBatteryCycleCount(), optionalValueIsUnavailable());
+        assertThat(mChangeCnt, is(1));
+
+        // check value change
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeBatteryCycleCount(34));
+        assertThat(mBatteryInfo.getBatteryCycleCount(), optionalIntValueIs(34));
+        assertThat(mChangeCnt, is(2));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeBatteryCycleCount(75));
+        assertThat(mBatteryInfo.getBatteryCycleCount(), optionalIntValueIs(75));
+        assertThat(mChangeCnt, is(3));
+    }
+
+    @Test
+    public void testSerial() {
+        connectDrone(mDrone, 1);
+
+        // check default value
+        assertThat(mBatteryInfo.getSerial(), nullValue());
+        assertThat(mChangeCnt, is(1));
+
+        // check value change
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeBatterySerial("test-serial1"));
+        assertThat(mBatteryInfo.getSerial(), is("test-serial1"));
+        assertThat(mChangeCnt, is(2));
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeBatterySerial("test-serial2"));
+        assertThat(mBatteryInfo.getSerial(), is("test-serial2"));
+        assertThat(mChangeCnt, is(3));
+    }
 }

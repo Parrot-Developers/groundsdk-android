@@ -43,13 +43,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.parrot.drone.groundsdk.device.peripheral.DevToolbox;
 import com.parrot.drone.groundsdkdemo.R;
 
@@ -109,7 +109,7 @@ public class DebugSettingsRecyclerView extends RecyclerView {
         private final TextView mValueText;
 
         @NonNull
-        private final Switch mEnableSwitch;
+        private final SwitchMaterial mEnableSwitch;
 
         @NonNull
         private final ProgressBar mUpdatingView;

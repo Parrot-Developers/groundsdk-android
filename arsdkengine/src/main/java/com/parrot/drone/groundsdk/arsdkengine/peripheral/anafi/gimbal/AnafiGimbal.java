@@ -182,7 +182,8 @@ public final class AnafiGimbal extends DronePeripheralController {
         mGimbal.cancelSettingsRollbacks()
                .updateLockedAxes(EnumSet.allOf(Axis.class))
                .updateCorrectableAxes(EnumSet.noneOf(Axis.class))
-               .updateErrors(EnumSet.noneOf(Gimbal.Error.class));
+               .updateErrors(EnumSet.noneOf(Gimbal.Error.class))
+               .updateCalibrationProcessState(Gimbal.CalibrationProcessState.NONE);
 
         for (Axis axis : EnumSet.allOf(Axis.class)) {
             mGimbal.updateAttitudeBounds(axis, null)

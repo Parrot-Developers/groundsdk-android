@@ -63,15 +63,44 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
          * @return {@code true} if the operation could be initiated, otherwise {@code false}
          */
         boolean format(@NonNull FormattingType type, @NonNull String name);
+
+        /**
+         * Formats the media with encryption.
+         *
+         * @param password encryption password
+         * @param type formatting type
+         * @param name new name given to the media. If empty, the media name is set to the product name.
+         *
+         * @return {@code true} if the operation could be initiated, otherwise {@code false}
+         */
+        boolean formatWithEncryption(@NonNull String password, @NonNull FormattingType type, @NonNull String name);
+
+        /**
+         * Sends the password in order to decrypt the media.
+         *
+         * @param password encryption password
+         * @param usage encryption usage
+         *
+         * @return {@code true} if the password has been sent, otherwise {@code false}
+         */
+        boolean sendPassword(@NonNull String password, @NonNull PasswordUsage usage);
     }
 
     /** Engine peripheral backend. */
     @NonNull
     private final Backend mBackend;
 
-    /** Current user storage state. */
+    /** Current user storage file system state. */
     @NonNull
-    private State mState;
+    private FileSystemState mFileSystemState;
+
+    /** Current user storage physical state. */
+    @NonNull
+    private PhysicalState mPhysicalState;
+
+    /** User storage UUID. */
+    @Nullable
+    private String mUuid;
 
     /** Current media information or {@code null} if there is no media. */
     @Nullable
@@ -82,6 +111,12 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
 
     /** Current ability to format the media. */
     private boolean mCanFormat;
+
+    /** Ability to encrypt decrypt the media. */
+    private boolean mEncryptionSupported;
+
+    /** Whether media is encrypted. */
+    private boolean mEncrypted;
 
     /** Supported formatting types. */
     @NonNull
@@ -100,15 +135,28 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
     public RemovableUserStorageCore(@NonNull ComponentStore<Peripheral> peripheralStore, @NonNull Backend backend) {
         super(DESC, peripheralStore);
         mBackend = backend;
-        mState = State.NO_MEDIA;
+        mPhysicalState = PhysicalState.NO_MEDIA;
+        mFileSystemState = FileSystemState.READY;
         mAvailableSpace = -1;
         mSupportedFormattingTypes = EnumSet.of(FormattingType.FULL);
     }
 
     @NonNull
     @Override
-    public State getState() {
-        return mState;
+    public FileSystemState getFileSystemState() {
+        return mFileSystemState;
+    }
+
+    @NonNull
+    @Override
+    public PhysicalState getPhysicalState() {
+        return mPhysicalState;
+    }
+
+    @Nullable
+    @Override
+    public String getUuid() {
+        return mUuid;
     }
 
     @Nullable
@@ -125,6 +173,16 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
     @Override
     public boolean canFormat() {
         return mCanFormat;
+    }
+
+    @Override
+    public boolean isEncryptionSupported() {
+        return mEncryptionSupported;
+    }
+
+    @Override
+    public boolean isEncrypted() {
+        return mEncrypted;
     }
 
     @NonNull
@@ -149,25 +207,70 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
         return mCanFormat && mSupportedFormattingTypes.contains(type) && mBackend.format(type, name);
     }
 
+    @Override
+    public boolean formatWithEncryption(@NonNull String password, @NonNull FormattingType type, @Nullable String name) {
+        return mCanFormat && mSupportedFormattingTypes.contains(type) && mEncryptionSupported &&
+                mBackend.formatWithEncryption(password, type, name != null ? name : "");
+    }
+
+    @Override
+    public boolean sendPassword(@NonNull String password, @NonNull PasswordUsage usage) {
+        return mBackend.sendPassword(password, usage);
+    }
+
     /**
-     * Updates the user storage state.
+     * Updates the user storage physical state.
      *
-     * @param state new state
+     * @param physicalState new storage physical state
      *
      * @return this, to allow call chaining
      */
     @NonNull
-    public RemovableUserStorageCore updateState(@NonNull State state) {
-        if (state != mState) {
-            mState = state;
-            if (state == State.NO_MEDIA) {
+    public RemovableUserStorageCore updatePhysicalState(@NonNull PhysicalState physicalState) {
+        if (physicalState != mPhysicalState) {
+            mPhysicalState = physicalState;
+            if (physicalState == PhysicalState.NO_MEDIA) {
                 // Reset information when there is no media
                 mMediaInfo = null;
+                mUuid = null;
                 mAvailableSpace = -1;
+                mCanFormat = false;
             }
-            if (state != State.FORMATTING) {
+            mChanged = true;
+        }
+        return this;
+    }
+
+    /**
+     * Updates the user storage file system state.
+     *
+     * @param fileSystemState new storage file system state
+     *
+     * @return this, to allow call chaining
+     */
+    @NonNull
+    public RemovableUserStorageCore updateFileSystemState(@NonNull FileSystemState fileSystemState) {
+        if (fileSystemState != mFileSystemState) {
+            mFileSystemState = fileSystemState;
+            if (fileSystemState != FileSystemState.FORMATTING) {
                 mFormattingState = null;
             }
+            mChanged = true;
+        }
+        return this;
+    }
+
+    /**
+     * Updates the user storage UUID.
+     *
+     * @param uuid new UUID
+     *
+     * @return this, to allow call chaining
+     */
+    @NonNull
+    public RemovableUserStorageCore updateUuid(@NonNull String uuid) {
+        if (!uuid.equals(mUuid)) {
+            mUuid = uuid;
             mChanged = true;
         }
         return this;
@@ -220,6 +323,38 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
     public RemovableUserStorageCore updateCanFormat(boolean canFormat) {
         if (canFormat != mCanFormat) {
             mCanFormat = canFormat;
+            mChanged = true;
+        }
+        return this;
+    }
+
+    /**
+     * Updates current ability to encrypt the media.
+     *
+     * @param encryptionSupported {@code true} if the media can be encrypted
+     *
+     * @return this, to allow call chaining
+     */
+    @NonNull
+    public RemovableUserStorageCore updateIsEncryptionSupported(boolean encryptionSupported) {
+        if (encryptionSupported != mEncryptionSupported) {
+            mEncryptionSupported = encryptionSupported;
+            mChanged = true;
+        }
+        return this;
+    }
+
+    /**
+     * Updates media encryption information.
+     *
+     * @param encrypted {@code true} if the media is encrypted
+     *
+     * @return this, to allow call chaining
+     */
+    @NonNull
+    public RemovableUserStorageCore updateIsEncrypted(boolean encrypted) {
+        if (encrypted != mEncrypted) {
+            mEncrypted = encrypted;
             mChanged = true;
         }
         return this;
@@ -331,7 +466,7 @@ public class RemovableUserStorageCore extends SingletonComponentCore implements 
         }
 
         /**
-         * Updates the media name.
+         * Updates the media capacity.
          *
          * @param capacity new capacity
          *

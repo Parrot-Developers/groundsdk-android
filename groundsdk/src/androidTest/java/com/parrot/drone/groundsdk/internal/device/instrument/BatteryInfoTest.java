@@ -162,4 +162,38 @@ public class BatteryInfoTest {
         assertThat(mChangeCnt, is(2));
         assertThat(instrument.getBatteryHealth(), optionalIntValueIs(95));
     }
+
+    @Test
+    public void testCycleCount() {
+        mImpl.publish();
+        assertThat(mChangeCnt, is(1));
+
+        BatteryInfo instrument = mStore.get(BatteryInfo.class);
+        assert instrument != null;
+
+        // test default values
+        assertThat(instrument.getBatteryCycleCount(), optionalValueIsUnavailable());
+
+        // test value change
+        mImpl.updateCycleCount(13).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(instrument.getBatteryCycleCount(), optionalIntValueIs(13));
+    }
+
+    @Test
+    public void testSerial() {
+        mImpl.publish();
+        assertThat(mChangeCnt, is(1));
+
+        BatteryInfo instrument = mStore.get(BatteryInfo.class);
+        assert instrument != null;
+
+        // test default values
+        assertThat(instrument.getSerial(), nullValue());
+
+        // test value change
+        mImpl.updateSerial("test-serial").notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(instrument.getSerial(), is("test-serial"));
+    }
 }

@@ -38,6 +38,7 @@ import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngine;
 import com.parrot.drone.groundsdk.arsdkengine.Iso8601;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.skycontroller.SkyControllerBatteryInfo;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.skycontroller.SkyControllerCompass;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.PeripheralController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.crashml.FtpReportDownloader;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.flightlog.FtpFlightLogDownloader;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.updater.FirmwareUpdaterProtocol;
@@ -47,6 +48,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyContro
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerMagnetometer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.SkyControllerSystemInfo;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.gamepad.Sc3Gamepad;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.skycontroller.gamepad.ScUaGamepad;
 import com.parrot.drone.groundsdk.device.RemoteControl;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureSkyctrl;
 
@@ -67,13 +69,23 @@ public class SkyControllerFamilyController extends RCController {
                                          @NonNull RemoteControl.Model model, @NonNull String name) {
         super(engine, uid, model, name);
 
+        PeripheralController<RCController> gamepadCtrl = null;
+        switch (model) {
+            case SKY_CONTROLLER_3:
+                gamepadCtrl = new Sc3Gamepad(this);
+                break;
+            case SKY_CONTROLLER_UA:
+                gamepadCtrl = new ScUaGamepad(this);
+                break;
+        }
+
         registerComponentControllers(
                 // instruments
                 new SkyControllerBatteryInfo(this),
                 new SkyControllerCompass(this),
                 // peripherals
                 new SkyControllerDroneFinder(this),
-                new Sc3Gamepad(this),
+                gamepadCtrl,
                 new SkyControllerSystemInfo(this),
                 new SkyControllerMagnetometer(this),
                 new SkyControllerCopilot(this),

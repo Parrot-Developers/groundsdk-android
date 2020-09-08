@@ -64,6 +64,7 @@
     <string name="title_activity_user_account">User Account</string>
     <string name="title_activity_facilities">Facilities</string>
     <string name="title_activity_piloting_control">Piloting Control</string>
+    <string name="title_activity_dri_settings">DRI Settings</string>
     <string name="title_dialog_password">Enter password</string>
     <string name="title_dialog_download_media">Downloading media</string>
     <string name="title_dialog_delete_media">Deleting media</string>
@@ -75,6 +76,8 @@
     <string name="title_dialog_format">Formatting options</string>
     <string name="title_dialog_media_resources">Resources</string>
     <string name="title_dialog_edit_color">Edit color</string>
+    <string name="title_dialog_storage_password">Enter Password and Usage</string>
+    <string name="title_dialog_pick_certificate_file">Select certificate file</string>
     <string name="label_password">Password</string>
     <string name="label_storage_name">Storage Name</string>
     <string name="known">KNOWN</string>
@@ -144,6 +147,9 @@
     <string name="action_send_palette">Send palette</string>
     <string name="action_send_rendering">Send rendering</string>
     <string name="action_ok">OK</string>
+    <string name="action_enter_password">Enter password</string>
+    <string name="action_decrypt">Decrypt</string>
+    <string name="action_deactivate_log_storage">Deactivate log storage</string>
     <string name="header_instruments">Instruments</string>
     <string name="header_piloting_itf">Piloting interfaces</string>
     <string name="header_peripherals">Peripherals</string>
@@ -152,6 +158,7 @@
     <string name="property_takeoff_land">Take-off/Land</string>
     <string name="property_max_altitude">Max. altitude</string>
     <string name="property_min_altitude">Min. altitude</string>
+    <string name="property_hovering_altitude">Hovering altitude</string>
     <string name="property_max_distance">Max. distance</string>
     <string name="property_max_pitch_roll">Max. pitch/roll</string>
     <string name="property_max_pitch_roll_velocity">Max. pitch/roll velocity</string>
@@ -190,7 +197,9 @@
     <string name="property_home_location">Home location</string>
     <string name="property_current_target">Current target</string>
     <string name="property_gps_fixed_on_takeoff">Fixed on take-off</string>
+    <string name="property_auto_trigger">Auto trigger</string>
     <string name="property_preferred_target">Preferred target</string>
+    <string name="property_ending_behaviour">Ending behaviour</string>
     <string name="property_autostart_on_disconnect_delay">Autostart on disconnect delay</string>
     <string name="property_home_reachability">Home reachability</string>
     <string name="property_warning_trigger_delay">Warning trigger delay</string>
@@ -255,6 +264,8 @@
     <string name="property_battery_level">Level</string>
     <string name="property_battery_charging">Charging</string>
     <string name="property_battery_health">Health</string>
+    <string name="property_battery_cycle_count">Cycle count</string>
+    <string name="property_battery_serial">Serial</string>
     <string name="property_flight_meter_last_flight_duration">Last flight duration</string>
     <string name="property_flight_meter_total_flight_duration">Total flight duration</string>
     <string name="property_flight_meter_total_flight_count">Total flight count</string>
@@ -273,12 +284,15 @@
     <string name="property_current_directive">Current directive</string>
     <string name="property_current_poi">Current POI</string>
     <string name="property_latest_finished_flight">Latest finished flight</string>
-    <string name="property_user_storage_state">State</string>
+    <string name="property_user_storage_fs_state">File system state</string>
+    <string name="property_user_storage_phy_state">Physical state</string>
     <string name="property_user_storage_name">Name</string>
     <string name="property_user_storage_capacity">Capacity</string>
     <string name="property_user_storage_available">Available</string>
+    <string name="property_user_storage_encrypted">Encrypted</string>
     <string name="property_user_storage_formatting_types">Formatting types</string>
     <string name="property_user_storage_formatting_state">Formatting state</string>
+    <string name="property_user_storage_type">Type</string>
     <string name="property_camera_active_state">Active</string>
     <string name="property_camera_mode">Mode</string>
     <string name="property_camera_exposure">Exposure</string>
@@ -341,7 +355,7 @@
     <string name="property_gimbal_control_velocity">Velocity</string>
     <string name="property_geofence_center">Center</string>
     <string name="property_geofence_mode">Mode</string>
-    <string name="property_leds_state">Switch state</string>
+    <string name="property_switch_state">Switch state</string>
     <string name="property_auto_connection_drone">Drone</string>
     <string name="property_auto_connection_remote_control">Remote control</string>
     <string name="property_user_location">Location</string>
@@ -387,6 +401,9 @@
     <string name="property_battery_gauge_updater_state">State</string>
     <string name="property_battery_gauge_updater_unavailability_reasons">Unavailability reasons</string>
     <string name="property_battery_gauge_updater_current_progress">Current progress</string>
+    <string name="property_dri_id_type">ID Type</string>
+    <string name="property_dri_id">ID</string>
+    <string name="property_log_control_storage_enabled">Log storage state</string>
     <string name="boolean_setting_enabled">On</string>
     <string name="boolean_setting_disabled">Off</string>
     <string name="valid">Valid</string>
@@ -545,6 +562,7 @@
     <string name="peripheral_user_storage">User Storage</string>
     <string name="peripheral_camera_main">Main Camera</string>
     <string name="peripheral_camera_thermal">Thermal Camera</string>
+    <string name="peripheral_camera_thermal_blended">Blended Thermal Camera</string>
     <string name="peripheral_anti_flicker">Anti-Flicker</string>
     <string name="peripheral_gimbal">Gimbal</string>
     <string name="peripheral_target_tracker">Target Tracker</string>
@@ -554,6 +572,9 @@
     <string name="peripheral_thermal_control">Thermal Control</string>
     <string name="peripheral_piloting_control">Piloting Control</string>
     <string name="peripheral_battery_gauge_updater">Battery Gauge Updater</string>
+    <string name="peripheral_dri">DRI</string>
+    <string name="peripheral_log_control">Log Control</string>
+    <string name="peripheral_certificate_uploader">Certificate Uploader</string>
     <string name="facility_auto_connection">Auto Connection</string>
     <string name="facility_blackbox_reporter">BlackBox Reporter</string>
     <string name="facility_crash_reporter">Crash Reporter</string>
@@ -614,5 +635,8 @@
     <string name="user_account_id">Account id</string>
     <string name="allow_accountless_data">Allow accountless data</string>
     <string name="allow_anonymous_data">Allow anonymous data</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="cypher_removable_storage">Cypher card</string>
 </resources>
 

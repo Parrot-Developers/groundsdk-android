@@ -106,25 +106,30 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
     @Test
     public void testCalibrationState() {
         connectDrone(mDrone, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationRequiredState(0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(true));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.CALIBRATED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationRequiredState(1));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
+        assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
+
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationRequiredState(2));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.RECOMMENDED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
     }
 
     @Test
     public void testCalibrationProcess() {
         connectDrone(mDrone, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -132,7 +137,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonCalibrationMagnetoCalibration(1)));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -140,7 +145,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         // starting it again should not send a new command
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -149,7 +154,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         // as the creation of the calibrationProcessState obj is done on startCalibrationProcess()
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStartedChanged(1));
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -158,7 +163,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged(
                         ArsdkFeatureCommon.CalibrationstateMagnetocalibrationaxistocalibratechangedAxis.XAXIS));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.ROLL,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -167,7 +172,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged(
                         ArsdkFeatureCommon.CalibrationstateMagnetocalibrationaxistocalibratechangedAxis.YAXIS));
         assertThat(mChangeCnt, is(4));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.PITCH,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -176,7 +181,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged(
                         ArsdkFeatureCommon.CalibrationstateMagnetocalibrationaxistocalibratechangedAxis.ZAXIS));
         assertThat(mChangeCnt, is(5));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.YAW,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -185,7 +190,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged(
                         ArsdkFeatureCommon.CalibrationstateMagnetocalibrationaxistocalibratechangedAxis.NONE));
         assertThat(mChangeCnt, is(6));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -193,7 +198,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 1, 0, 0));
         assertThat(mChangeCnt, is(7));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.of(CalibrationProcessState.Axis.PITCH, CalibrationProcessState.Axis.ROLL))));
@@ -201,21 +206,21 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 0, 1, 0));
         assertThat(mChangeCnt, is(8));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.of(CalibrationProcessState.Axis.ROLL, CalibrationProcessState.Axis.YAW))));
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStartedChanged(0));
         assertThat(mChangeCnt, is(9));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
     }
 
     @Test
     public void testCalibrationProcessFailed() {
         connectDrone(mDrone, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -223,7 +228,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonCalibrationMagnetoCalibration(1)));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -232,7 +237,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 0, 1, 1));
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -240,7 +245,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
 
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStartedChanged(0));
         assertThat(mChangeCnt, is(4)); // 2 changes: calibration failure and calibration end
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mLatestFailed, is(true));
     }
@@ -248,7 +253,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
     @Test
     public void testCalibrationProcessCancel() {
         connectDrone(mDrone, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -256,7 +261,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonCalibrationMagnetoCalibration(1)));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -264,14 +269,14 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonCalibrationMagnetoCalibration(0)));
         mMagnetometer.cancelCalibrationProcess();
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
     }
 
     @Test
     public void testCalibrationProcessAxesOkButFinallyFailed() {
         connectDrone(mDrone, 1);
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mChangeCnt, is(1));
 
@@ -279,7 +284,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.commonCalibrationMagnetoCalibration(1)));
         mMagnetometer.startCalibrationProcess();
         assertThat(mChangeCnt, is(2));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -288,7 +293,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 1, 1, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.NONE,
                         EnumSet.of(CalibrationProcessState.Axis.PITCH, CalibrationProcessState.Axis.YAW,
@@ -299,7 +304,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged(
                         ArsdkFeatureCommon.CalibrationstateMagnetocalibrationaxistocalibratechangedAxis.ZAXIS));
         assertThat(mChangeCnt, is(4));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.YAW,
                         EnumSet.of(CalibrationProcessState.Axis.PITCH, CalibrationProcessState.Axis.YAW,
@@ -309,7 +314,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 1, 0, 0));
         assertThat(mChangeCnt, is(5));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.YAW,
                         EnumSet.of(CalibrationProcessState.Axis.PITCH, CalibrationProcessState.Axis.ROLL))));
@@ -318,7 +323,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 1, 1, 0));
         assertThat(mChangeCnt, is(6));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher.is(CalibrationProcessState.Axis.YAW,
                         EnumSet.of(CalibrationProcessState.Axis.PITCH, CalibrationProcessState.Axis.YAW,
@@ -330,7 +335,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStateChanged(1, 1, 1, 1));
         assertThat(mChangeCnt, is(7));
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), allOf(notNullValue(),
                 Magnetometer3StepCalibrationProcessStateMatcher
                         .is(CalibrationProcessState.Axis.YAW, EnumSet.noneOf(CalibrationProcessState.Axis.class))));
@@ -339,7 +344,7 @@ public class AnafiMagnetometerTests extends ArsdkEngineTestBase {
         // end of the calibration process
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeCommonCalibrationStateMagnetoCalibrationStartedChanged(0));
         assertThat(mChangeCnt, is(9)); // 2 changes: calibration failure and calibration end
-        assertThat(mMagnetometer.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
         assertThat(mMagnetometer.getCalibrationProcessState(), nullValue());
         assertThat(mLatestFailed, is(true));
     }

@@ -244,7 +244,7 @@ public class MediaStoreTest {
         // content change observation should start
         verify(mBackend).startWatchingContentChange();
         // browsing should start
-        verify(mBackend).browse(mBrowseCb.capture());
+        verify(mBackend).browse(any(), mBrowseCb.capture());
 
         // mock successful list reception
         mBrowseCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, Arrays.asList(mMedia1, mMedia2));
@@ -254,11 +254,11 @@ public class MediaStoreTest {
 
         // mock a content change
         MediaRequest mockRequest = mock(MediaRequest.class);
-        doReturn(mockRequest).when(mBackend).browse(any());
+        doReturn(mockRequest).when(mBackend).browse(any(), any());
         mMediaStoreImpl.notifyObservers();
 
         // a new browse request should be emitted
-        verify(mBackend, times(2)).browse(mBrowseCb.capture());
+        verify(mBackend, times(2)).browse(any(), mBrowseCb.capture());
 
         // mock a change while waiting for the request result
         mMediaStoreImpl.notifyObservers();
@@ -274,7 +274,78 @@ public class MediaStoreTest {
         assertThat(listRef.get(), contains(mMedia1, mMedia2));
 
         // another browse request should be emitted
-        verify(mBackend, times(3)).browse(mBrowseCb.capture());
+        verify(mBackend, times(3)).browse(any(), mBrowseCb.capture());
+
+        // mock successful list reception
+        mBrowseCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, Arrays.asList(mMedia1, mMedia2, mMedia3));
+
+        assertThat(mChangeCnt, is(2));
+        assertThat(listRef.get(), contains(mMedia1, mMedia2, mMedia3));
+
+        // close media list
+        listRef.close();
+
+        // content change observation should stop
+        verify(mBackend).stopWatchingContentChange();
+
+        // last request should have been canceled
+        verify(mockRequest, times(2)).cancel();
+
+        // list observer should not be notified
+        assertThat(mChangeCnt, is(2));
+        // ref content should be null
+        assertThat(listRef.get(), nullValue());
+    }
+
+    @Test
+    public void testMediaListWithStorageType() {
+        mMediaStoreImpl.publish();
+        assertThat(mComponentChangeCnt, is(1));
+
+        // request a media list
+        Ref<List<MediaItem>> listRef = mMediaStore.browse(MediaStore.StorageType.INTERNAL, obj -> {
+            mChangeCnt++;
+            assertThat(obj, notNullValue());
+        });
+
+        assertThat(listRef, notNullValue());
+        assertThat(listRef.get(), nullValue());
+        assertThat(mChangeCnt, is(0));
+
+        // content change observation should start
+        verify(mBackend).startWatchingContentChange();
+        // browsing should start
+        verify(mBackend).browse(eq(MediaStore.StorageType.INTERNAL), mBrowseCb.capture());
+
+        // mock successful list reception
+        mBrowseCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, Arrays.asList(mMedia1, mMedia2));
+
+        assertThat(mChangeCnt, is(1));
+        assertThat(listRef.get(), contains(mMedia1, mMedia2));
+
+        // mock a content change
+        MediaRequest mockRequest = mock(MediaRequest.class);
+        doReturn(mockRequest).when(mBackend).browse(any(), any());
+        mMediaStoreImpl.notifyObservers();
+
+        // a new browse request should be emitted
+        verify(mBackend, times(2)).browse(eq(MediaStore.StorageType.INTERNAL), mBrowseCb.capture());
+
+        // mock a change while waiting for the request result
+        mMediaStoreImpl.notifyObservers();
+
+        // current browse request should be canceled
+        verify(mockRequest).cancel();
+
+        // mock request cancellation callback
+        mBrowseCb.getValue().onRequestComplete(MediaRequest.Status.CANCELED, null);
+
+        // media list should not change
+        assertThat(mChangeCnt, is(1));
+        assertThat(listRef.get(), contains(mMedia1, mMedia2));
+
+        // another browse request should be emitted
+        verify(mBackend, times(3)).browse(eq(MediaStore.StorageType.INTERNAL), mBrowseCb.capture());
 
         // mock successful list reception
         mBrowseCb.getValue().onRequestComplete(MediaRequest.Status.SUCCESS, Arrays.asList(mMedia1, mMedia2, mMedia3));

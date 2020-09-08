@@ -67,6 +67,9 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
             extends ActivablePilotingItfContent.ViewHolder<ReturnHomeContent, ReturnHomePilotingItf> {
 
         @NonNull
+        private final TextView mAutoTriggerSwitchStateText;
+
+        @NonNull
         private final TextView mReasonText;
 
         @NonNull
@@ -82,10 +85,16 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
         private final TextView mPreferredTargetText;
 
         @NonNull
+        private final TextView mEndingBehaviour;
+
+        @NonNull
         private final TextView mAutostartOnDisconnectDelayText;
 
         @NonNull
         private final TextView mMinAltitudeText;
+
+        @NonNull
+        private final TextView mHoveringAltitude;
 
         @NonNull
         private final TextView mHomeReachabilityText;
@@ -101,12 +110,15 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
         ViewHolder(@NonNull View rootView) {
             super(rootView);
             mReasonText = findViewById(R.id.reason);
+            mAutoTriggerSwitchStateText = findViewById(R.id.autoTriggerSwitch);
             mLocationText = findViewById(R.id.location);
             mCurrentTargetText = findViewById(R.id.currentTarget);
             mFixedOnTakeOffText = findViewById(R.id.fixed);
             mPreferredTargetText = findViewById(R.id.preferredTarget);
+            mEndingBehaviour = findViewById(R.id.endingBehavior);
             mAutostartOnDisconnectDelayText = findViewById(R.id.delay);
             mMinAltitudeText = findViewById(R.id.min_altitude);
+            mHoveringAltitude = findViewById(R.id.hovering_altitude);
             mHomeReachabilityText = findViewById(R.id.reachability);
             mWarningTriggerDelayText = findViewById(R.id.trigger_date);
             mEditSettingsButton = findViewById(android.R.id.edit);
@@ -118,13 +130,17 @@ class ReturnHomeContent extends ActivablePilotingItfContent<Drone, ReturnHomePil
         void onBind(@NonNull ReturnHomeContent content, @NonNull ReturnHomePilotingItf returnHome) {
             super.onBind(content, returnHome);
             mReasonText.setText(returnHome.getReason().toString());
+            mAutoTriggerSwitchStateText.setText(mContext.getString(returnHome.autoTrigger().isEnabled()
+                    ? R.string.boolean_setting_enabled : R.string.boolean_setting_disabled));
             Location location = returnHome.getHomeLocation();
             mLocationText.setText(location == null ? mContext.getString(R.string.no_value) : location.toString());
             mCurrentTargetText.setText(returnHome.getCurrentTarget().toString());
             mFixedOnTakeOffText.setText(Boolean.toString(returnHome.gpsWasFixedOnTakeOff()));
             mPreferredTargetText.setText(returnHome.getPreferredTarget().getValue().toString());
+            mEndingBehaviour.setText(returnHome.getEndingBehavior().getValue().toString());
             setIntSetting(mAutostartOnDisconnectDelayText, returnHome.getAutoStartOnDisconnectDelay());
             setDoubleSetting(mMinAltitudeText, returnHome.getMinAltitude());
+            setDoubleSetting(mHoveringAltitude, returnHome.getEndingHoveringAltitude());
             mHomeReachabilityText.setText(returnHome.getHomeReachability().name());
             long delay = returnHome.getAutoTriggerDelay();
             mWarningTriggerDelayText.setText(

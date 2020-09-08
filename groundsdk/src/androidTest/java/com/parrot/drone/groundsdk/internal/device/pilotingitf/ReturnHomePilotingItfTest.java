@@ -47,6 +47,8 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabling;
+import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingValueIs;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpToDateAt;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingIsUpdatingTo;
 import static com.parrot.drone.groundsdk.EnumSettingMatcher.enumSettingValueIs;
@@ -174,18 +176,56 @@ public class ReturnHomePilotingItfTest {
         // test initial value
         assertThat(mChangeCnt, is(1));
         assertThat(mPilotingItf.getCurrentTarget(), is(ReturnHomePilotingItf.Target.TAKE_OFF_POSITION));
-        assertThat(mPilotingItf.gpsWasFixedOnTakeOff(), is(false));
 
         // change current target
-        mPilotingItfImpl.updateCurrentTarget(ReturnHomePilotingItf.Target.CONTROLLER_POSITION, false).notifyUpdated();
+        mPilotingItfImpl.updateCurrentTarget(ReturnHomePilotingItf.Target.CONTROLLER_POSITION).notifyUpdated();
         assertThat(mChangeCnt, is(2));
         assertThat(mPilotingItf.getCurrentTarget(), is(ReturnHomePilotingItf.Target.CONTROLLER_POSITION));
 
         // change current target again
-        mPilotingItfImpl.updateCurrentTarget(ReturnHomePilotingItf.Target.TAKE_OFF_POSITION, true).notifyUpdated();
+        mPilotingItfImpl.updateCurrentTarget(ReturnHomePilotingItf.Target.TAKE_OFF_POSITION).notifyUpdated();
         assertThat(mChangeCnt, is(3));
         assertThat(mPilotingItf.getCurrentTarget(), is(ReturnHomePilotingItf.Target.TAKE_OFF_POSITION));
+    }
+
+    @Test
+    public void testGpsWasFixedOnTakeOff() {
+        mPilotingItfImpl.publish();
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.gpsWasFixedOnTakeOff(), is(false));
+
+        // change gps was fixed on take off
+        mPilotingItfImpl.updateGpsFixedOnTakeOff(true).notifyUpdated();
         assertThat(mPilotingItf.gpsWasFixedOnTakeOff(), is(true));
+    }
+
+    @Test
+    public void testAutoTrigger() {
+        mPilotingItfImpl.publish();
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.autoTrigger(), booleanSettingValueIs(false));
+
+        // notify new backend values
+        mPilotingItfImpl.autoTrigger().updateValue(true);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.autoTrigger(), booleanSettingValueIs(true));
+
+        // change setting
+        mPilotingItf.autoTrigger().toggle();
+        assertThat(mChangeCnt, is(3));
+        assertThat(mBackend.mSentAutoTriggerSwitchState, is(false));
+        assertThat(mPilotingItf.autoTrigger(), booleanSettingIsDisabling());
+
+        // validate change from backend
+        mPilotingItfImpl.autoTrigger().updateValue(false);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.autoTrigger(), booleanSettingValueIs(false));
     }
 
     @Test
@@ -195,7 +235,7 @@ public class ReturnHomePilotingItfTest {
         // test initial value
         assertThat(mChangeCnt, is(1));
         assertThat(mPilotingItf.getPreferredTarget(), enumSettingIsUpToDateAt(
-                ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION));
+                ReturnHomePilotingItf.Target.TAKE_OFF_POSITION));
 
         // notify new backend values
         mPilotingItfImpl.getPreferredTarget().updateValue(ReturnHomePilotingItf.Target.CONTROLLER_POSITION);
@@ -217,6 +257,37 @@ public class ReturnHomePilotingItfTest {
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getPreferredTarget(), enumSettingIsUpToDateAt(
                 ReturnHomePilotingItf.Target.TAKE_OFF_POSITION));
+    }
+
+    @Test
+    public void testEndingBehaviour() {
+        mPilotingItfImpl.publish();
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getEndingBehavior(), enumSettingIsUpToDateAt(
+                ReturnHomePilotingItf.EndingBehavior.HOVERING));
+
+        // notify new backend values
+        mPilotingItfImpl.getEndingBehavior().updateValue(ReturnHomePilotingItf.EndingBehavior.LANDING);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.getEndingBehavior(), enumSettingIsUpToDateAt(
+                ReturnHomePilotingItf.EndingBehavior.LANDING));
+
+        // change setting
+        mPilotingItf.getEndingBehavior().setValue(ReturnHomePilotingItf.EndingBehavior.HOVERING);
+        assertThat(mChangeCnt, is(3));
+        assertThat(mBackend.mSentEndingBehavior, is(ReturnHomePilotingItf.EndingBehavior.HOVERING));
+        assertThat(mPilotingItf.getEndingBehavior(), enumSettingIsUpdatingTo(
+                ReturnHomePilotingItf.EndingBehavior.HOVERING));
+
+        // validate change from backend
+        mPilotingItfImpl.getEndingBehavior().updateValue(ReturnHomePilotingItf.EndingBehavior.HOVERING);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getEndingBehavior(), enumSettingIsUpToDateAt(
+                ReturnHomePilotingItf.EndingBehavior.HOVERING));
     }
 
     @Test
@@ -244,6 +315,33 @@ public class ReturnHomePilotingItfTest {
         mPilotingItfImpl.notifyUpdated();
         assertThat(mChangeCnt, is(4));
         assertThat(mPilotingItf.getAutoStartOnDisconnectDelay(), intSettingIsUpToDateAt(10, 82, 120));
+    }
+
+    @Test
+    public void testEndingHoveringAltitude() {
+        mPilotingItfImpl.publish();
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalSettingIsUnavailable());
+
+        // notify new backend values
+        mPilotingItfImpl.getEndingHoveringAltitude().updateBounds(DoubleRange.of(10, 150)).updateValue(50);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpToDateAt(10, 50, 150));
+
+        // change setting
+        mPilotingItf.getEndingHoveringAltitude().setValue(80);
+        assertThat(mChangeCnt, is(3));
+        assertThat(mBackend.mSentEndingHoveringAltitude, is(80.0));
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpdatingTo(10, 80, 150));
+
+        // validate change from backend
+        mPilotingItfImpl.getEndingHoveringAltitude().updateBounds(DoubleRange.of(10, 150)).updateValue(82);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mChangeCnt, is(4));
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpToDateAt(10, 82, 150));
     }
 
     @Test
@@ -360,6 +458,45 @@ public class ReturnHomePilotingItfTest {
     }
 
     @Test
+    public void testSetCustomLocation() {
+        mPilotingItfImpl.publish();
+
+        // set preferred target to not custom value from the api
+        mPilotingItf.getPreferredTarget().setValue(ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION);
+        assertThat(mPilotingItf.getPreferredTarget(),
+                enumSettingIsUpdatingTo(ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION));
+
+        // mock update from backend
+        mPilotingItfImpl.getPreferredTarget().updateValue(ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mPilotingItf.getPreferredTarget(),
+                enumSettingIsUpToDateAt(ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION));
+
+        // when preferred location is different from custom, backend should not be called
+        mPilotingItf.setCustomLocation(12.0, 12.0, 0.0);
+        assertThat(mBackend.mCustomLocationLatitude, is(0.0));
+        assertThat(mBackend.mCustomLocationLongitude, is(0.0));
+        assertThat(mBackend.mCustomLocationAltitude, is(0.0));
+
+        // set preferred target to custom value
+        mPilotingItfImpl.getPreferredTarget().setValue(ReturnHomePilotingItf.Target.CUSTOM_LOCATION);
+        assertThat(mPilotingItf.getPreferredTarget(), enumSettingIsUpdatingTo(
+                ReturnHomePilotingItf.Target.CUSTOM_LOCATION));
+
+        // mock update from backend
+        mPilotingItfImpl.getPreferredTarget().updateValue(ReturnHomePilotingItf.Target.CUSTOM_LOCATION);
+        mPilotingItfImpl.notifyUpdated();
+        assertThat(mPilotingItf.getPreferredTarget(),
+                enumSettingIsUpToDateAt(ReturnHomePilotingItf.Target.CUSTOM_LOCATION));
+
+        mPilotingItf.setCustomLocation(12.0, 13.0, 14.0);
+        assertThat(mBackend.mCustomLocationLatitude, is(12.0));
+        assertThat(mBackend.mCustomLocationLongitude, is(13.0));
+        assertThat(mBackend.mCustomLocationAltitude, is(14.0));
+    }
+
+
+    @Test
     public void testCancelRollbacks() {
         mPilotingItfImpl.getAutoStartOnDisconnectDelay()
                         .updateBounds(IntegerRange.of(0, 1))
@@ -367,36 +504,64 @@ public class ReturnHomePilotingItfTest {
         mPilotingItfImpl.getMinAltitude()
                         .updateBounds(DoubleRange.of(10, 50))
                         .updateValue(20);
+        mPilotingItfImpl.getEndingHoveringAltitude()
+                        .updateBounds(DoubleRange.of(5, 50))
+                        .updateValue(20);
         mPilotingItfImpl.publish();
 
-        assertThat(mPilotingItf.getPreferredTarget(), allOf(
-                enumSettingValueIs(ReturnHomePilotingItf.Target.TRACKED_TARGET_POSITION),
+        assertThat(mPilotingItf.autoTrigger(), allOf(
+                booleanSettingValueIs(false),
                 settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getPreferredTarget(), allOf(
+                enumSettingValueIs(ReturnHomePilotingItf.Target.TAKE_OFF_POSITION),
+                settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getEndingBehavior(), allOf(
+                enumSettingValueIs(ReturnHomePilotingItf.EndingBehavior.HOVERING),
+                settingIsUpToDate()
+        ));
 
         assertThat(mPilotingItf.getAutoStartOnDisconnectDelay(), allOf(
                 intSettingValueIs(0, 0, 1),
                 settingIsUpToDate()));
 
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpToDateAt(5, 20, 50));
+
         assertThat(mPilotingItf.getMinAltitude(), optionalDoubleSettingIsUpToDateAt(10, 20, 50));
 
         // mock user changes settings
+        mPilotingItf.autoTrigger().toggle();
         mPilotingItf.getPreferredTarget().setValue(ReturnHomePilotingItf.Target.CONTROLLER_POSITION);
+        mPilotingItfImpl.getEndingBehavior().setValue(ReturnHomePilotingItf.EndingBehavior.LANDING);
         mPilotingItf.getAutoStartOnDisconnectDelay().setValue(1);
+        mPilotingItfImpl.getEndingHoveringAltitude().setValue(30);
         mPilotingItf.getMinAltitude().setValue(30);
 
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpdatingTo(5, 30, 50));
         assertThat(mPilotingItf.getMinAltitude(), optionalDoubleSettingIsUpdatingTo(10, 30, 50));
 
         // cancel all rollbacks
         mPilotingItfImpl.cancelSettingsRollbacks();
 
         // all settings should be updated to user values
+        assertThat(mPilotingItf.autoTrigger(), allOf(
+                booleanSettingValueIs(true),
+                settingIsUpToDate()));
+
         assertThat(mPilotingItf.getPreferredTarget(), allOf(
                 enumSettingValueIs(ReturnHomePilotingItf.Target.CONTROLLER_POSITION),
+                settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getEndingBehavior(), allOf(
+                enumSettingValueIs(ReturnHomePilotingItf.EndingBehavior.LANDING),
                 settingIsUpToDate()));
 
         assertThat(mPilotingItf.getAutoStartOnDisconnectDelay(), allOf(
                 intSettingValueIs(0, 1, 1),
                 settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpToDateAt(5, 30, 50));
 
         assertThat(mPilotingItf.getMinAltitude(), optionalDoubleSettingIsUpToDateAt(10, 30, 50));
 
@@ -404,13 +569,23 @@ public class ReturnHomePilotingItfTest {
         mockSettingTimeout();
 
         // nothing should change
+        assertThat(mPilotingItf.autoTrigger(), allOf(
+                booleanSettingValueIs(true),
+                settingIsUpToDate()));
+
         assertThat(mPilotingItf.getPreferredTarget(), allOf(
                 enumSettingValueIs(ReturnHomePilotingItf.Target.CONTROLLER_POSITION),
+                settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getEndingBehavior(), allOf(
+                enumSettingValueIs(ReturnHomePilotingItf.EndingBehavior.LANDING),
                 settingIsUpToDate()));
 
         assertThat(mPilotingItf.getAutoStartOnDisconnectDelay(), allOf(
                 intSettingValueIs(0, 1, 1),
                 settingIsUpToDate()));
+
+        assertThat(mPilotingItf.getEndingHoveringAltitude(), optionalDoubleSettingIsUpToDateAt(5, 30, 50));
 
         assertThat(mPilotingItf.getMinAltitude(), optionalDoubleSettingIsUpToDateAt(10, 30, 50));
     }
@@ -421,13 +596,25 @@ public class ReturnHomePilotingItfTest {
 
     private static final class Backend implements ReturnHomePilotingItfCore.Backend {
 
+        boolean mSentAutoTriggerSwitchState;
+
         int mSentAutoStartOnDisconnectDelay;
+
+        double mSentEndingHoveringAltitude;
 
         double mSentMinAltitude;
 
         ReturnHomePilotingItf.Target mSentPreferredTarget;
 
+        ReturnHomePilotingItf.EndingBehavior mSentEndingBehavior;
+
         int cancelAutoTriggerCnt;
+
+        double mCustomLocationLatitude;
+
+        double mCustomLocationLongitude;
+
+        double mCustomLocationAltitude;
 
         @Override
         public boolean activate() {
@@ -440,14 +627,32 @@ public class ReturnHomePilotingItfTest {
         }
 
         @Override
+        public boolean setAutoTrigger(boolean enabled) {
+            mSentAutoTriggerSwitchState = enabled;
+            return true;
+        }
+
+        @Override
         public boolean setPreferredTarget(@NonNull ReturnHomePilotingItf.Target preferredTarget) {
             mSentPreferredTarget = preferredTarget;
             return true;
         }
 
         @Override
+        public boolean setEndingBehavior(@NonNull ReturnHomePilotingItf.EndingBehavior endingBehavior) {
+            mSentEndingBehavior = endingBehavior;
+            return true;
+        }
+
+        @Override
         public boolean setAutoStartOnDisconnectDelay(int delay) {
             mSentAutoStartOnDisconnectDelay = delay;
+            return true;
+        }
+
+        @Override
+        public boolean setEndingHoveringAltitude(double altitude) {
+            mSentEndingHoveringAltitude = altitude;
             return true;
         }
 
@@ -460,6 +665,13 @@ public class ReturnHomePilotingItfTest {
         @Override
         public void cancelAutoTrigger() {
             cancelAutoTriggerCnt++;
+        }
+
+        @Override
+        public void setCustomLocation(double latitude, double longitude, double altitude) {
+            mCustomLocationLatitude = latitude;
+            mCustomLocationLongitude = longitude;
+            mCustomLocationAltitude = altitude;
         }
     }
 }

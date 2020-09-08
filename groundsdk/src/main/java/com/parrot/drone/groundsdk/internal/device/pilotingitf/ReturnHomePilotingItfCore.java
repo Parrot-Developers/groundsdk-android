@@ -42,6 +42,7 @@ import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;
 import com.parrot.drone.groundsdk.device.pilotingitf.ReturnHomePilotingItf;
 import com.parrot.drone.groundsdk.internal.component.ComponentDescriptor;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;
+import com.parrot.drone.groundsdk.internal.value.BooleanSettingCore;
 import com.parrot.drone.groundsdk.internal.value.EnumSettingCore;
 import com.parrot.drone.groundsdk.internal.value.IntSettingCore;
 import com.parrot.drone.groundsdk.internal.value.OptionalDoubleSettingCore;
@@ -63,6 +64,15 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
     public interface Backend extends ActivablePilotingItfCore.Backend {
 
         /**
+         * Updates the auto trigger setting.
+         *
+         * @param enabled the auto trigger to send to the drone
+         *
+         * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
+         */
+        boolean setAutoTrigger(boolean enabled);
+
+        /**
          * Updates the preferred target setting.
          *
          * @param preferredTarget the preferred target value to send to the drone
@@ -72,6 +82,15 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
         boolean setPreferredTarget(@NonNull Target preferredTarget);
 
         /**
+         * Updates the ending behavior setting.
+         *
+         * @param endingBehavior the ending behavior value to send to the drone
+         *
+         * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
+         */
+        boolean setEndingBehavior(@NonNull EndingBehavior endingBehavior);
+
+        /**
          * Updates the auto-start on disconnect delay setting.
          *
          * @param delay the delay value to send to the drone
@@ -79,6 +98,15 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
          * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
          */
         boolean setAutoStartOnDisconnectDelay(int delay);
+
+        /**
+         * Updates the ending hovering altitude setting.
+         *
+         * @param altitude the altitude value to send to the drone
+         *
+         * @return {@code true} if the value could successfully be set or sent to the device, {@code false} otherwise
+         */
+        boolean setEndingHoveringAltitude(double altitude);
 
         /**
          * Updates the minimum altitude setting.
@@ -93,19 +121,40 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
          * Cancels return home auto trigger.
          */
         void cancelAutoTrigger();
+
+        /**
+         * Updates the return home custom location.
+         *
+         * @param latitude the custom location latitude to send to the drone
+         * @param longitude the custom location longitude to send to the drone
+         * @param altitude the custom location altitude to send to the drone
+         */
+        void setCustomLocation(double latitude, double longitude, double altitude);
     }
 
     /** Backend of this interface. */
     @NonNull
     private final Backend mBackend;
 
+    /** Auto trigger setting. */
+    @NonNull
+    private final BooleanSettingCore mAutoTriggerSetting;
+
     /** Preferred target setting. */
     @NonNull
     private final EnumSettingCore<Target> mPreferredTargetSetting;
 
+    /** Ending behavior setting. */
+    @NonNull
+    private final EnumSettingCore<EndingBehavior> mEndingBehaviorSetting;
+
     /** Auto-start on disconnect delay setting. */
     @NonNull
     private final IntSettingCore mAutoStartOnDisconnectDelaySetting;
+
+    /** Ending hovering altitude setting. */
+    @NonNull
+    private final OptionalDoubleSettingCore mEndingHoveringAltitudeSetting;
 
     /** Minimum altitude setting. */
     @NonNull
@@ -157,7 +206,7 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
     /**
      * Constructor.
      *
-     * @param pilotingItfStore store where this piloting interface belongs.
+     * @param pilotingItfStore store where this piloting interface belongs
      * @param backend          backend used to forward actions to the engine
      */
     public ReturnHomePilotingItfCore(@NonNull ComponentStore<PilotingItf> pilotingItfStore, @NonNull Backend backend) {
@@ -168,10 +217,16 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
         mReachability = Reachability.UNKNOWN;
         mAutoTriggerDelay = NO_DELAY;
         mLocationTimeStamp = NO_TIMESTAMP;
-        mPreferredTargetSetting = new EnumSettingCore<>(Target.TRACKED_TARGET_POSITION,
+        mAutoTriggerSetting = new BooleanSettingCore(new SettingController(this::onSettingChange),
+                mBackend::setAutoTrigger);
+        mPreferredTargetSetting = new EnumSettingCore<>(Target.TAKE_OFF_POSITION,
                 new SettingController(this::onSettingChange), mBackend::setPreferredTarget);
+        mEndingBehaviorSetting = new EnumSettingCore<>(EndingBehavior.HOVERING,
+                new SettingController(this::onSettingChange), mBackend::setEndingBehavior);
         mAutoStartOnDisconnectDelaySetting = new IntSettingCore(new SettingController(this::onSettingChange),
                 mBackend::setAutoStartOnDisconnectDelay);
+        mEndingHoveringAltitudeSetting = new OptionalDoubleSettingCore(new SettingController(this::onSettingChange),
+                mBackend::setEndingHoveringAltitude);
         mMinAltitudeSetting = new OptionalDoubleSettingCore(new SettingController(this::onSettingChange),
                 mBackend::setMinAltitude);
     }
@@ -226,8 +281,20 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
 
     @NonNull
     @Override
+    public EnumSettingCore<EndingBehavior> getEndingBehavior() {
+        return mEndingBehaviorSetting;
+    }
+
+    @NonNull
+    @Override
     public IntSettingCore getAutoStartOnDisconnectDelay() {
         return mAutoStartOnDisconnectDelaySetting;
+    }
+
+    @NonNull
+    @Override
+    public OptionalDoubleSettingCore getEndingHoveringAltitude() {
+        return mEndingHoveringAltitudeSetting;
     }
 
     @NonNull
@@ -258,12 +325,25 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
         }
     }
 
+    @NonNull
+    @Override
+    public BooleanSettingCore autoTrigger() {
+        return mAutoTriggerSetting;
+    }
+
+    @Override
+    public void setCustomLocation(double latitude, double longitude, double altitude) {
+        if (mPreferredTargetSetting.getValue() == Target.CUSTOM_LOCATION) {
+            mBackend.setCustomLocation(latitude, longitude, altitude);
+        }
+    }
+
     /**
      * Updates the return home reason after a change in the backend.
      *
-     * @param newReason the new reason
+     * @param newReason the new reason.
      *
-     * @return {@code this}, to allow chained calls
+     * @return {@code this}, to allow chained calls.
      */
     @NonNull
     public ReturnHomePilotingItfCore updateReason(@NonNull Reason newReason) {
@@ -277,16 +357,29 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
     /**
      * Updates the current return home target after a change in the backend.
      *
-     * @param newTarget         the new target
-     * @param gpsFixedOnTakeOff {@code true} if GPS was fixed upon take-off, {@code false} otherwise. Only relevant
-     *                          when target is {@link Target#TAKE_OFF_POSITION}
+     * @param newTarget the new target
      *
      * @return {@code this}, to allow chained calls
      */
     @NonNull
-    public ReturnHomePilotingItfCore updateCurrentTarget(@NonNull Target newTarget, boolean gpsFixedOnTakeOff) {
-        if (newTarget != mCurrentTarget || gpsFixedOnTakeOff != mGpsFixedOnTakeOff) {
+    public ReturnHomePilotingItfCore updateCurrentTarget(@NonNull Target newTarget) {
+        if (newTarget != mCurrentTarget) {
             mCurrentTarget = newTarget;
+            mChanged = true;
+        }
+        return this;
+    }
+    /**
+     * Updates if the gps was fixed on take off after a change in the backend.
+     *
+     * @param gpsFixedOnTakeOff {@code true} if GPS was fixed upon take-off, {@code false} otherwise. Only relevant
+     *                          when target is {@link Target#TAKE_OFF_POSITION}.
+     *
+     * @return {@code this}, to allow chained calls
+     */
+    @NonNull
+    public ReturnHomePilotingItfCore updateGpsFixedOnTakeOff(boolean gpsFixedOnTakeOff) {
+        if (gpsFixedOnTakeOff != mGpsFixedOnTakeOff) {
             mGpsFixedOnTakeOff = gpsFixedOnTakeOff;
             mChanged = true;
         }
@@ -320,7 +413,7 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
     /**
      * Resets the current home location.
      *
-     * @return {@code this}, to allow chained calls
+     * @return {@code this}, to allow chained calls.
      */
     @NonNull
     public ReturnHomePilotingItfCore resetLocation() {
@@ -372,8 +465,11 @@ public final class ReturnHomePilotingItfCore extends ActivablePilotingItfCore im
      */
     @NonNull
     public ReturnHomePilotingItfCore cancelSettingsRollbacks() {
+        mAutoTriggerSetting.cancelRollback();
         mPreferredTargetSetting.cancelRollback();
+        mEndingBehaviorSetting.cancelRollback();
         mAutoStartOnDisconnectDelaySetting.cancelRollback();
+        mEndingHoveringAltitudeSetting.cancelRollback();
         mMinAltitudeSetting.cancelRollback();
         return this;
     }

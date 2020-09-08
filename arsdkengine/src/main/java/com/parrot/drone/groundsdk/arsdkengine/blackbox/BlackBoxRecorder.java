@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.ArsdkEngine;
+import com.parrot.drone.groundsdk.arsdkengine.R;
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.EnvironmentData;
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.Event;
 import com.parrot.drone.groundsdk.arsdkengine.blackbox.data.FlightData;
@@ -70,6 +71,9 @@ public class BlackBoxRecorder {
     @Nullable
     private final SystemLocation mSystemLocation;
 
+    /** Blackbox circular buffers capacity, in seconds. */
+    private final int mBlackBoxBufferCapacity;
+
     /**
      * Constructor.
      *
@@ -78,6 +82,7 @@ public class BlackBoxRecorder {
      */
     public BlackBoxRecorder(@NonNull ArsdkEngine engine, @NonNull BlackBoxStorage storage) {
         mSystemLocation = engine.getUtility(SystemLocation.class);
+        mBlackBoxBufferCapacity = engine.getContext().getResources().getInteger(R.integer.blackbox_buffer_capacity);
         mStorage = storage;
         mContexts = new HashMap<>();
     }
@@ -207,7 +212,7 @@ public class BlackBoxRecorder {
         BlackBoxDroneSession openDroneSession(@NonNull DroneCore drone,
                                               @NonNull BlackBoxSession.CloseListener listener) {
             if (mDroneSession == null) {
-                mDroneSession = new BlackBoxDroneSession(this, drone, () -> {
+                mDroneSession = new BlackBoxDroneSession(this, mBlackBoxBufferCapacity, drone, () -> {
                     if (mRcSession == null) {
                         closeSelf();
                     } else {

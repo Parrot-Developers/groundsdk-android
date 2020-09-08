@@ -50,6 +50,7 @@ import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareVersion;
 import com.parrot.drone.groundsdk.internal.device.DroneCore;
 import com.parrot.drone.groundsdk.internal.utility.DroneStore;
+import com.parrot.drone.groundsdk.internal.utility.SystemBarometer;
 import com.parrot.drone.groundsdk.internal.utility.SystemLocation;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureCommon;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureControllerInfo;
@@ -157,6 +158,11 @@ public abstract class DroneController extends DeviceController<DroneCore> {
             location.monitorWith(mLocationMonitor);
         }
 
+        SystemBarometer barometer = getEngine().getUtility(SystemBarometer.class);
+        if (barometer != null) {
+            barometer.monitorWith(mBarometerMonitor);
+        }
+
         if (isDataSyncAllowed()) {
             uploadEphemeris();
         }
@@ -172,6 +178,11 @@ public abstract class DroneController extends DeviceController<DroneCore> {
         if (location != null) {
             location.disposeMonitor(mLocationMonitor);
             location.revokeWifiUsageDenial(this);
+        }
+
+        SystemBarometer barometer = getEngine().getUtility(SystemBarometer.class);
+        if (barometer != null) {
+            barometer.disposeMonitor(mBarometerMonitor);
         }
 
         mActivationController.onDisconnected();
@@ -291,6 +302,12 @@ public abstract class DroneController extends DeviceController<DroneCore> {
                 }
 
                 @Override
+                public void onBoardIdChanged(@NonNull String id) {
+                    getDevice().updateBoardId(id);
+                    getDeviceDict().put(PersistentStore.KEY_DEVICE_BOARD_ID, id).commit();
+                }
+
+                @Override
                 public void onAllSettingsChanged() {
                     handleAllSettingsReceived();
                 }
@@ -317,6 +334,14 @@ public abstract class DroneController extends DeviceController<DroneCore> {
                     }
                 }
             };
+
+    /** Processes system atmospheric pressure measurements and sends them to the drone. */
+    private final SystemBarometer.Monitor mBarometerMonitor = (pressure, measureTimeStamp) -> {
+        // same as Free Flight 4
+        // TODO : what relationship with other timestamps ( time we send to the drone, pcmd timestamps,
+        // TODO   barometer timestamps, etc.) ?
+        sendCommand(ArsdkFeatureControllerInfo.encodeBarometer((float) pressure, measureTimeStamp));
+    };
 
     /** Processes system geographic location changes and sends them to the drone. */
     private final SystemLocation.Monitor mLocationMonitor = location -> {

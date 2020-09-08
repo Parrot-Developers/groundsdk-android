@@ -67,6 +67,7 @@ public final class TestExecutor {
     public static void teardown() {
         Executor.setBackgroundThreadScheduler(null);
         Executor.setMainThreadScheduler(null);
+        DIRECT_MAIN_SCHEDULER.shutdown();
     }
 
     public static void mockTimePasses(long time, @NonNull TimeUnit unit) {

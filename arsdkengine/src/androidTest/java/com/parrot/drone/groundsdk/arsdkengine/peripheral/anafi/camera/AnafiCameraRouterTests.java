@@ -1344,6 +1344,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         ArsdkFeatureCamera.Resolution.toBitField(
                                 ArsdkFeatureCamera.Resolution.RES_DCI_4K,
                                 ArsdkFeatureCamera.Resolution.RES_UHD_4K,
+                                ArsdkFeatureCamera.Resolution.RES_UHD_8K,
                                 ArsdkFeatureCamera.Resolution.RES_1080P),
                         ArsdkFeatureCamera.Framerate.toBitField(
                                 ArsdkFeatureCamera.Framerate.FPS_24,
@@ -1383,6 +1384,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         EnumSet.of(
                                 CameraRecording.Resolution.RES_DCI_4K,
                                 CameraRecording.Resolution.RES_UHD_4K,
+                                CameraRecording.Resolution.RES_UHD_8K,
                                 CameraRecording.Resolution.RES_1080P)),
                 recordingSettingSupportsResolutions(
                         CameraRecording.Mode.HIGH_FRAMERATE,
@@ -1396,6 +1398,7 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         EnumSet.of(
                                 CameraRecording.Resolution.RES_DCI_4K,
                                 CameraRecording.Resolution.RES_UHD_4K,
+                                CameraRecording.Resolution.RES_UHD_8K,
                                 CameraRecording.Resolution.RES_1080P),
                         EnumSet.of(
                                 CameraRecording.Framerate.FPS_24,
@@ -1621,7 +1624,8 @@ public class AnafiCameraRouterTests extends ArsdkEngineTestBase {
                         EnumSet.of(
                                 CameraRecording.Resolution.RES_DCI_4K,
                                 CameraRecording.Resolution.RES_UHD_4K,
-                                CameraRecording.Resolution.RES_1080P)),
+                                CameraRecording.Resolution.RES_1080P,
+                                CameraRecording.Resolution.RES_UHD_8K)),
                 recordingSettingSupportsResolutions(
                         CameraRecording.Mode.HIGH_FRAMERATE,
                         EnumSet.of(

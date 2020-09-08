@@ -38,9 +38,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -58,10 +62,15 @@ public class FormatDialogFragment extends DialogFragment {
     public interface Listener {
 
         void onFormatAccept(@NonNull RemovableUserStorage.FormattingType type, @NonNull String name);
+
+        void onFormatWithEncryptionAccept(@NonNull String password, @NonNull RemovableUserStorage.FormattingType type,
+                                          @NonNull String name);
     }
 
     @Nullable
     private Listener mListener;
+
+    private boolean mEncryptionSupported;
 
     @SuppressWarnings("NullableProblems")
     @NonNull
@@ -75,6 +84,23 @@ public class FormatDialogFragment extends DialogFragment {
     @NonNull
     private Spinner mFormattingTypeView;
 
+    @SuppressWarnings("NullableProblems")
+    @NonNull
+    private RadioGroup mCypherRadioGroup;
+
+    @SuppressWarnings("NullableProblems")
+    @NonNull
+    private RadioButton mYesRadioButton;
+
+    @SuppressWarnings("NullableProblems")
+    @NonNull
+    private RadioButton mNoRadioButton;
+
+
+    @SuppressWarnings("NullableProblems")
+    @NonNull
+    private EditText mPasswordInput;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -85,10 +111,18 @@ public class FormatDialogFragment extends DialogFragment {
         View content = activity.getLayoutInflater().inflate(R.layout.dialog_format, null);
         mNameInput = content.findViewById(android.R.id.edit);
         mFormattingTypeView = content.findViewById(R.id.formatting_type);
+        mCypherRadioGroup = content.findViewById(R.id.cypher_radio_group);
+        mYesRadioButton = content.findViewById(R.id.yes_radio_button);
+        mNoRadioButton = content.findViewById(R.id.no_radio_button);
+        mPasswordInput = content.findViewById(R.id.password_edit_text);
         ArrayAdapter<RemovableUserStorage.FormattingType> adapter =
                 new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, mFormattingTypes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mFormattingTypeView.setAdapter(adapter);
+        mYesRadioButton.setEnabled(mEncryptionSupported);
+        mNoRadioButton.setEnabled(mEncryptionSupported);
+        mCypherRadioGroup.setOnCheckedChangeListener(mCypherCheckedChangeListener);
+        mPasswordInput.addTextChangedListener(mPasswordEditTextWatcher);
         return new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_dialog_format)
                 .setView(content)
@@ -105,16 +139,48 @@ public class FormatDialogFragment extends DialogFragment {
         mFormattingTypes = new ArrayList<>(types);
     }
 
+    public void setEncryptionSupported(boolean encryptionSupported) {
+        mEncryptionSupported = encryptionSupported;
+    }
+
     private final DialogInterface.OnClickListener mClickListener = (dialog, which) -> {
         if (which == DialogInterface.BUTTON_POSITIVE) {
             if (mListener != null) {
                 RemovableUserStorage.FormattingType type =
                         (RemovableUserStorage.FormattingType) mFormattingTypeView.getSelectedItem();
-                mListener.onFormatAccept(type, mNameInput.getText().toString());
+                if (mYesRadioButton.isChecked()) {
+                    mListener.onFormatWithEncryptionAccept(mPasswordInput.getText().toString(), type, mNameInput.getText().toString());
+                } else {
+                    mListener.onFormatAccept(type, mNameInput.getText().toString());
+                }
             }
             dialog.dismiss();
+
         } else if (which == DialogInterface.BUTTON_NEGATIVE) {
             dialog.cancel();
         }
     };
+
+    private final RadioGroup.OnCheckedChangeListener mCypherCheckedChangeListener = (dialog, which) -> {
+        mPasswordInput.setEnabled(which == R.id.yes_radio_button);
+        updateConfirmButtonState();
+    };
+
+    private final TextWatcher mPasswordEditTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            updateConfirmButtonState();
+        }
+    };
+
+    private void updateConfirmButtonState() {
+        boolean passwordIfNeeded = mNoRadioButton.isChecked() || !mPasswordInput.getText().toString().isEmpty();
+        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(passwordIfNeeded);
+    }
 }

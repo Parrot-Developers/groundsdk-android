@@ -315,7 +315,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         super.setUp();
         ApplicationStorageProvider.setInstance(new MockAppStorageProvider());
 
-        doReturn(DUMMY_REQUEST).when(mMockHttpClient).browse(any());
+        doReturn(DUMMY_REQUEST).when(mMockHttpClient).browse(any(), any());
         doReturn(DUMMY_REQUEST).when(mMockHttpClient).fetch(any(), any(), any());
         doReturn(DUMMY_REQUEST).when(mMockHttpClient).download(any(), any(), any());
         doReturn(DUMMY_REQUEST).when(mMockHttpClient).deleteMedia(any(), any());
@@ -421,12 +421,12 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         connectDrone(mDrone, 1);
         clearInvocations(mMockHttpClient);
 
-        Ref<List<MediaItem>> listRef = mMediaStore.browse(list -> mChangeCnt++);
+        Ref<List<MediaItem>> listRef = mMediaStore.browse(MediaStore.StorageType.INTERNAL, list -> mChangeCnt++);
 
         assertThat(mChangeCnt, is(0));
         assertThat(listRef.get(), nullValue());
 
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(eq(MediaStore.StorageType.INTERNAL), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(
                 MOCK_PHOTO, MOCK_PHOTO_INVALID, MOCK_VIDEO, MOCK_VIDEO_INVALID));
 
@@ -482,7 +482,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         mMediaClientListenerCaptor.getValue().onMediaAdded(MOCK_PHOTO);
 
         // check that media list is refreshed
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(eq(MediaStore.StorageType.INTERNAL), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(
                 MOCK_PHOTO, MOCK_VIDEO));
 
@@ -494,12 +494,12 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         connectDrone(mDrone, 1);
         clearInvocations(mMockHttpClient);
 
-        Ref<List<MediaItem>> listRef = mMediaStore.browse(list -> mChangeCnt++);
+        Ref<List<MediaItem>> listRef = mMediaStore.browse(MediaStore.StorageType.REMOVABLE, list -> mChangeCnt++);
 
         assertThat(mChangeCnt, is(0));
         assertThat(listRef.get(), nullValue());
 
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(eq(MediaStore.StorageType.REMOVABLE),mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.FAILED, 500, null);
 
         assertThat(mChangeCnt, is(1));
@@ -512,7 +512,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Collections.singletonList(MOCK_PHOTO));
 
         //noinspection ConstantConditions
@@ -540,7 +540,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Collections.singletonList(MOCK_PHOTO));
 
         //noinspection ConstantConditions
@@ -565,7 +565,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Collections.singletonList(MOCK_PHOTO));
 
         //noinspection ConstantConditions
@@ -594,7 +594,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
 
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 
@@ -750,7 +750,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 
         List<MediaItem> list = listRef.get();
@@ -824,7 +824,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
 
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 
@@ -870,7 +870,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
 
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 
@@ -916,7 +916,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
 
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 
@@ -968,7 +968,7 @@ public class AnafiMediaStoreTests extends ArsdkEngineTestBase {
         clearInvocations(mMockHttpClient);
 
         Ref<List<MediaItem>> listRef = mMediaStore.browse((list) -> {});
-        verify(mMockHttpClient).browse(mBrowseCb.capture());
+        verify(mMockHttpClient).browse(any(), mBrowseCb.capture());
 
         mBrowseCb.getValue().onRequestComplete(HttpRequest.Status.SUCCESS, 200, Arrays.asList(MOCK_PHOTO, MOCK_VIDEO));
 

@@ -59,6 +59,8 @@ final class ModeAdapter {
                 return ThermalControl.Mode.DISABLED;
             case STANDARD:
                 return ThermalControl.Mode.STANDARD;
+            case BLENDED:
+                return ThermalControl.Mode.EMBEDDED;
         }
         return null;
     }
@@ -77,6 +79,8 @@ final class ModeAdapter {
                 return ArsdkFeatureThermal.Mode.DISABLED;
             case STANDARD:
                 return ArsdkFeatureThermal.Mode.STANDARD;
+            case EMBEDDED:
+                return ArsdkFeatureThermal.Mode.BLENDED;
         }
         return null;
     }

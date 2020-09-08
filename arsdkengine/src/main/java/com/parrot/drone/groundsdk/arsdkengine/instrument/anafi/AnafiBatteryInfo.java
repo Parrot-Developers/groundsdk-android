@@ -95,5 +95,15 @@ public class AnafiBatteryInfo extends DroneInstrumentController {
         public void onHealth(int stateOfHealth) {
             mBatteryInfo.updateHealth(stateOfHealth).notifyUpdated();
         }
+
+        @Override
+        public void onCycleCount(long count) {
+            mBatteryInfo.updateCycleCount((int) count).notifyUpdated();
+        }
+
+        @Override
+        public void onSerial(@NonNull String serial) {
+            mBatteryInfo.updateSerial(serial).notifyUpdated();
+        }
     };
 }

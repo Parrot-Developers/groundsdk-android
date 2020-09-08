@@ -81,11 +81,10 @@
             tools:text="false"/>
     </LinearLayout>
 
-    <com.parrot.drone.groundsdkdemo.settings.ToggleSettingView
-        android:id="@+id/thermal_switch"
+    <com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView
+        android:id="@+id/thermal_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
         app:title="@string/property_stream_thermal"/>
 
     <com.parrot.drone.groundsdkdemo.settings.ToggleSettingView

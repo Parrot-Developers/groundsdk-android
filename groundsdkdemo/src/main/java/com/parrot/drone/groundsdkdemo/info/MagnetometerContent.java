@@ -79,8 +79,7 @@ class MagnetometerContent extends PeripheralContent<Peripheral.Provider, Magneto
 
         @Override
         void onBind(@NonNull MagnetometerContent content, @NonNull Magnetometer magnetometer) {
-            mCalibratedText.setText(magnetometer.isCalibrated()
-                    ? R.string.property_magnetometer_calibrated : R.string.property_magnetometer_not_calibrated);
+            mCalibratedText.setText(magnetometer.calibrationState().name());
         }
 
         @SuppressWarnings("FieldCanBeLocal")

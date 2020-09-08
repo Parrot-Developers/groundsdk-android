@@ -44,11 +44,17 @@ import static com.parrot.drone.groundsdkdemo.settings.SettingViewAdapters.update
 
 public class ReturnHomeSettingsActivity extends GroundSdkActivityBase {
 
+    private ToggleSettingView mAutoTrigger;
+
     private MultiChoiceSettingView<ReturnHomePilotingItf.Target> mPreferredTargetView;
+
+    private MultiChoiceSettingView<ReturnHomePilotingItf.EndingBehavior> mEndingBehavior;
 
     private RangedSettingView mAutostartOnDisconnectDelayView;
 
     private RangedSettingView mMinAltitudeView;
+
+    private RangedSettingView mHoveringAltitudeView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,15 +69,21 @@ public class ReturnHomeSettingsActivity extends GroundSdkActivityBase {
 
         setContentView(R.layout.activity_return_home_settings);
 
+        mAutoTrigger = findViewById(R.id.autoTriggerSwitch);
         mPreferredTargetView = findViewById(R.id.preferredTarget);
+        mEndingBehavior = findViewById(R.id.endingBehavior);
         mAutostartOnDisconnectDelayView = findViewById(R.id.delay);
         mMinAltitudeView = findViewById(R.id.min_altitude);
+        mHoveringAltitudeView = findViewById(R.id.hovering_altitude);
 
         drone.getPilotingItf(ReturnHomePilotingItf.class, pilotingItf -> {
             assert pilotingItf != null;
+            updateSetting(mAutoTrigger, pilotingItf.autoTrigger());
             updateSetting(mPreferredTargetView, pilotingItf.getPreferredTarget());
+            updateSetting(mEndingBehavior, pilotingItf.getEndingBehavior());
             updateSetting(mAutostartOnDisconnectDelayView, pilotingItf.getAutoStartOnDisconnectDelay());
             updateSetting(mMinAltitudeView, pilotingItf.getMinAltitude());
+            updateSetting(mHoveringAltitudeView, pilotingItf.getEndingHoveringAltitude());
         });
     }
 }

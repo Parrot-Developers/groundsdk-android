@@ -144,7 +144,6 @@ public class AnafiFlightPlanPilotingItfTests extends ArsdkEngineTestBase {
         super.teardown();
     }
 
-
     @Test
     public void testPublication() {
         // should be unavailable when the drone is not connected and not known

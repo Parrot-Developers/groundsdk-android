@@ -46,7 +46,8 @@ import java.util.Map;
 public final class GamepadFacadeProvider implements Peripheral.Provider {
 
     private static final GamepadFacade.Creator<?>[] FACADE_IMPL_CREATORS = new GamepadFacade.Creator[] {
-            Sc3GamepadFacadeImpl.CREATOR
+            Sc3GamepadFacadeImpl.CREATOR,
+            ScUaGamepadFacadeImpl.CREATOR
     };
 
     @NonNull

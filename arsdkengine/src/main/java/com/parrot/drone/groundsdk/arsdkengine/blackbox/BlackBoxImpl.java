@@ -58,12 +58,6 @@ import java.util.LinkedList;
  */
 class BlackBoxImpl implements BlackBoxStorage.BlackBox {
 
-    /** Maximum amount of samples in the flight data circular buffer. */
-    private static final int FLIGHT_SAMPLE_COUNT = 5 * 60;
-
-    /** Maximum amount of samples in the environment data circular buffer. */
-    private static final int ENVIRONMENT_SAMPLE_COUNT = 60;
-
     /** JSon serializer thread-safe singleton. */
     private static final Gson JSON_SERIALIZER = new GsonBuilder()
             .excludeFieldsWithModifiers(0)
@@ -95,16 +89,25 @@ class BlackBoxImpl implements BlackBoxStorage.BlackBox {
     @NonNull
     private final LinkedList<EnvironmentData> mEnvironmentInfos;
 
+    /** Maximum amount of samples in the flight data circular buffer. */
+    private final int mMaxFlightSamples;
+
+    /** Maximum amount of samples in the environment data circular buffer. */
+    private final int mMaxEnvironmentSamples;
+
     /**
      * Constructor.
      *
-     * @param drone drone that this black box is recorded for
+     * @param bufferCapacity circular buffers capacity, in seconds
+     * @param drone          drone that this black box is recorded for
      */
-    BlackBoxImpl(@NonNull DroneCore drone) {
+    BlackBoxImpl(int bufferCapacity, @NonNull DroneCore drone) {
         mHeader = new HeaderInfo(drone);
         mEvents = new LinkedList<>();
         mFlightInfos = new LinkedList<>();
         mEnvironmentInfos = new LinkedList<>();
+        mMaxFlightSamples = 5 * bufferCapacity;
+        mMaxEnvironmentSamples = bufferCapacity;
     }
 
     /**
@@ -122,7 +125,7 @@ class BlackBoxImpl implements BlackBoxStorage.BlackBox {
      * @param info flight data sample to record
      */
     void addFlightInfo(@NonNull FlightData info) {
-        addInfo(info, mFlightInfos, FLIGHT_SAMPLE_COUNT);
+        addInfo(info, mFlightInfos, mMaxFlightSamples);
     }
 
     /**
@@ -131,7 +134,7 @@ class BlackBoxImpl implements BlackBoxStorage.BlackBox {
      * @param info environment data sample to record
      */
     void addEnvironmentInfo(@NonNull EnvironmentData info) {
-        addInfo(info, mEnvironmentInfos, ENVIRONMENT_SAMPLE_COUNT);
+        addInfo(info, mEnvironmentInfos, mMaxEnvironmentSamples);
     }
 
     @Override

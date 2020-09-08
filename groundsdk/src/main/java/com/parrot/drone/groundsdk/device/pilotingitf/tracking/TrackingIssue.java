@@ -53,6 +53,9 @@ public enum TrackingIssue {
     /** Drone is currently too close to the tracked target. */
     DRONE_TOO_CLOSE_TO_TARGET,
 
+    /** Drone is too far from target. */
+    DRONE_TOO_FAR_FROM_TARGET,
+
     /** Drone is currently too close to the ground. */
     DRONE_TOO_CLOSE_TO_GROUND,
 
@@ -63,5 +66,11 @@ public enum TrackingIssue {
     TARGET_BAROMETER_INFO_INACCURATE,
 
     /** External target detection information is not being forwarded. */
-    TARGET_DETECTION_INFO_MISSING
+    TARGET_DETECTION_INFO_MISSING,
+
+    /** Target horizontal speed is too high. */
+    TARGET_HORIZONTAL_SPEED_TOO_HIGH,
+
+    /** Target vertical speed is too high. */
+    TARGET_VERTICAL_SPEED_TOO_HIGH
 }

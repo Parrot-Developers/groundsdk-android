@@ -79,7 +79,7 @@ public class MagnetometerWith1StepCalibrationTest {
     }
 
     @Test
-    public void testIsCalibrated() {
+    public void testCalibrationState() {
         mMagnetometer.publish();
         Magnetometer magneto = mStore.get(Magnetometer.class);
         assert magneto != null;
@@ -87,17 +87,22 @@ public class MagnetometerWith1StepCalibrationTest {
         mStore.registerObserver(Magnetometer.class, () -> cnt[0]++);
 
         // test initial value
-        assertThat(magneto.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
 
-        // change isCalibrated
-        mMagnetometer.updateIsCalibrated(true).notifyUpdated();
+        // change calibration state
+        mMagnetometer.updateCalibrationState(Magnetometer.MagnetometerCalibrationState.RECOMMENDED).notifyUpdated();
         assertThat(cnt[0], is(1));
-        assertThat(magneto.isCalibrated(), is(true));
+        assertThat(magneto.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.RECOMMENDED));
 
-        // change isCalibrated
-        mMagnetometer.updateIsCalibrated(false).notifyUpdated();
+        // change calibration state
+        mMagnetometer.updateCalibrationState(Magnetometer.MagnetometerCalibrationState.REQUIRED).notifyUpdated();
         assertThat(cnt[0], is(2));
-        assertThat(magneto.isCalibrated(), is(false));
+        assertThat(magneto.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
+
+        // change calibration state
+        mMagnetometer.updateCalibrationState(Magnetometer.MagnetometerCalibrationState.CALIBRATED).notifyUpdated();
+        assertThat(cnt[0], is(3));
+        assertThat(magneto.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.CALIBRATED));
     }
 
     @Test
@@ -110,7 +115,7 @@ public class MagnetometerWith1StepCalibrationTest {
 
         // test initial value
         assertThat(magneto.getCalibrationProcessState(), nullValue());
-        assertThat(magneto.isCalibrated(), is(false));
+        assertThat(mMagnetometer.calibrationState(), is(Magnetometer.MagnetometerCalibrationState.REQUIRED));
 
         // start a calibration process
         magneto.startCalibrationProcess();

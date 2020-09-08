@@ -47,9 +47,9 @@ import com.parrot.drone.groundsdk.device.peripheral.camera.Camera;
 import com.parrot.drone.groundsdk.device.peripheral.stream.CameraLive;
 import com.parrot.drone.groundsdk.stream.GsdkStreamView;
 import com.parrot.drone.groundsdk.stream.Stream;
-import com.parrot.drone.groundsdk.value.EnumSetting;
 import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.R;
+import com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView;
 import com.parrot.drone.groundsdkdemo.settings.ToggleSettingView;
 
 import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
@@ -134,23 +134,19 @@ public class ThermalStreamActivity extends GroundSdkActivityBase {
             return;
         }
 
-
-        ToggleSettingView thermalSwitch = findViewById(R.id.thermal_switch);
-        thermalSwitch.setAvailable(true);
+        MultiChoiceSettingView<ThermalControl.Mode>  thermalModeView = findViewById(R.id.thermal_mode);
 
         mThermalControl = drone.getPeripheral(ThermalControl.class, thermalControl -> {
             if (thermalControl == null) {
                 finish();
             } else {
-                EnumSetting<ThermalControl.Mode> mode = thermalControl.mode();
-                boolean thermalEnabled = mode.getValue() == ThermalControl.Mode.STANDARD;
-                thermalSwitch
-                        .setToggled(thermalEnabled)
-                        .setUpdating(mode.isUpdating())
-                        .setListener(() -> {
-                            mCameraLive.stop();
-                            mode.setValue(thermalEnabled ? ThermalControl.Mode.DISABLED : ThermalControl.Mode.STANDARD);
-                        });
+
+                thermalModeView.setListener(chosenItem -> {
+                    mCameraLive.stop();
+                    thermalControl.mode().setValue(chosenItem);
+                }).setChoices(thermalControl.mode().getAvailableValues())
+                        .setSelection(thermalControl.mode().getValue())
+                        .setUpdating(thermalControl.mode().isUpdating());
             }
         }).get();
 

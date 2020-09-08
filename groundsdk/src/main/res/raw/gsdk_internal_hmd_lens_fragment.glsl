@@ -7,12 +7,12 @@ layout (location = 0) uniform sampler2D sampler;
 in vec2 fragTexCoordsR;
 in vec2 fragTexCoordsG;
 in vec2 fragTexCoordsB;
-in float fragFade;
+in vec4 fragColorFilter;
 
 out vec4 fragColor;
 
 void main() {
-    fragColor.rgb = vec3(0.0);
+    fragColor = vec4(vec3(0.0), 1.0);
 
     if (fragTexCoordsR.x >= 0.0 && fragTexCoordsR.y >= 0.0 && fragTexCoordsR.x <= 1.0 && fragTexCoordsR.y <= 1.0) {
         fragColor.r = texture(sampler, fragTexCoordsR).r;
@@ -26,5 +26,5 @@ void main() {
         fragColor.b = texture(sampler, fragTexCoordsB).b;
     }
 
-    fragColor.rgb *= vec3(fragFade);
+    fragColor *= fragColorFilter;
 }

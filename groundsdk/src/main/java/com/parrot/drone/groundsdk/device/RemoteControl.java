@@ -50,7 +50,10 @@ public abstract class RemoteControl implements Instrument.Provider, Peripheral.P
     public enum Model implements DeviceModel {
 
         /** Sky Controller 3 remote control. */
-        SKY_CONTROLLER_3(0x0918);
+        SKY_CONTROLLER_3(0x0918),
+
+        /** Sky Controller UA remote control. */
+        SKY_CONTROLLER_UA(0x091c);
 
         /** Model id. */
         @Id

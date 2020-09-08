@@ -59,7 +59,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
 
     private int mChangeCnt;
 
-    private RemovableUserStorage.State mExpectedState;
+    private RemovableUserStorage.FileSystemState mExpectedState;
 
     @Override
     public void setUp() {
@@ -78,7 +78,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
             if (mExpectedState != null) {
                 // check if current state matches the expected state
                 assertThat(mRemovableUserStorage, notNullValue());
-                assertThat(mRemovableUserStorage.getState(), is(mExpectedState));
+                assertThat(mRemovableUserStorage.getFileSystemState(), is(mExpectedState));
                 mExpectedState = null;
             }
         });
@@ -111,73 +111,76 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
 
         assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
         assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(1));
 
         // Format denied
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.DENIED));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING_DENIED));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.FORMATTING_DENIED));
         assertThat(mChangeCnt, is(2));
 
         // Format success
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.SUCCESS));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING_SUCCEEDED));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED));
         assertThat(mChangeCnt, is(3));
 
         // Format error
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.ERROR));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING_FAILED));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.FORMATTING_FAILED));
         assertThat(mChangeCnt, is(4));
 
         // No media detected
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.UNDETECTED,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(5));
 
         // Media rejected since it's to small
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.TOO_SMALL,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SMALL));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.MEDIA_TOO_SMALL));
         assertThat(mChangeCnt, is(6));
 
         // Media rejected since it's too slow
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.TOO_SLOW,
                 ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SLOW));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.MEDIA_TOO_SLOW));
         assertThat(mChangeCnt, is(7));
 
         // Drone acts as a USB mass-storage device
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.USB_MASS_STORAGE,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.USB_MASS_STORAGE));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.USB_MASS_STORAGE));
         assertThat(mChangeCnt, is(8));
 
         // Mounting
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MOUNTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.MOUNTING));
         assertThat(mChangeCnt, is(9));
 
         // Need format
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
         assertThat(mChangeCnt, is(10));
 
         // Formatting
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
         assertThat(mChangeCnt, is(11));
 
         // Ready
@@ -185,7 +188,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
         assertThat(mChangeCnt, is(12));
 
         // Media error
@@ -193,15 +196,63 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.ERROR, 0, 1, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.ERROR));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.ERROR));
         assertThat(mChangeCnt, is(13));
 
         // No media detected
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.UNDETECTED,
                         ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(14));
+
+        // Password Needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.PASSWORD_NEEDED, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mChangeCnt, is(15));
+
+        // Wrong Usage will receive WRONG_USAGE then rollback on the last state (PASSWORD_NEEDED)
+        mExpectedState = RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_USAGE;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.WRONG_USAGE));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mChangeCnt, is(17));
+        assertThat(mExpectedState, nullValue());
+
+        // Wrong Password will receive WRONG_PASSWORD then rollback on the last state (PASSWORD_NEEDED)
+        mExpectedState = RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.WRONG_PASSWORD));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mChangeCnt, is(19));
+        assertThat(mExpectedState, nullValue());
+
+        // Good Password
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.SUCCESS));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.DECRYPTION_SUCCEEDED));
+        assertThat(mChangeCnt, is(20));
+
+        // Checking
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.CHECKING, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.CHECKING));
+        assertThat(mChangeCnt, is(21));
+
+        // External access OK
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.EXTERNAL_ACCESS_OK, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.EXTERNAL_ACCESS_OK));
+        assertThat(mChangeCnt, is(22));
     }
 
     @Test
@@ -209,7 +260,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         connectDrone(mDrone, 1);
         assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
         assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(1));
 
         // Not media info received
@@ -248,11 +299,47 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
     }
 
     @Test
+    public void testUuid() {
+        connectDrone(mDrone, 1);
+        assertThat(mRemovableUserStorage.getUuid(), nullValue());
+        assertThat(mChangeCnt, is(1));
+
+        // Not UUID received
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getUuid(), nullValue());
+        assertThat(mChangeCnt, is(2));
+
+        // Receive UUID
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageSdcardUuid("Uuid"));
+        assertThat(mRemovableUserStorage.getUuid(), is("Uuid"));
+        assertThat(mChangeCnt, is(3));
+
+        // Change UUID
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageSdcardUuid("NewUuid"));
+        assertThat(mRemovableUserStorage.getUuid(), is("NewUuid"));
+        assertThat(mChangeCnt, is(4));
+
+        // Same UUID, no change should be notified
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageSdcardUuid("NewUuid"));
+        assertThat(mRemovableUserStorage.getUuid(), is("NewUuid"));
+        assertThat(mChangeCnt, is(4));
+
+        // No media detected, UUID should be reset to null
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.UNDETECTED,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        assertThat(mRemovableUserStorage.getUuid(), nullValue());
+        assertThat(mChangeCnt, is(5));
+    }
+
+    @Test
     public void testAvailableSpace() {
         connectDrone(mDrone, 1);
         assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
         assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(1));
 
         // Media ready
@@ -299,33 +386,33 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(1));
         assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
         assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
 
         // format needed
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL), is(true));
         assertThat(mChangeCnt, is(3));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting state
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting result, success
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.SUCCESS));
         assertThat(mChangeCnt, is(4));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING_SUCCEEDED));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED));
 
         // user storage ready
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
@@ -333,13 +420,13 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
         assertThat(mChangeCnt, is(5));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("NewName")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL, "NewName"), is(true));
         assertThat(mChangeCnt, is(6));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting and ready states before formatting result, nothing should change
         mMockArsdkCore.commandReceived(1,
@@ -350,47 +437,47 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
         assertThat(mChangeCnt, is(6));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting result, success
-        mExpectedState = RemovableUserStorage.State.FORMATTING_SUCCEEDED;
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED;
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.SUCCESS));
         assertThat(mChangeCnt, is(8)); // 1 change for State.FORMATTING_SUCCEEDED and 1 change for State.READY
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
         assertThat(mExpectedState, nullValue());
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL), is(true));
         assertThat(mChangeCnt, is(9));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting result, error
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.ERROR));
         assertThat(mChangeCnt, is(10));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING_FAILED));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING_FAILED));
 
         // receive format needed
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(11));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL), is(true));
         assertThat(mChangeCnt, is(12));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // receive formatting result, denied, previous state should be restored
-        mExpectedState = RemovableUserStorage.State.FORMATTING_DENIED;
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_DENIED;
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.DENIED));
         assertThat(mChangeCnt, is(14)); // 1 change for State.FORMATTING_DENIED and 1 change for State.NEED_FORMAT
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
         assertThat(mExpectedState, nullValue());
     }
 
@@ -402,71 +489,274 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(1));
         assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
         assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
 
         // format needed
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL), is(true));
         assertThat(mChangeCnt, is(2));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // receive formatting state
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
         assertThat(mChangeCnt, is(3));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // user storage ready, meaning formatting succeed
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
-        mExpectedState = RemovableUserStorage.State.FORMATTING_SUCCEEDED; // expected transient state for format result
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED; // expected transient state for format result
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
         assertThat(mChangeCnt, is(5));
         assertThat(mExpectedState, nullValue());
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
 
         // format not allowed in READY state
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL, "NewName"), is(false));
         assertThat(mChangeCnt, is(5));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
 
         // format needed
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(6));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // format
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
         assertThat(mRemovableUserStorage.format(RemovableUserStorage.FormattingType.FULL), is(true));
         assertThat(mChangeCnt, is(6));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // receive formatting state
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
         assertThat(mChangeCnt, is(7));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.FORMATTING));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
 
         // user storage need format, meaning formatting failed
-        mExpectedState = RemovableUserStorage.State.FORMATTING_FAILED; // expected transient state for format result
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_FAILED; // expected transient state for format result
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(9));
         assertThat(mExpectedState, nullValue());
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+    }
+
+    @Test
+    public void testFormatWithEncryptionWithFormatResultEvent() {
+        connectDrone(mDrone, 1,
+                () -> mMockArsdkCore.commandReceived(1,
+                        ArsdkEncoder.encodeUserStorageCapabilities(ArsdkFeatureUserStorage.Feature.toBitField(
+                                ArsdkFeatureUserStorage.Feature.FORMAT_WHEN_READY_ALLOWED,
+                                ArsdkFeatureUserStorage.Feature.FORMAT_RESULT_EVT_SUPPORTED,
+                                ArsdkFeatureUserStorage.Feature.ENCRYPTION_SUPPORTED))));
+
+        // initial values
+        assertThat(mChangeCnt, is(1));
+        assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
+        assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
+
+        // format needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("", "password",
+                ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting state
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting result, success
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.SUCCESS));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED));
+
+        // user storage ready
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("NewName",
+                "password", ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "NewName"), is(true));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting and ready states before formatting result, nothing should change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting result, success
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.SUCCESS));
+        assertThat(mChangeCnt, is(8)); // 1 change for State.FORMATTING_SUCCEEDED and 1 change for State.READY
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
+        assertThat(mExpectedState, nullValue());
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("",
+                "password", ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mChangeCnt, is(9));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting result, error
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.ERROR));
+        assertThat(mChangeCnt, is(10));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING_FAILED));
+
+        // receive format needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(11));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("", "password",
+                ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mChangeCnt, is(12));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // receive formatting result, denied, previous state should be restored
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_DENIED;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageFormatResult(ArsdkFeatureUserStorage.FormattingResult.DENIED));
+        assertThat(mChangeCnt, is(14)); // 1 change for State.FORMATTING_DENIED and 1 change for State.NEED_FORMAT
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+        assertThat(mExpectedState, nullValue());
+    }
+
+    @Test
+    public void testFormatWithEncryptionWithoutFormatResultEvent() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageCapabilities(ArsdkFeatureUserStorage.Feature.toBitField(
+                        ArsdkFeatureUserStorage.Feature.ENCRYPTION_SUPPORTED))));
+
+        // initial values
+        assertThat(mChangeCnt, is(1));
+        assertThat(mRemovableUserStorage.getMediaInfo(), nullValue());
+        assertThat(mRemovableUserStorage.getAvailableSpace(), is(-1L));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
+
+        // format needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("",
+                "password", ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // receive formatting state
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // user storage ready, meaning formatting succeed
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageStartMonitoring(0)));
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED; // expected transient state for format result
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mExpectedState, nullValue());
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
+
+        // format not allowed in READY state
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "NewName"), is(false));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
+
+        // format needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // format and encrypt
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormatWithEncryption("",
+                "password", ArsdkFeatureUserStorage.FormattingType.FULL)));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
+
+        // receive formatting state
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMATTING, 0, 0, 0));
+        assertThat(mChangeCnt, is(7));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.FORMATTING));
+
+        // user storage need format, meaning formatting failed
+        mExpectedState = RemovableUserStorage.FileSystemState.FORMATTING_FAILED; // expected transient state for format result
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(9));
+        assertThat(mExpectedState, nullValue());
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
     }
 
     @Test
@@ -475,14 +765,14 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
 
         // initial values
         assertThat(mChangeCnt, is(1));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
 
         // format needed
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
 
         // SupportedFormattingTypes not received, the simple format command should be sent
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageFormat("")));
@@ -509,7 +799,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
 
         // initial values
         assertThat(mChangeCnt, is(1));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mRemovableUserStorage.formattingState(), nullValue());
 
         // prepare to format
@@ -517,7 +807,7 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.FORMAT_NEEDED, 0, 0, 0));
         assertThat(mChangeCnt, is(2));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
         assertThat(mRemovableUserStorage.formattingState(), nullValue());
 
         // request format, formatting state should be null as it's not supported
@@ -566,7 +856,109 @@ public class AnafiRemovableUserStorageTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
                         ArsdkFeatureUserStorage.FsState.READY, 0, 0, 0));
         assertThat(mChangeCnt, is(6));
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
         assertThat(mRemovableUserStorage.formattingState(), nullValue());
+    }
+
+    @Test
+    public void testDecryption() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeUserStorageCapabilities(
+                ArsdkFeatureUserStorage.Feature.toBitField(ArsdkFeatureUserStorage.Feature.ENCRYPTION_SUPPORTED))));
+
+        // initial values
+        assertThat(mChangeCnt, is(1));
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
+
+        // password needed
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.PASSWORD_NEEDED, 0, 0, 0));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+
+        // send password and usage
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageEncryptionPassword("password",
+                ArsdkFeatureUserStorage.PasswordUsage.RECORD)));
+        assertThat(mRemovableUserStorage.sendPassword("password", RemovableUserStorage.PasswordUsage.RECORD),
+                is(true));
+        assertThat(mChangeCnt, is(2));
+
+        // receive wrong password state then rollback to the previous one
+        mExpectedState = RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.WRONG_PASSWORD));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mExpectedState, nullValue());
+
+        // send password and usage
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageEncryptionPassword("password",
+                ArsdkFeatureUserStorage.PasswordUsage.USB)));
+        assertThat(mRemovableUserStorage.sendPassword("password", RemovableUserStorage.PasswordUsage.USB),
+                is(true));
+        assertThat(mChangeCnt, is(4));
+
+        // receive wrong usage state then rollback to the previous one
+        mExpectedState = RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_USAGE;
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.WRONG_USAGE));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mExpectedState, nullValue());
+
+        // send password
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.userStorageEncryptionPassword("password",
+                ArsdkFeatureUserStorage.PasswordUsage.RECORD)));
+        assertThat(mRemovableUserStorage.sendPassword("password", RemovableUserStorage.PasswordUsage.RECORD),
+                is(true));
+        assertThat(mChangeCnt, is(6));
+
+        // decryption success
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageDecryption(ArsdkFeatureUserStorage.PasswordResult.SUCCESS));
+        assertThat(mChangeCnt, is(7));
+        assertThat(mRemovableUserStorage.getFileSystemState(),
+                is(RemovableUserStorage.FileSystemState.DECRYPTION_SUCCEEDED));
+    }
+
+    @Test
+    public void testAttributeEncrypted() {
+        connectDrone(mDrone, 1);
+
+        // initial values
+        assertThat(mChangeCnt, is(1));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(false));
+
+        // receive state with encrypted attribute
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN,
+                        ArsdkFeatureUserStorage.Attribute.toBitField(ArsdkFeatureUserStorage.Attribute.ENCRYPTED),
+                        0, 0));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(true));
+
+        // receive same state, should change nothing
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN,
+                        ArsdkFeatureUserStorage.Attribute.toBitField(ArsdkFeatureUserStorage.Attribute.ENCRYPTED),
+                        0, 0));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(true));
+
+        // receive state without encrypted attribute
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(false));
+
+        // receive same state, should change nothing
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeUserStorageState(ArsdkFeatureUserStorage.PhyState.AVAILABLE,
+                        ArsdkFeatureUserStorage.FsState.UNKNOWN, 0, 0, 0));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(false));
     }
 }

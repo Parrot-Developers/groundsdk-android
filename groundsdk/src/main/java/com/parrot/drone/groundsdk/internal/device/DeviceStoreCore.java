@@ -124,6 +124,8 @@ public class DeviceStoreCore<D extends DeviceCore> implements DeviceStore<D> {
         device.getNameHolder().registerObserver(it -> notifyDeviceChanged(device));
         // observe the device for firmware version change
         device.getFirmwareVersionHolder().registerObserver(it -> notifyDeviceChanged(device));
+        // observe the device for board identifier change
+        device.getBoardIdHolder().registerObserver(it -> notifyDeviceChanged(device));
         // observe the device for state change
         device.getStateHolder().registerObserver(it -> notifyDeviceChanged(device));
         return true;

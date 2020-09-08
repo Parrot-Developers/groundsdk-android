@@ -374,6 +374,10 @@ public abstract class DeviceController<D extends DeviceCore> {
         if (version != null) {
             mDevice.updateFirmwareVersion(version);
         }
+        String boardId = mDeviceDict.getString(PersistentStore.KEY_DEVICE_BOARD_ID);
+        if (boardId != null) {
+            mDevice.updateBoardId(boardId);
+        }
         String presetUid = mDeviceDict.getString(PersistentStore.KEY_DEVICE_PRESET_KEY);
         if (presetUid == null) {
             presetUid = PersistentStore.getDefaultPresetKey(mDevice.getModel());
@@ -966,6 +970,11 @@ public abstract class DeviceController<D extends DeviceCore> {
 
             mDevice.getDeviceStateCore().updateConnectionState(DeviceState.ConnectionState.CONNECTED)
                    .updatePersisted(true).notifyUpdated();
+
+            // in case board id was not received during connection
+            if (mDevice.getBoardId() == null) {
+                mDevice.updateBoardId(""); // now we know board id to be unavailable
+            }
 
             // store the device
             mDeviceDict.put(PersistentStore.KEY_DEVICE_NAME, mDevice.getName())

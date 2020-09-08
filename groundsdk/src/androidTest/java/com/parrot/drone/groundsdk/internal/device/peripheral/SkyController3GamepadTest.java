@@ -51,6 +51,7 @@ import com.parrot.drone.groundsdk.internal.MockComponentStore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.gamepad.SkyController3GamepadCore;
 import com.parrot.drone.groundsdk.internal.tasks.TestExecutor;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,6 +115,11 @@ public class SkyController3GamepadTest {
         mBackend.reset();
         mButtonEventListener.reset();
         mAxisEventListener.reset();
+    }
+
+    @After
+    public void tearDown() {
+        TestExecutor.teardown();
     }
 
     @Test

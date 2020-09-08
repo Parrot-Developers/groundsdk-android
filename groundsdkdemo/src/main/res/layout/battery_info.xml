@@ -89,6 +89,30 @@
                 tools:text="85 %"/>
         </TableRow>
 
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_battery_cycle_count"/>
+
+            <TextView
+                android:id="@+id/cycle_count"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="13"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_battery_serial"/>
+
+            <TextView
+                android:id="@+id/serial"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="0123456789ABCDEF"/>
+        </TableRow>
+
     </TableLayout>
 
 </androidx.cardview.widget.CardView>

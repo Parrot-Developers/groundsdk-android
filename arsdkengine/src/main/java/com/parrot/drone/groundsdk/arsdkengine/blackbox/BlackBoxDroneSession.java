@@ -65,14 +65,15 @@ public final class BlackBoxDroneSession extends BlackBoxSession {
     /**
      * Constructor.
      *
-     * @param context  context that manages the session
-     * @param drone    drone to record a black box from
-     * @param listener listener to notify when the session closes
+     * @param context                context that manages the session
+     * @param blackBoxBufferCapacity black box circular buffers capacity, in seconds
+     * @param drone                  drone to record a black box from
+     * @param listener               listener to notify when the session closes
      */
-    BlackBoxDroneSession(@NonNull BlackBoxRecorder.Context context, @NonNull DroneCore drone,
-                         @NonNull CloseListener listener) {
+    BlackBoxDroneSession(@NonNull BlackBoxRecorder.Context context, int blackBoxBufferCapacity,
+                         @NonNull DroneCore drone, @NonNull CloseListener listener) {
         super(context, listener);
-        mBlackBox = new BlackBoxImpl(drone);
+        mBlackBox = new BlackBoxImpl(blackBoxBufferCapacity, drone);
         // start sampling
         mEnvironmentInfoSampler.start();
         mFlightInfoSampler.start();

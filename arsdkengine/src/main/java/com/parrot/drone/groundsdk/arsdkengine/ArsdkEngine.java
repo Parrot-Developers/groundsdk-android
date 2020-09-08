@@ -335,12 +335,15 @@ public class ArsdkEngine extends EngineBase implements RcUsbAccessoryManager {
             switch (droneModel) {
                 case ANAFI_4K:
                 case ANAFI_THERMAL:
+                case ANAFI_UA:
+                case ANAFI_USA:
                     return new AnafiFamilyDroneController(this, uid, droneModel, name);
             }
         } else if (model instanceof RemoteControl.Model) {
             RemoteControl.Model rcModel = (RemoteControl.Model) model;
             switch (rcModel) {
                 case SKY_CONTROLLER_3:
+                case SKY_CONTROLLER_UA:
                     return new SkyControllerFamilyController(this, uid, rcModel, name);
             }
         }

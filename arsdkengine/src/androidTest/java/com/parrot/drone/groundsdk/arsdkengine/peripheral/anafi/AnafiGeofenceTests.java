@@ -309,68 +309,6 @@ public class AnafiGeofenceTests extends ArsdkEngineTestBase {
     }
 
     @Test
-    public void testCenterWithHomeAsBackup() {
-        // connect drone, receiving drone settings (including max distance to keep component published on disconnection)
-        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeArdrone3PilotingSettingsStateMaxDistanceChanged(500, 10, 2000)));
-
-        assertThat(mChangeCnt, is(1));
-        assertThat(mGeofence.getCenter(), nullValue());
-
-        // mock drone sends home
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateHomeChanged(12.12, 13.13, 14.14));
-
-        // geofence center should update to home value
-        assertThat(mChangeCnt, is(2));
-        assertThat(mGeofence.getCenter(), locationIs(12.12, 13.13));
-
-        // mock drone sends geofence center
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateGeofenceCenterChanged(1.1, 2.2));
-
-        // geofence center should update to received value
-        assertThat(mChangeCnt, is(3));
-        assertThat(mGeofence.getCenter(), locationIs(1.1, 2.2));
-
-        // mock drone sends home again
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateHomeChanged(22.22, 23.23, 24.24));
-
-        // nothing should change (received geofence center is used in priority)
-        assertThat(mChangeCnt, is(3));
-        assertThat(mGeofence.getCenter(), locationIs(1.1, 2.2));
-
-        // disconnect drone
-        disconnectDrone(mDrone, 1);
-
-        // geofence center should remain (we keep it so that the UI can keep the previous center while reconnecting)
-        assertThat(mChangeCnt, is(3));
-        assertThat(mGeofence.getCenter(), locationIs(1.1, 2.2));
-
-        // reconnect
-        connectDrone(mDrone, 1);
-
-        // mock drone sends home
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateHomeChanged(32.32, 33.33, 34.34));
-
-        // geofence center should update to home value (since the connection was lost, we accept home fallback again)
-        assertThat(mChangeCnt, is(4));
-        assertThat(mGeofence.getCenter(), locationIs(32.32, 33.33));
-
-        // mock drone sends an invalid geofence center
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateGeofenceCenterChanged(500, 500));
-
-        // geofence center should be null
-        assertThat(mChangeCnt, is(5));
-        assertThat(mGeofence.getCenter(), nullValue());
-
-        // mock drone sends home again
-        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3GPSSettingsStateHomeChanged(42.22, 43.23, 44.24));
-
-        // nothing should change (received geofence center, even if invalid, is used in priority)
-        assertThat(mChangeCnt, is(5));
-        assertThat(mGeofence.getCenter(), nullValue());
-    }
-
-    @Test
     public void testResetOnDisconnect() {
         // tests that all values are reset properly and rollbacks are canceled upon disconnection
         connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,

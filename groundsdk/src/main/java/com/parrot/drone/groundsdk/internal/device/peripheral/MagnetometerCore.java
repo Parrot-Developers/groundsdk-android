@@ -64,8 +64,9 @@ public abstract class MagnetometerCore extends SingletonComponentCore implements
     @NonNull
     final Backend mBackend;
 
-    /** Whether or not the drone is calibrated. */
-    private boolean mIsCalibrated;
+    /** The magnetometer calibration state. */
+    @NonNull
+    private MagnetometerCalibrationState mCalibrationState;
 
     /**
      * Constructor.
@@ -79,11 +80,13 @@ public abstract class MagnetometerCore extends SingletonComponentCore implements
                      @NonNull Backend backend) {
         super(descriptor, peripheralStore);
         mBackend = backend;
+        mCalibrationState = MagnetometerCalibrationState.REQUIRED;
     }
 
     @Override
-    public boolean isCalibrated() {
-        return mIsCalibrated;
+    @NonNull
+    public MagnetometerCalibrationState calibrationState() {
+        return mCalibrationState;
     }
 
     /**
@@ -91,14 +94,14 @@ public abstract class MagnetometerCore extends SingletonComponentCore implements
      * <p>
      * Note: changes are not notified until {@link #notifyUpdated()} is called
      *
-     * @param isCalibrated whether or not the drone is calibrated
+     * @param calibrationState calibration state
      *
      * @return the object, to allow chain calls
      */
     @NonNull
-    public MagnetometerCore updateIsCalibrated(boolean isCalibrated) {
-        if (mIsCalibrated != isCalibrated) {
-            mIsCalibrated = isCalibrated;
+    public MagnetometerCore updateCalibrationState(@NonNull MagnetometerCalibrationState calibrationState) {
+        if (mCalibrationState != calibrationState) {
+            mCalibrationState = calibrationState;
             mChanged = true;
         }
 

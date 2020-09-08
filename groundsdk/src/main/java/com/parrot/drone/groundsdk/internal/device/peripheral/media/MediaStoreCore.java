@@ -63,19 +63,21 @@ public final class MediaStoreCore extends ComponentCore {
         void stopWatchingContentChange();
 
         /**
-         * Requests a list of the available media in the store.
+         * Requests a list of the available media for a specific storage in the store.
          * <p>
          * {@code callback} is always called, either after success or failure. <br>
          * In case the callback is invoked directly by this method, then this method returns {@code null}. Otherwise
          * this method returns a {@code MediaRequest} object, which can be used to cancel the request, and means that
          * the callback will be invoked at a later time.
          *
-         * @param callback callback notified when the list is available.
+         * @param storageType   targeted storage type
+         * @param callback      callback notified when the list is available
          *
          * @return a request that can be canceled, or {@code null} if the request was processed directly
          */
         @Nullable
-        MediaRequest browse(@NonNull MediaRequest.ResultCallback<List<? extends MediaItemCore>> callback);
+        MediaRequest browse(@Nullable MediaStore.StorageType storageType,
+                            @NonNull MediaRequest.ResultCallback<List<? extends MediaItemCore>> callback);
 
         /**
          * Requests download of a media resource.

@@ -71,6 +71,10 @@ final class ResolutionAdapter {
                 return CameraRecording.Resolution.RES_720P_4_3;
             case RES_480P:
                 return CameraRecording.Resolution.RES_480P;
+            case RES_UHD_8K:
+                return CameraRecording.Resolution.RES_UHD_8K;
+            case RES_5K:
+                return CameraRecording.Resolution.RES_5K;
         }
         return null;
     }
@@ -101,6 +105,10 @@ final class ResolutionAdapter {
                 return ArsdkFeatureCamera.Resolution.RES_720P_SD;
             case RES_480P:
                 return ArsdkFeatureCamera.Resolution.RES_480P;
+            case RES_UHD_8K:
+                return ArsdkFeatureCamera.Resolution.RES_UHD_8K;
+            case RES_5K:
+                return ArsdkFeatureCamera.Resolution.RES_5K;
         }
         return null;
     }

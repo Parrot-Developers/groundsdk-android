@@ -59,8 +59,6 @@ public class PasswordDialogFragment extends DialogFragment {
         void onPasswordAcquired(@NonNull String password);
     }
 
-    @SuppressWarnings("NullableProblems")
-    @NonNull
     private PasswordAcquiredListener mListener;
 
     @SuppressWarnings("NullableProblems")
@@ -96,7 +94,9 @@ public class PasswordDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (PasswordAcquiredListener) context;
+        if (mListener == null) {
+            mListener = (PasswordAcquiredListener) context;
+        }
     }
 
     @Override
@@ -104,6 +104,10 @@ public class PasswordDialogFragment extends DialogFragment {
         super.onStart();
         mPositiveButton = ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE);
         mPositiveButton.setEnabled(false);
+    }
+
+    public void setListener(PasswordAcquiredListener listener) {
+        mListener = listener;
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -132,7 +136,9 @@ public class PasswordDialogFragment extends DialogFragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
-                mListener.onPasswordAcquired(mPasswordInput.getText().toString());
+                if (mListener != null) {
+                    mListener.onPasswordAcquired(mPasswordInput.getText().toString());
+                }
                 dialog.dismiss();
             } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                 dialog.cancel();

@@ -142,6 +142,17 @@ public class ThermalControlTest {
                 enumSettingValueIs(ThermalControl.Mode.DISABLED),
                 settingIsUpToDate()));
 
+        mThermalControl.mode().setValue(ThermalControl.Mode.EMBEDDED);
+
+        verify(mMockBackend, times(1)).setMode(ThermalControl.Mode.EMBEDDED);
+
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mThermalControl.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
+                enumSettingValueIs(ThermalControl.Mode.DISABLED),
+                settingIsUpToDate()));
+
+
         // test nothing changes if values do not change
         doReturn(true).when(mMockBackend).setMode(any());
         mThermalControl.mode().setValue(ThermalControl.Mode.DISABLED);
@@ -153,7 +164,7 @@ public class ThermalControlTest {
                 enumSettingValueIs(ThermalControl.Mode.DISABLED),
                 settingIsUpToDate()));
 
-        // test user changes value
+        // test user changes value to standard
         mThermalControl.mode().setValue(ThermalControl.Mode.STANDARD);
 
         verify(mMockBackend, times(2)).setMode(ThermalControl.Mode.STANDARD);
@@ -175,6 +186,30 @@ public class ThermalControlTest {
         assertThat(mThermalControl.mode(), allOf(
                 enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
                 enumSettingValueIs(ThermalControl.Mode.STANDARD),
+                settingIsUpToDate()));
+
+        // test user changes value to embedded
+        mThermalControl.mode().setValue(ThermalControl.Mode.EMBEDDED);
+
+        verify(mMockBackend, times(2)).setMode(ThermalControl.Mode.EMBEDDED);
+        assertThat(mComponentChangeCnt, is(5));
+        assertThat(mThermalControl.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
+                enumSettingValueIs(ThermalControl.Mode.EMBEDDED),
+                settingIsUpdating()));
+
+        // mock update from low-level
+        mThermalControlImpl.mode().updateValue(ThermalControl.Mode.EMBEDDED);
+
+        // verify changes are not published until notifyUpdated() is called
+        assertThat(mComponentChangeCnt, is((5)));
+
+        mThermalControlImpl.notifyUpdated();
+
+        assertThat(mComponentChangeCnt, is(6));
+        assertThat(mThermalControl.mode(), allOf(
+                enumSettingSupports(EnumSet.allOf(ThermalControl.Mode.class)),
+                enumSettingValueIs(ThermalControl.Mode.EMBEDDED),
                 settingIsUpToDate()));
 
         verifyNoMoreInteractions(mMockBackend);

@@ -67,10 +67,20 @@
 
         <TableRow>
 
-            <TextView android:text="@string/property_user_storage_state"/>
+            <TextView android:text="@string/property_user_storage_phy_state"/>
 
             <TextView
-                android:id="@+id/user_storage_state"
+                android:id="@+id/user_storage_phy_state"
+                android:gravity="center_vertical|end"
+                tools:text="READY"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/property_user_storage_fs_state"/>
+
+            <TextView
+                android:id="@+id/user_storage_fs_state"
                 android:gravity="center_vertical|end"
                 tools:text="READY"/>
         </TableRow>
@@ -107,6 +117,17 @@
 
         <TableRow>
 
+            <TextView
+                android:text="@string/property_user_storage_encrypted"/>
+
+            <TextView
+                android:id="@+id/user_storage_encrypted"
+                android:gravity="center_vertical|end"
+                tools:text="false"/>
+        </TableRow>
+
+        <TableRow>
+
             <TextView android:text="@string/property_user_storage_formatting_types"/>
 
             <TextView
@@ -124,6 +145,15 @@
                 android:gravity="center_vertical|end"
                 tools:text="HIGH_LEVEL: 35%"/>
         </TableRow>
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btn_enter_password"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/action_enter_password"
+            android:enabled="false"
+            tools:ignore="ContentDescription"/>
     </TableLayout>
 
 </androidx.cardview.widget.CardView>

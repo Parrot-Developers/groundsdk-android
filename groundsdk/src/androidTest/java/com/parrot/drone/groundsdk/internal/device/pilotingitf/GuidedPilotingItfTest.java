@@ -32,31 +32,27 @@
 
 package com.parrot.drone.groundsdk.internal.device.pilotingitf;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.Directive;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.FinishedLocationFlightInfo;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.FinishedRelativeMoveFlightInfo;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective.Orientation;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.RelativeMoveDirective;
 import com.parrot.drone.groundsdk.device.pilotingitf.PilotingItf;
 import com.parrot.drone.groundsdk.internal.MockComponentStore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.FinishedLocationFlightInfoCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.FinishedRelativeMoveFlightInfoCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.LocationDirectiveCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.RelativeMoveDirectiveCore;
+import com.parrot.drone.groundsdk.internal.device.pilotingitf.guided.FinishedFlightInfoCore;
+import com.parrot.drone.groundsdk.internal.device.pilotingitf.guided.GuidedPilotingItfCore;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.EnumSet;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import static com.parrot.drone.groundsdk.FinishedRelativeMoveFlightInfoMatcher.matchesFinishedRelativeMoveFlightInfo;
 import static com.parrot.drone.groundsdk.LocationDirectiveMatcher.matchesLocationDirective;
 import static com.parrot.drone.groundsdk.RelativeMoveDirectiveMatcher.matchesRelativeMoveDirective;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -106,29 +102,34 @@ public class GuidedPilotingItfTest {
         assertThat(itf.getCurrentDirective(), nullValue());
 
         // start location move
-        itf.moveToLocation(48.8795, 2.3675, 5, Orientation.headingDuring(90));
+        itf.moveToLocation(48.8795, 2.3675, 5,
+                GuidedPilotingItf.LocationDirective.Orientation.headingDuring(90));
         assertThat(mChangeCnt, is(1));
-        assertThat(mBackend.mCurrentDirective, instanceOf(LocationDirective.class));
-        assertThat((LocationDirective) mBackend.mCurrentDirective,
-                matchesLocationDirective(48.8795, 2.3675, 5, Orientation.headingDuring(90)));
+        assertThat(mBackend.mCurrentDirective, instanceOf(GuidedPilotingItf.LocationDirective.class));
+        assertThat((GuidedPilotingItf.LocationDirective) mBackend.mCurrentDirective,
+                matchesLocationDirective(48.8795, 2.3675, 5,
+                        GuidedPilotingItf.LocationDirective.Orientation.headingDuring(90)));
 
         // update current directive
-        LocationDirectiveCore directive = new LocationDirectiveCore(48.0, 2.0, 10, Orientation.TO_TARGET);
+        GuidedPilotingItf.LocationDirective directive = new GuidedPilotingItf.LocationDirective(
+                48.0, 2.0, 10, GuidedPilotingItf.LocationDirective.Orientation.TO_TARGET, null);
         mPilotingItfImpl.updateCurrentDirective(directive).notifyUpdated();
         assertThat(mChangeCnt, is(2));
-        assertThat(itf.getCurrentDirective(), instanceOf(LocationDirective.class));
-        assertThat((LocationDirective) itf.getCurrentDirective(),
-                matchesLocationDirective(48.0, 2.0, 10, Orientation.TO_TARGET));
+        assertThat(itf.getCurrentDirective(), instanceOf(GuidedPilotingItf.LocationDirective.class));
+        assertThat((GuidedPilotingItf.LocationDirective) itf.getCurrentDirective(),
+                matchesLocationDirective(48.0, 2.0, 10,
+                        GuidedPilotingItf.LocationDirective.Orientation.TO_TARGET));
 
         // location move is finished: update current directive and latest finished flight info
-        FinishedLocationFlightInfo flightInfo = new FinishedLocationFlightInfoCore(directive, true);
+        GuidedPilotingItf.FinishedLocationFlightInfo flightInfo = new FinishedFlightInfoCore.Location(directive, true);
         mPilotingItfImpl.updateCurrentDirective(null).updateLatestFinishedFlightInfo(flightInfo).notifyUpdated();
         assertThat(mChangeCnt, is(3));
         assertThat(itf.getCurrentDirective(), nullValue());
-        assertThat(itf.getLatestFinishedFlightInfo(), instanceOf(FinishedLocationFlightInfo.class));
-        flightInfo = (FinishedLocationFlightInfo) itf.getLatestFinishedFlightInfo();
+        assertThat(itf.getLatestFinishedFlightInfo(), instanceOf(GuidedPilotingItf.FinishedLocationFlightInfo.class));
+        flightInfo = (GuidedPilotingItf.FinishedLocationFlightInfo) itf.getLatestFinishedFlightInfo();
         assert flightInfo != null;
-        assertThat(flightInfo.getDirective(), matchesLocationDirective(48.0, 2.0, 10, Orientation.TO_TARGET));
+        assertThat(flightInfo.getDirective(), matchesLocationDirective(48.0, 2.0, 10,
+                GuidedPilotingItf.LocationDirective.Orientation.TO_TARGET));
         assertThat(flightInfo.wasSuccessful(), is(true));
     }
 
@@ -145,35 +146,91 @@ public class GuidedPilotingItfTest {
         // start relative move
         itf.moveToRelativePosition(10.0, 2.5, -5.0, 45.0);
         assertThat(mChangeCnt, is(1));
-        assertThat(mBackend.mCurrentDirective, instanceOf(RelativeMoveDirective.class));
-        assertThat((RelativeMoveDirective) mBackend.mCurrentDirective,
+        assertThat(mBackend.mCurrentDirective, instanceOf(GuidedPilotingItf.RelativeMoveDirective.class));
+        assertThat((GuidedPilotingItf.RelativeMoveDirective) mBackend.mCurrentDirective,
                 matchesRelativeMoveDirective(10.0, 2.5, -5.0, 45.0));
 
         // update current directive
-        RelativeMoveDirective directive = new RelativeMoveDirectiveCore(50.0, -1.0, 0.5, 0.0);
+        GuidedPilotingItf.RelativeMoveDirective directive = new GuidedPilotingItf.RelativeMoveDirective(
+                50.0, -1.0, 0.5, 0.0, null);
         mPilotingItfImpl.updateCurrentDirective(directive).notifyUpdated();
         assertThat(mChangeCnt, is(2));
-        assertThat(itf.getCurrentDirective(), instanceOf(RelativeMoveDirective.class));
-        assertThat((RelativeMoveDirective) itf.getCurrentDirective(),
+        assertThat(itf.getCurrentDirective(), instanceOf(GuidedPilotingItf.RelativeMoveDirective.class));
+        assertThat((GuidedPilotingItf.RelativeMoveDirective) itf.getCurrentDirective(),
                 matchesRelativeMoveDirective(50.0, -1.0, 0.5, 0.0));
 
         // relative move is finished: update current directive and latest finished flight info
-        FinishedRelativeMoveFlightInfo flightInfo =
-                new FinishedRelativeMoveFlightInfoCore(directive, true, 50.01, -0.998, 0.502, 0.0);
+        GuidedPilotingItf.FinishedRelativeMoveFlightInfo flightInfo =
+                new FinishedFlightInfoCore.Relative(directive, true, 50.01, -0.998, 0.502, 0.0);
         mPilotingItfImpl.updateCurrentDirective(null).updateLatestFinishedFlightInfo(flightInfo).notifyUpdated();
         assertThat(mChangeCnt, is(3));
         assertThat(itf.getCurrentDirective(), nullValue());
-        assertThat(itf.getLatestFinishedFlightInfo(), instanceOf(FinishedRelativeMoveFlightInfo.class));
-        flightInfo = (FinishedRelativeMoveFlightInfo) itf.getLatestFinishedFlightInfo();
+        assertThat(itf.getLatestFinishedFlightInfo(), instanceOf(GuidedPilotingItf.FinishedRelativeMoveFlightInfo.class));
+        flightInfo = (GuidedPilotingItf.FinishedRelativeMoveFlightInfo) itf.getLatestFinishedFlightInfo();
         assert flightInfo != null;
         assertThat(flightInfo.getDirective(), matchesRelativeMoveDirective(50.0, -1.0, 0.5, 0.0));
         assertThat(flightInfo, matchesFinishedRelativeMoveFlightInfo(true, 50.01, -0.998, 0.502, 0.0));
     }
 
+    @Test
+    public void testUnavailabilityReasons() {
+        mPilotingItfImpl.publish();
+        GuidedPilotingItf itf = mStore.get(GuidedPilotingItf.class);
+        assert itf != null;
+
+        // test initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(itf.getUnavailabilityReasons(), empty());
+
+        // change unavailability reasons
+        mPilotingItfImpl.updateUnavailabilityReasons(EnumSet.allOf(GuidedPilotingItf.UnavailabilityReason.class))
+                        .notifyUpdated();
+        assertThat(itf.getUnavailabilityReasons(),
+                containsInAnyOrder(GuidedPilotingItf.UnavailabilityReason.values()));
+        assertThat(mChangeCnt, is(2));
+
+        // change unavailability reasons
+        mPilotingItfImpl.updateUnavailabilityReasons(
+                EnumSet.of(GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING)).notifyUpdated();
+        assertThat(itf.getUnavailabilityReasons(),
+                containsInAnyOrder(GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING));
+        assertThat(mChangeCnt, is(3));
+
+        // update to same unavailability reasons
+        mPilotingItfImpl.updateUnavailabilityReasons(
+                EnumSet.of(GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING)).notifyUpdated();
+        assertThat(itf.getUnavailabilityReasons(),
+                containsInAnyOrder(GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING));
+        assertThat(mChangeCnt, is(3));
+
+        // change unavailability reasons
+        mPilotingItfImpl.updateUnavailabilityReasons(EnumSet.noneOf(GuidedPilotingItf.UnavailabilityReason.class))
+                        .notifyUpdated();
+        assertThat(itf.getUnavailabilityReasons(), empty());
+        assertThat(mChangeCnt, is(4));
+    }
+
+    @Test
+    public void testMove() {
+        mPilotingItfImpl.publish();
+        GuidedPilotingItf itf = mStore.get(GuidedPilotingItf.class);
+        assert itf != null;
+
+        // test initial value
+        assertThat(mBackend.mCurrentDirective, nullValue());
+
+        GuidedPilotingItf.Directive directive = new GuidedPilotingItf.LocationDirective(1, 2, 3,
+                GuidedPilotingItf.LocationDirective.Orientation.headingStart(4),
+                new GuidedPilotingItf.Directive.Speed(5, 6, 7));
+        itf.move(directive);
+
+        assertThat(mBackend.mCurrentDirective, is(directive));
+    }
+
     private static final class Backend implements GuidedPilotingItfCore.Backend {
 
         @Nullable
-        private Directive mCurrentDirective;
+        private GuidedPilotingItf.Directive mCurrentDirective;
 
         @Override
         public boolean activate() {
@@ -186,14 +243,8 @@ public class GuidedPilotingItfTest {
         }
 
         @Override
-        public void moveToLocation(double latitude, double longitude, double altitude,
-                                   @NonNull Orientation orientation) {
-            mCurrentDirective = new LocationDirectiveCore(latitude, longitude, altitude, orientation);
-        }
-
-        @Override
-        public void moveToRelativePosition(double dx, double dy, double dz, double dpsi) {
-            mCurrentDirective = new RelativeMoveDirectiveCore(dx, dy, dz, dpsi);
+        public void move(@NonNull GuidedPilotingItf.Directive directive) {
+            mCurrentDirective = directive;
         }
     }
 }

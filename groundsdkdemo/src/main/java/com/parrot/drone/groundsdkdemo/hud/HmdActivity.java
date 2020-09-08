@@ -39,8 +39,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
+import android.widget.TextView;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.StreamServer;
 import com.parrot.drone.groundsdk.device.peripheral.stream.CameraLive;
@@ -51,6 +52,22 @@ import com.parrot.drone.groundsdkdemo.R;
 import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
 
 public class HmdActivity extends GroundSdkActivityBase {
+
+    private static final String[] HMD_MODELS = new String [] {
+            "cockpitGlasses2",
+            "aoguerbe",
+            "bNext",
+            "googleDayDreamView",
+            "hamswanShineconY005",
+            "homido",
+            "homido2",
+            "homidoPrime",
+            "mergeVR",
+            "samsungGearVR",
+            "shinecon6G4E",
+            "zeissVROne",
+            "skillkorpVR5"
+    };
 
     private static final float MILLIMETERS_PER_INCH = 25.4f;
 
@@ -98,24 +115,19 @@ public class HmdActivity extends GroundSdkActivityBase {
         findViewById(R.id.hmd_overlay_progress).setVisibility(View.GONE);
 
         SeekBar leftOffsetBar = mConfigPanel.findViewById(R.id.left_lens_offset);
-        leftOffsetBar.setOnSeekBarChangeListener((SeekBarChangeListener) (seekBar, progress, fromUser) ->
-                mHmdView.setLeftLensOffset(1 - (double) progress / seekBar.getMax()));
 
         SeekBar rightOffsetBar = mConfigPanel.findViewById(R.id.right_lens_offset);
-        rightOffsetBar.setOnSeekBarChangeListener((SeekBarChangeListener) (seekBar, progress, fromUser) ->
-                mHmdView.setRightLensOffset((double) progress / seekBar.getMax()));
 
         SeekBar vertOffsetBar = mConfigPanel.findViewById(R.id.vert_lenses_offset);
         vertOffsetBar.setOnSeekBarChangeListener((SeekBarChangeListener) (seekBar, progress, fromUser) ->
                 mHmdView.setLensesVerticalOffset(screenHeightMm / 2 - progress * screenHeightMm / seekBar.getMax()));
 
-        Switch seeThroughSwitch = mConfigPanel.findViewById(R.id.see_through);
+        SwitchMaterial seeThroughSwitch = mConfigPanel.findViewById(R.id.see_through);
         seeThroughSwitch.setOnCheckedChangeListener((switchBtn, isChecked) -> mHmdView.enableSeeThrough(isChecked));
 
-        leftOffsetBar.setProgress((int) Math.round((1 - mHmdView.getLeftLensOffset()) * leftOffsetBar.getMax()));
-        rightOffsetBar.setProgress((int) Math.round(mHmdView.getRightLensOffset() * rightOffsetBar.getMax()));
         vertOffsetBar.setProgress((int) Math.round((screenHeightMm / 2 - mHmdView.getLensesVerticalOffset())
                                                    * vertOffsetBar.getMax() / screenHeightMm));
+
         mHmdView.post(mAnimateOverlay);
     }
 
@@ -148,7 +160,7 @@ public class HmdActivity extends GroundSdkActivityBase {
 
         @Override
         public void run() {
-            View text = findViewById(R.id.hmd_overlay_text);
+            TextView text = findViewById(R.id.hmd_overlay_text);
             View progress = findViewById(R.id.hmd_overlay_progress);
             LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) text.getLayoutParams();
 
@@ -161,6 +173,12 @@ public class HmdActivity extends GroundSdkActivityBase {
 
                 if (mCnt % 4 == 0) {
                     progressLayoutParams.gravity = Gravity.START;
+
+                    if (mCnt % 8 == 0) {
+                        String model = HMD_MODELS[(mCnt / 8) % HMD_MODELS.length];
+                        mHmdView.setHmdModel(R.raw.gsdkdemo_hmd_models, model);
+                        text.setText(model);
+                    }
                 } else {
                     progressLayoutParams.gravity = Gravity.END;
                 }

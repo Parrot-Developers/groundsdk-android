@@ -64,11 +64,19 @@ class BatteryInfoContent extends InstrumentContent<Instrument.Provider, BatteryI
         @NonNull
         private final TextView mHealthText;
 
+        @NonNull
+        private final TextView mCycleCountText;
+
+        @NonNull
+        private final TextView mSerialText;
+
         ViewHolder(@NonNull View rootView) {
             super(rootView);
             mLevelText = findViewById(R.id.level);
             mChargingText = findViewById(R.id.charging);
             mHealthText = findViewById(R.id.health);
+            mCycleCountText = findViewById(R.id.cycle_count);
+            mSerialText = findViewById(R.id.serial);
         }
 
         @Override
@@ -78,6 +86,10 @@ class BatteryInfoContent extends InstrumentContent<Instrument.Provider, BatteryI
             OptionalInt health = battery.getBatteryHealth();
             mHealthText.setText(mContext.getString(health.isAvailable() ? R.string.percent_format : R.string.no_value,
                     health.getValue()));
+            OptionalInt cycleCount = battery.getBatteryCycleCount();
+            mCycleCountText.setText(cycleCount.isAvailable() ? String.valueOf(cycleCount.getValue())
+                    : mContext.getString(R.string.no_value));
+            mSerialText.setText(battery.getSerial());
         }
     }
 }

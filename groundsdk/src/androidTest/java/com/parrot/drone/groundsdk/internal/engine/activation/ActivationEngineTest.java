@@ -35,6 +35,7 @@ package com.parrot.drone.groundsdk.internal.engine.activation;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.parrot.drone.groundsdk.MockAppStorageProvider;
@@ -66,6 +67,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,12 +194,17 @@ public class ActivationEngineTest {
         // add default drone(s) and simulator drone, they should never be registered
         List<MockDrone> drones = Stream.of(Drone.Model.values())
                                        .map(it -> addDrone(it.defaultDeviceUid(), it, "1.0.0").mockPersisted())
-                                       .collect(Collectors.toList());
-        MockDrone simulatorDrone =
-                addDrone(ArsdkDevice.SIMULATOR_UID, Drone.Model.ANAFI_THERMAL, "1.0.0").mockPersisted();
+                                       .collect(Collectors.toCollection(ArrayList::new));
+        drones.add(addDrone(ArsdkDevice.SIMULATOR_UID, Drone.Model.ANAFI_THERMAL, "1.0.0").mockPersisted());
+
+        // add a drone with no known board id (yet), should not be registered
+        drones.add(addDrone("null-board-id", Drone.Model.ANAFI_4K, "1.0.0", null).mockPersisted());
+
+        // add a drond with a board id for which registration is not required, should not be registered
+        drones.add(addDrone("skip-board-id", Drone.Model.ANAFI_4K, "1.0.0", "0x1")
+                .mockPersisted());
 
         drones.forEach(it -> assertThat(mEngine.deviceNeedRegister(it), is(false)));
-        assertThat(mEngine.deviceNeedRegister(simulatorDrone), is(false));
 
         // make internet available
         mockInternetAvailable();
@@ -206,7 +213,6 @@ public class ActivationEngineTest {
         verify(mMockHttpClient, Mockito.times(0)).register(any(), any());
 
         drones.forEach(it -> assertThat(mEngine.deviceNeedRegister(it), is(false)));
-        assertThat(mEngine.deviceNeedRegister(simulatorDrone), is(false));
     }
 
     @Test
@@ -369,10 +375,21 @@ public class ActivationEngineTest {
     private MockDrone addDrone(@NonNull String uid,
                                @NonNull Drone.Model model,
                                @NonNull String firmware) {
+        return addDrone(uid, model, firmware, "");
+    }
+
+    @NonNull
+    private MockDrone addDrone(@NonNull String uid,
+                               @NonNull Drone.Model model,
+                               @NonNull String firmware,
+                               @Nullable String boardId) {
         MockDrone device = new MockDrone(uid, model);
         FirmwareVersion firmwareVersion = FirmwareVersion.parse(firmware);
         assert firmwareVersion != null;
         device.updateFirmwareVersion(firmwareVersion);
+        if (boardId != null) {
+            device.updateBoardId(boardId);
+        }
         mDroneStore.add(device);
         return device;
     }
@@ -385,6 +402,7 @@ public class ActivationEngineTest {
         FirmwareVersion firmwareVersion = FirmwareVersion.parse(firmware);
         assert firmwareVersion != null;
         device.updateFirmwareVersion(firmwareVersion);
+        device.updateBoardId("");
         mRCStore.add(device);
         return device;
     }

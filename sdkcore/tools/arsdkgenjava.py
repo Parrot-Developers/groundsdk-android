@@ -284,15 +284,20 @@ def gen_java(feature, out):
     out.write("/** Generated, do not edit ! */\n")
     out.write("package %s;\n\n", package)
 
-    out.write("import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;\n")
+    out.write(
+        "import androidx.annotation.NonNull;\n"
+        "import androidx.annotation.Nullable;\n"
+        "\n"
+        "import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;\n"
+        "import com.parrot.drone.sdkcore.ulog.ULog;\n"
+        "\n"
+        "import static com.parrot.drone.sdkcore.arsdk.Logging.TAG;\n"
+        "\n"
+    )
 
     # add enum specific imports
     if feature.enums:
-        out.write("import androidx.annotation.NonNull;\n");
-        out.write("import androidx.annotation.Nullable;\n");
         out.write("import android.util.SparseArray;\n\n")
-        out.write("import com.parrot.drone.sdkcore.ulog.ULog;\n\n")
-        out.write("import static com.parrot.drone.sdkcore.arsdk.Logging.TAG;\n\n")
         if any(enum.usedLikeBitfield for enum in feature.enums):
             out.write("import java.util.function.Consumer;\n");
             out.write("import java.util.EnumSet;\n\n")

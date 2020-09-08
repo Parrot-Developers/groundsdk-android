@@ -52,6 +52,8 @@ import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiRadio;
 import com.parrot.drone.groundsdk.arsdkengine.instrument.anafi.AnafiSpeedometer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiBatteryGaugeUpdater;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiBeeper;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiCertificateUploader;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiDri;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiGeofence;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiLeds;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiMagnetometer;
@@ -59,6 +61,7 @@ import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiMotors;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiPilotingControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiPreciseHome;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiRemovableUserStorage;
+import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiLogControl;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiStreamServer;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiSystemInfo;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.anafi.AnafiTargetTracker;
@@ -155,7 +158,10 @@ public class AnafiFamilyDroneController extends DroneController {
                 new AnafiStreamServer(this),
                 new AnafiLeds(this),
                 new AnafiPilotingControl(this),
-                new AnafiBatteryGaugeUpdater(this)
+                new AnafiBatteryGaugeUpdater(this),
+                new AnafiDri(this),
+                new AnafiLogControl(this),
+                new AnafiCertificateUploader(this)
         );
     }
 

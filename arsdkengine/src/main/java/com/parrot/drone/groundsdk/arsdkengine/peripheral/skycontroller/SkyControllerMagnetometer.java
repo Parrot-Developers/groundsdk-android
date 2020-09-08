@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.RCController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.RCPeripheralController;
+import com.parrot.drone.groundsdk.device.peripheral.Magnetometer;
 import com.parrot.drone.groundsdk.internal.device.peripheral.MagnetometerWith1StepCalibrationCore;
 import com.parrot.drone.groundsdk.internal.value.IntegerRangeCore;
 import com.parrot.drone.groundsdk.value.IntegerRange;
@@ -93,9 +94,11 @@ public class SkyControllerMagnetometer extends RCPeripheralController {
                     zQuality = IntegerRangeCore.PERCENTAGE.scaleFrom(zQuality, ARSDK_CALIBRATION_QUALITY_RANGE);
                     mMagnetometer.updateCalibrationProgress(xQuality, yQuality, zQuality).notifyUpdated();
                     if (status != null) {
-                        mMagnetometer.updateIsCalibrated(
-                                status == CalibrationstateMagnetocalibrationstateStatus.CALIBRATED)
-                                     .notifyUpdated();
+                        Magnetometer.MagnetometerCalibrationState calibrationState =
+                                status == CalibrationstateMagnetocalibrationstateStatus.CALIBRATED
+                                        ? Magnetometer.MagnetometerCalibrationState.CALIBRATED
+                                        : Magnetometer.MagnetometerCalibrationState.REQUIRED;
+                        mMagnetometer.updateCalibrationState(calibrationState).notifyUpdated();
                     }
                 }
             };

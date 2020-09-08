@@ -55,7 +55,13 @@ public abstract class Drone
         ANAFI_4K(0x0914),
 
         /** Anafi thermal drone. */
-        ANAFI_THERMAL(0x0919);
+        ANAFI_THERMAL(0x0919),
+
+        /** Anafi UA drone. */
+        ANAFI_UA(0x091b),
+
+        /** Anafi USA drone. */
+        ANAFI_USA(0x091e);
 
         /** Model id. */
         @Id

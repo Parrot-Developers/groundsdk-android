@@ -60,9 +60,11 @@ import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem;
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus;
 import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.R;
+import com.parrot.drone.groundsdkdemo.settings.MultiChoiceSettingView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,7 +74,13 @@ import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
 
 public class MediaStoreBrowserActivity extends GroundSdkActivityBase
         implements DownloadMediaDialogFragment.Listener, DeleteMediaDialogFragment.Listener,
-                   DeleteAllMediaDialogFragment.Listener, MediaResourcesDialogFragment.Listener {
+        DeleteAllMediaDialogFragment.Listener, MediaResourcesDialogFragment.Listener {
+
+    enum StorageType {
+        REMOVABLE,
+        INTERNAL,
+        ALL
+    }
 
     private Button mDeleteButton;
 
@@ -102,6 +110,8 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
 
     private Ref<?> mCurrentTaskRef;
 
+    private Ref<List<MediaItem>> mCurrentBrowseTaskRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +123,11 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
         mSelectedMedias = new LinkedHashSet<>();
 
         mTaskRunningIndicator = findViewById(R.id.task_running);
+
+        MultiChoiceSettingView<StorageType> mTypeView = findViewById(R.id.storage_type_filter);
+        mTypeView.setChoices(EnumSet.allOf(StorageType.class));
+        mTypeView.setSelection(StorageType.ALL);
+        mTypeView.setListener(this::browseOn);
 
         mDeleteButton = findViewById(R.id.btn_delete);
         mDeleteButton.setOnClickListener(mButtonClickListener);
@@ -144,7 +159,18 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
             return;
         }
 
-        mMediaStore.browse(mediaList -> {
+        browseOn(StorageType.ALL);
+    }
+
+    private void browseOn(StorageType storageType) {
+        if (mMediaStore == null) {
+            finish();
+            return;
+        }
+        if (mCurrentBrowseTaskRef != null) {
+            mCurrentBrowseTaskRef.close();
+        }
+        Ref.Observer<List<MediaItem>> callback = mediaList -> {
             mMedias = mediaList;
             computeSelectedMedias();
             mAdapter.notifyDataSetChanged();
@@ -158,7 +184,19 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
                     mResourcesDialogFragment.update(mDrone, mMediaStore, mObservedMediaItem);
                 }
             }
-        });
+        };
+
+        switch (storageType) {
+            case REMOVABLE:
+                mCurrentBrowseTaskRef = mMediaStore.browse(MediaStore.StorageType.REMOVABLE, callback);
+                break;
+            case INTERNAL:
+                mCurrentBrowseTaskRef = mMediaStore.browse(MediaStore.StorageType.INTERNAL, callback);
+                break;
+            case ALL:
+                mCurrentBrowseTaskRef = mMediaStore.browse(callback);
+                break;
+        }
     }
 
     private void computeSelectedMedias() {
@@ -187,8 +225,8 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
                 mCurrentTaskDialog = deleteDialog;
                 taskRef = mMediaStore.delete(
                         mSelectedMedias.stream()
-                                       .flatMap(it -> it.getResources().stream())
-                                       .collect(Collectors.toList()),
+                                .flatMap(it -> it.getResources().stream())
+                                .collect(Collectors.toList()),
                         deleter -> {
                             if (deleter != null) {
                                 deleteDialog.update(deleter);
@@ -223,9 +261,9 @@ public class MediaStoreBrowserActivity extends GroundSdkActivityBase
                 mCurrentTaskDialog = downloadDialog;
                 taskRef = mMediaStore.download(
                         mSelectedMedias.stream()
-                                       .flatMap(it -> it.getResources().stream())
-                                       .filter(it -> it.getFormat() != MediaItem.Resource.Format.DNG)
-                                       .collect(Collectors.toList()),
+                                .flatMap(it -> it.getResources().stream())
+                                .filter(it -> it.getFormat() != MediaItem.Resource.Format.DNG)
+                                .collect(Collectors.toList()),
                         MediaDestination.platformMediaStore("groundSdkDemo"),
                         downloader -> {
                             if (downloader != null) {

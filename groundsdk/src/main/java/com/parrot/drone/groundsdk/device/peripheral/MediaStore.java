@@ -75,6 +75,16 @@ public interface MediaStore extends Peripheral {
         INDEXED
     }
 
+    /** Storage type. */
+    enum StorageType {
+
+        /** Internal storage. */
+        INTERNAL,
+
+        /** Removable user storage (usually a sdcard). */
+        REMOVABLE
+    }
+
     /**
      * Retrieves the current indexing state of the media store.
      *
@@ -116,19 +126,35 @@ public interface MediaStore extends Peripheral {
     int getVideoResourceCount();
 
     /**
-     * Creates a new media list for browsing device media.
+     * Creates a new media list for browsing media on every storage of the drone.
      * <p>
      * This is an asynchronous operation. The provided observer is notified with the resulting list of media items
      * when it has been first loaded and each time the content changes. <br>
      * This list may be closed or the operation may be aborted early by {@link Ref#close() closing} the returned
      * reference.
      *
-     * @param observer observer notified when the media list has been loaded and when it s content changes
+     * @param observer observer notified when the media list has been loaded and when its content changes
      *
      * @return a reference on a list of {@link MediaItem}
      */
     @NonNull
     Ref<List<MediaItem>> browse(@NonNull Ref.Observer<List<MediaItem>> observer);
+
+    /**
+     * Creates a new media list for browsing media on a specific storage.
+     * <p>
+     * This is an asynchronous operation. The provided observer is notified with the resulting list of media items
+     * when it has been first loaded and each time the content changes. <br>
+     * This list may be closed or the operation may be aborted early by {@link Ref#close() closing} the returned
+     * reference.
+     *
+     * @param storageType   targeted storage type
+     * @param observer      observer notified when the media list has been loaded and when its content changes
+     *
+     * @return a reference on a list of {@link MediaItem}
+     */
+    @NonNull
+    Ref<List<MediaItem>> browse(@NonNull StorageType storageType, @NonNull Ref.Observer<List<MediaItem>> observer);
 
     /**
      * Retrieves a media thumbnail.

@@ -47,6 +47,7 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
 
 import com.parrot.drone.groundsdk.R;
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;
@@ -73,20 +74,6 @@ public final class GsdkHmdView extends FrameLayout {
     /** GL view renderer. */
     @NonNull
     private final Renderer mRenderer;
-
-    /**
-     * Left lens horizontal offset from view center. 0 (resp 1.) is minimal (resp. maximal) offset supported by the
-     * lenses model in use.
-     */
-    @FloatRange(from = 0, to = 1)
-    private double mLeftLensOffset;
-
-    /**
-     * Right lens horizontal offset from view center. 0 (resp 1.) is minimal (resp. maximal) offset supported by the
-     * lenses model in use.
-     */
-    @FloatRange(from = 0, to = 1)
-    private double mRightLensOffset;
 
     /** Left & right lenses vertical offset from view center, in millimeters. */
     private double mLensesVerticalOffset;
@@ -169,11 +156,13 @@ public final class GsdkHmdView extends FrameLayout {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GsdkHmdView, defStyleAttr,
                 defStyleRes);
         @LayoutRes int overlayLayout;
+        @RawRes int hmdDataPack;
+        String hmdModelName;
         try {
             overlayLayout = a.getResourceId(R.styleable.GsdkHmdView_gsdk_overlay, 0);
-            mLeftLensOffset = a.getFraction(R.styleable.GsdkHmdView_gsdk_leftLensOffset, 1, 1, 0);
-            mRightLensOffset = a.getFraction(R.styleable.GsdkHmdView_gsdk_rightLensOffset, 1, 1, 0);
             mLensesVerticalOffset = a.getFloat(R.styleable.GsdkHmdView_gsdk_lensesVerticalOffset, 0);
+            hmdDataPack = a.getResourceId(R.styleable.GsdkHmdView_gsdk_hmdDataPack, 0);
+            hmdModelName = a.getString(R.styleable.GsdkHmdView_gsdk_hmdModelName);
         } finally {
             a.recycle();
         }
@@ -229,78 +218,24 @@ public final class GsdkHmdView extends FrameLayout {
             }
         };
 
-        mRenderer.setLeftLensOffset((float) mLeftLensOffset);
-        mRenderer.setRightLensOffset((float) mRightLensOffset);
         mRenderer.setLensesVerticalOffset((float) mLensesVerticalOffset);
+
+        if (hmdDataPack != 0 && hmdModelName != null) {
+            setHmdModel(hmdDataPack, hmdModelName);
+        }
 
         addView(renderView);
         addView(mOverlayView, new LayoutParams(0, 0));
     }
 
     /**
-     * Configures left lens horizontal offset.
-     * <p>
-     * Defines how to horizontally offset left lens projection center from the center of GsdkHmdView. Value in linear
-     * range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by used lenses model.
+     * Configures HMD model to be used for rendering.
      *
-     * @param offset left lens horizontal offset
-     *
-     * @see #getLeftLensOffset()
+     * @param hmdDataPack resource containing HMD model definitions
+     * @param modelName   identifies the model to use from the provided data pack
      */
-    public void setLeftLensOffset(@FloatRange(from = 0, to = 1) double offset) {
-        if (Double.compare(mLeftLensOffset, offset) == 0) {
-            return;
-        }
-        mLeftLensOffset = offset;
-        mRenderer.setLeftLensOffset((float) mLeftLensOffset);
-    }
-
-    /**
-     * Returns configured left lens horizontal offset.
-     * <p>
-     * Value in linear range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by
-     * used lenses model.
-     *
-     * @return configured left lens horizontal offset
-     *
-     * @see #setLeftLensOffset(double)
-     */
-    @FloatRange(from = 0, to = 1)
-    public double getLeftLensOffset() {
-        return mLeftLensOffset;
-    }
-
-    /**
-     * Configures right lens horizontal offset.
-     * <p>
-     * Defines how to horizontally offset right lens projection center from the center of GsdkHmdView. Value in linear
-     * range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by used lenses model.
-     *
-     * @param offset right lens horizontal offset
-     *
-     * @see #getRightLensOffset()
-     */
-    public void setRightLensOffset(@FloatRange(from = 0, to = 1) double offset) {
-        if (Double.compare(mRightLensOffset, offset) == 0) {
-            return;
-        }
-        mRightLensOffset = offset;
-        mRenderer.setRightLensOffset((float) mRightLensOffset);
-    }
-
-    /**
-     * Returns configured right lens horizontal offset.
-     * <p>
-     * Value in linear range [0, 1] where 0 (resp. 1) corresponds to the minimal (resp. maximal) offset supported by
-     * used lenses model.
-     *
-     * @return configured right lens horizontal offset
-     *
-     * @see #setRightLensOffset(double)
-     */
-    @FloatRange(from = 0, to = 1)
-    public double getRightLensOffset() {
-        return mRightLensOffset;
+    public void setHmdModel(@RawRes int hmdDataPack, @NonNull String modelName) {
+        mRenderer.setHmdModel(hmdDataPack, modelName);
     }
 
     /**

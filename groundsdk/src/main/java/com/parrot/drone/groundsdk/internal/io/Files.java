@@ -44,7 +44,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Comparator;
@@ -178,33 +177,6 @@ public final class Files {
             }
         }
         return !rootDir.exists();
-    }
-
-    /**
-     * Reads a raw android resource as a binary byte buffer.
-     *
-     * @param resources android resources
-     * @param resId     identifier of the raw resource to read
-     *
-     * @return a byte buffer containing loaded resource data
-     *
-     * @throws IOException          in case reading failed
-     * @throws InterruptedException if the current thread is interrupted while this method executes.
-     */
-    @NonNull
-    public static ByteBuffer readRawResource(@NonNull Resources resources, @RawRes int resId)
-            throws IOException, InterruptedException {
-        try (InputStream src = resources.openRawResource(resId)) {
-            ByteArrayOutputStream dst = new ByteArrayOutputStream(src.available()) {
-
-                @Override
-                public synchronized byte[] toByteArray() {
-                    return buf; // transfer ownership of internal array instead of copying
-                }
-            };
-            IoStreams.transfer(src, dst);
-            return ByteBuffer.wrap(dst.toByteArray());
-        }
     }
 
     /**

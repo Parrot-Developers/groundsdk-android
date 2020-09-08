@@ -34,6 +34,7 @@ package com.parrot.drone.groundsdk.device.instrument;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.Ref;
 import com.parrot.drone.groundsdk.value.OptionalInt;
@@ -78,4 +79,29 @@ public interface BatteryInfo extends Instrument {
      */
     @NonNull
     OptionalInt getBatteryHealth();
+
+    /**
+     * Retrieves the device's current battery cycle count.
+     * <p>
+     * Battery cycle count may be unsupported depending on the drone model and/or firmware versions. <br>
+     * Hence, clients of this API should call {@link OptionalInt#isAvailable() isAvailable} method on the returned
+     * value to check whether it can be considered valid before use.
+     *
+     * @return current battery cycle count
+     *
+     * @see OptionalInt
+     */
+    @NonNull
+    OptionalInt getBatteryCycleCount();
+
+    /**
+     * Retrieves the battery serial number.
+     *
+     * Battery serial may be unsupported depending on the drone model and/or firmware versions, in which case this
+     * method returns {@code null}.
+     *
+     * @return battery serial, or {@code null} if unsupported
+     */
+    @Nullable
+    String getSerial();
 }

@@ -43,6 +43,7 @@ import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaClient;
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaIndexingState;
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpMediaItem;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.DronePeripheralController;
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.media.MediaItemCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.media.MediaRequest;
 import com.parrot.drone.groundsdk.internal.device.peripheral.media.MediaResourceCore;
@@ -115,6 +116,15 @@ public final class AnafiMediaStore extends DronePeripheralController {
                     if (state == null) {
                         throw new ArsdkCommand.RejectedEventException("Invalid indexing state");
                     }
+
+                    if (state == ArsdkFeatureMediastore.State.NOT_AVAILABLE) {
+                        clearCachedMediaList();
+                        mMediaStore.updatePhotoMediaCount(0)
+                                   .updateVideoMediaCount(0)
+                                   .updatePhotoResourceCount(0)
+                                   .updateVideoResourceCount(0);
+                    }
+
                     mMediaStore.updateIndexingState(IndexingStateAdapter.from(state)).notifyUpdated();
                 }
 
@@ -145,7 +155,7 @@ public final class AnafiMediaStore extends DronePeripheralController {
             if (ULog.d(TAG_MEDIA)) {
                 ULog.d(TAG_MEDIA, "Media added: " + media.getId());
             }
-            onStateChanged();
+            clearCachedMediaList();
         }
 
         @Override
@@ -153,7 +163,7 @@ public final class AnafiMediaStore extends DronePeripheralController {
             if (ULog.d(TAG_MEDIA)) {
                 ULog.d(TAG_MEDIA, "Media removed: " + mediaId);
             }
-            onStateChanged();
+            clearCachedMediaList();
         }
 
         @Override
@@ -161,7 +171,7 @@ public final class AnafiMediaStore extends DronePeripheralController {
             if (ULog.d(TAG_MEDIA)) {
                 ULog.d(TAG_MEDIA, "All media removed");
             }
-            onStateChanged();
+            clearCachedMediaList();
         }
 
         @Override
@@ -169,7 +179,7 @@ public final class AnafiMediaStore extends DronePeripheralController {
             if (ULog.d(TAG_MEDIA)) {
                 ULog.d(TAG_MEDIA, "Resource added: " + resource.getId());
             }
-            onStateChanged();
+            clearCachedMediaList();
         }
 
         @Override
@@ -177,21 +187,27 @@ public final class AnafiMediaStore extends DronePeripheralController {
             if (ULog.d(TAG_MEDIA)) {
                 ULog.d(TAG_MEDIA, "Resource removed: " + resourceId);
             }
-            onStateChanged();
+            clearCachedMediaList();
         }
 
         @Override
         public void onIndexingStateChanged(@NonNull HttpMediaIndexingState state) {
+            if (ULog.d(TAG_MEDIA)) {
+                ULog.d(TAG_MEDIA, "Indexing state changed: " + state);
+            }
             if (state == HttpMediaIndexingState.INDEXED) {
-                onStateChanged();
+                clearCachedMediaList();
             }
         }
-
-        private void onStateChanged() {
-            mCachedMediaList = null;
-            mMediaStore.notifyObservers();
-        }
     };
+
+    /**
+     * Clears cached media list and notifies store content change.
+     */
+    private void clearCachedMediaList() {
+        mCachedMediaList = null;
+        mMediaStore.notifyObservers();
+    }
 
     /** Backend of MediaStoreCore implementation. */
     @SuppressWarnings("FieldCanBeLocal")
@@ -219,14 +235,15 @@ public final class AnafiMediaStore extends DronePeripheralController {
 
         @Nullable
         @Override
-        public MediaRequest browse(@NonNull MediaRequest.ResultCallback<List<? extends MediaItemCore>> callback) {
+        public MediaRequest browse(@Nullable MediaStore.StorageType storageType,
+                                   @NonNull MediaRequest.ResultCallback<List<? extends MediaItemCore>> callback) {
             MediaRequest request = null;
             if (mCachedMediaList != null) {
                 callback.onRequestComplete(MediaRequest.Status.SUCCESS, mCachedMediaList);
             } else if (mMediaClient == null) {
                 callback.onRequestComplete(MediaRequest.Status.FAILED, null);
             } else {
-                request = mMediaClient.browse((status, code, result) -> {
+                HttpRequest.ResultCallback<List<HttpMediaItem>> browseCallback = (status, code, result) -> {
                     switch (status) {
                         case SUCCESS:
                             assert result != null;
@@ -243,7 +260,8 @@ public final class AnafiMediaStore extends DronePeripheralController {
                             callback.onRequestComplete(MediaRequest.Status.CANCELED, null);
                             break;
                     }
-                })::cancel;
+                };
+                request = mMediaClient.browse(storageType, browseCallback)::cancel;
             }
             return request;
         }

@@ -40,6 +40,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore;
 import com.parrot.drone.groundsdk.internal.http.HttpClient;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.HttpSession;
@@ -64,6 +65,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
@@ -221,15 +223,17 @@ public class HttpMediaClient extends HttpClient {
     }
 
     /**
-     * Browse available medias.
+     * Browse available medias of a specific storage.
      *
-     * @param callback callback notified of request completion status and result (list of medias)
+     * @param storageType   targeted storage type
+     * @param callback      callback notified of request completion status and result (list of medias)
      *
      * @return the ongoing request, that can be canceled
      */
     @NonNull
-    public HttpRequest browse(@NonNull HttpRequest.ResultCallback<List<HttpMediaItem>> callback) {
-        Call<List<HttpMediaItem>> call = mService.list();
+    public HttpRequest browse(@Nullable MediaStore.StorageType storageType,
+                              @NonNull HttpRequest.ResultCallback<List<HttpMediaItem>> callback) {
+        Call<List<HttpMediaItem>> call = mService.list(convert(storageType));
         call.enqueue(new Callback<List<HttpMediaItem>>() {
 
             @Override
@@ -520,17 +524,31 @@ public class HttpMediaClient extends HttpClient {
         });
     }
 
+    @Nullable
+    private static String convert(@Nullable MediaStore.StorageType storageType) {
+        if (storageType == null) return null;
+        switch (storageType) {
+            case INTERNAL:
+                return "internal";
+            case REMOVABLE:
+                return "sdcard";
+        }
+        return null;
+    }
+
     /** REST API. */
     private interface Service {
 
         /**
          * Retrieves the list of medias on the drone.
          *
-         * @return drone media list
+         * @param storageType storage type where to search. Optional, will search in every storage if {@code null}
+         *
+         * @return a retrofit call for sending the request out. The request returns a media list
          */
         @NonNull
         @GET(MEDIA_ENDPOINT_BASE + "medias")
-        Call<List<HttpMediaItem>> list();
+        Call<List<HttpMediaItem>> list(@Nullable @Query("storage") String storageType);
 
         /**
          * Downloads a media/resource file from the drone.

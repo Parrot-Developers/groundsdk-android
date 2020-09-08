@@ -38,7 +38,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    app:gsdk_overlay="@layout/fpv_ui"
+    app:gsdk_overlay="@layout/hmd_ui"
+    app:gsdk_hmdDataPack="@raw/gsdkdemo_hmd_models"
+    app:gsdk_hmdModelName="cockpitGlasses2"
     tools:context="com.parrot.drone.groundsdkdemo.hud.HmdActivity"
     tools:ignore="HardcodedText">
 
@@ -96,7 +98,7 @@
             android:layout_toStartOf="@id/vert_see_through_label"
             android:max="100"/>
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/see_through"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

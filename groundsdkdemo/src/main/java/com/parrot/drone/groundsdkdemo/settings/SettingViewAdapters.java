@@ -79,7 +79,6 @@ public final class SettingViewAdapters {
             .setUpdating(setting.isUpdating());
     }
 
-
     public static <E extends Enum<E>> void updateSetting(@NonNull MultiChoiceSettingView<E> view,
                                                          @NonNull EnumSetting<E> setting) {
         view.setListener(setting::setValue)
@@ -87,7 +86,6 @@ public final class SettingViewAdapters {
             .setSelection(setting.getValue())
             .setUpdating(setting.isUpdating());
     }
-
 
     public static void updateSetting(@NonNull TextSettingView view, @NonNull StringSetting setting) {
         view.setListener(setting::setValue)

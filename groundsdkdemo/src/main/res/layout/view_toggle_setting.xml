@@ -53,7 +53,7 @@
         android:textStyle="bold"
         tools:text="Banked-turn mode"/>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@android:id/edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

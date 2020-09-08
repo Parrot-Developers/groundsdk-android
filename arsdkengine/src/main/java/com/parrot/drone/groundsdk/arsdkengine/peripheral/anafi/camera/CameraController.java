@@ -47,6 +47,7 @@ import com.parrot.drone.groundsdk.device.peripheral.camera.CameraRecording;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraStyle;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraWhiteBalance;
 import com.parrot.drone.groundsdk.device.peripheral.camera.CameraZoom;
+import com.parrot.drone.groundsdk.internal.device.peripheral.camera.BlendedThermalCameraCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraAlignmentSettingCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraCore;
 import com.parrot.drone.groundsdk.internal.device.peripheral.camera.CameraExposureLockCore;
@@ -1295,6 +1296,8 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
                 return new MainCameraCore(mPeripheralStore, mBackend);
             case THERMAL:
                 return new ThermalCameraCore(mPeripheralStore, mBackend);
+            case THERMAL_BLENDED:
+                return new BlendedThermalCameraCore(mPeripheralStore, mBackend);
         }
         return null;
     }

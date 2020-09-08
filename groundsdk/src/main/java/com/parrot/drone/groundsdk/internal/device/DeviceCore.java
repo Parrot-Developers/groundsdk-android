@@ -104,6 +104,10 @@ public class DeviceCore {
     @NonNull
     private final DeviceFirmwareVersionHolder mFirmwareVersion;
 
+    /** Device board identifier holder. */
+    @NonNull
+    private final DeviceBoardIdHolder mBoardId;
+
     /** Device state holder. */
     @NonNull
     private final DeviceStateHolder mState;
@@ -130,6 +134,7 @@ public class DeviceCore {
         mModel = model;
         mName = new DeviceNameHolder(name);
         mFirmwareVersion = new DeviceFirmwareVersionHolder();
+        mBoardId = new DeviceBoardIdHolder();
         mState = new DeviceStateHolder();
         mDelegate = delegate;
         mInstruments = new ComponentStore<>();
@@ -143,6 +148,7 @@ public class DeviceCore {
     void destroy() {
         mName.destroy();
         mFirmwareVersion.destroy();
+        mBoardId.destroy();
         mState.destroy();
         mInstruments.destroy();
         mPeripherals.destroy();
@@ -190,6 +196,17 @@ public class DeviceCore {
     @NonNull
     public final FirmwareVersion getFirmwareVersion() {
         return mFirmwareVersion.get();
+    }
+
+    /**
+     * Gets the device board id.
+     *
+     * @return device board id if available, otherwise {@code null} if not queried yet or empty if known to be
+     *         unavailable
+     */
+    @Nullable
+    public final String getBoardId() {
+        return mBoardId.get();
     }
 
     /**
@@ -322,6 +339,15 @@ public class DeviceCore {
     }
 
     /**
+     * Updates device board identifier.
+     *
+     * @param boardId new board id
+     */
+    public final void updateBoardId(@NonNull String boardId) {
+        mBoardId.update(boardId);
+    }
+
+    /**
      * Gets the holder for the device name.
      * <p>
      * Used to get the current device name, and to register to device name updates when the latter changes.
@@ -344,6 +370,18 @@ public class DeviceCore {
     @NonNull
     final DeviceFirmwareVersionHolder getFirmwareVersionHolder() {
         return mFirmwareVersion;
+    }
+
+    /**
+     * Gets the holder for the device board identifier.
+     * <p>
+     * Used to get the current device board id, and to register to device board id updates when the latter changes.
+     *
+     * @return the holder for the device board id
+     */
+    @NonNull
+    final DeviceBoardIdHolder getBoardIdHolder() {
+        return mBoardId;
     }
 
     /**

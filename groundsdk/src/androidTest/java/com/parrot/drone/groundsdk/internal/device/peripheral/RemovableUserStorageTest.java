@@ -96,41 +96,53 @@ public class RemovableUserStorageTest {
         mRemovableUserStorageImpl.publish();
         assertThat(mChangeCnt, is(1));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.NO_MEDIA).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NO_MEDIA));
+        mRemovableUserStorageImpl.updatePhysicalState(RemovableUserStorage.PhysicalState.NO_MEDIA).notifyUpdated();
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.NO_MEDIA));
         assertThat(mChangeCnt, is(1));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.MEDIA_TOO_SMALL).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SMALL));
+        mRemovableUserStorageImpl.updatePhysicalState(RemovableUserStorage.PhysicalState.MEDIA_TOO_SMALL).notifyUpdated();
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.MEDIA_TOO_SMALL));
         assertThat(mChangeCnt, is(2));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.USB_MASS_STORAGE).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.USB_MASS_STORAGE));
+        mRemovableUserStorageImpl.updatePhysicalState(RemovableUserStorage.PhysicalState.USB_MASS_STORAGE).notifyUpdated();
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.USB_MASS_STORAGE));
         assertThat(mChangeCnt, is(3));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.MEDIA_TOO_SLOW).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MEDIA_TOO_SLOW));
+        mRemovableUserStorageImpl.updatePhysicalState(RemovableUserStorage.PhysicalState.MEDIA_TOO_SLOW).notifyUpdated();
+        assertThat(mRemovableUserStorage.getPhysicalState(), is(RemovableUserStorage.PhysicalState.MEDIA_TOO_SLOW));
         assertThat(mChangeCnt, is(4));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.MOUNTING).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.MOUNTING));
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.MOUNTING).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.MOUNTING));
         assertThat(mChangeCnt, is(5));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.NEED_FORMAT).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.NEED_FORMAT));
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.NEED_FORMAT).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.NEED_FORMAT));
         assertThat(mChangeCnt, is(6));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.READY).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.READY));
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.READY).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.READY));
         assertThat(mChangeCnt, is(7));
 
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.ERROR).notifyUpdated();
-        assertThat(mRemovableUserStorage.getState(), is(RemovableUserStorage.State.ERROR));
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.ERROR).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.ERROR));
         assertThat(mChangeCnt, is(8));
 
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.PASSWORD_NEEDED));
+        assertThat(mChangeCnt, is(9));
+
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_USAGE).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_USAGE));
+        assertThat(mChangeCnt, is(10));
+
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD).notifyUpdated();
+        assertThat(mRemovableUserStorage.getFileSystemState(), is(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD));
+        assertThat(mChangeCnt, is(11));
+
         // Check same state does not trigger a change
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.ERROR).notifyUpdated();
-        assertThat(mChangeCnt, is(8));
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.DECRYPTION_WRONG_PASSWORD).notifyUpdated();
+        assertThat(mChangeCnt, is(11));
     }
 
     @Test
@@ -174,6 +186,26 @@ public class RemovableUserStorageTest {
     }
 
     @Test
+    public void testUuid() {
+        mRemovableUserStorageImpl.publish();
+        assertThat(mChangeCnt, is(1));
+
+        assertThat(mRemovableUserStorage.getUuid(), nullValue());
+
+        mRemovableUserStorageImpl.updateUuid("Uuid").notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.getUuid(), is("Uuid"));
+
+        mRemovableUserStorageImpl.updateUuid("NewUuid").notifyUpdated();
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.getUuid(), is("NewUuid"));
+
+        // Check same value does not trigger a change
+        mRemovableUserStorageImpl.updateUuid("NewUuid").notifyUpdated();
+        assertThat(mChangeCnt, is(3));
+    }
+
+    @Test
     public void testCanFormat() {
         mRemovableUserStorageImpl.publish();
         assertThat(mChangeCnt, is(1));
@@ -186,6 +218,38 @@ public class RemovableUserStorageTest {
 
         // Check same value does not trigger a change
         mRemovableUserStorageImpl.updateCanFormat(true).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+    }
+
+    @Test
+    public void testEncryptionSupported() {
+        mRemovableUserStorageImpl.publish();
+        assertThat(mChangeCnt, is(1));
+
+        assertThat(mRemovableUserStorage.isEncryptionSupported(), is(false));
+
+        mRemovableUserStorageImpl.updateIsEncryptionSupported(true).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.isEncryptionSupported(), is(true));
+
+        // Check same value does not trigger a change
+        mRemovableUserStorageImpl.updateIsEncryptionSupported(true).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+    }
+
+    @Test
+    public void testEncrypted() {
+        mRemovableUserStorageImpl.publish();
+        assertThat(mChangeCnt, is(1));
+
+        assertThat(mRemovableUserStorage.isEncrypted(), is(false));
+
+        mRemovableUserStorageImpl.updateIsEncrypted(true).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.isEncrypted(), is(true));
+
+        // check same value does not trigger a change
+        mRemovableUserStorageImpl.updateIsEncrypted(true).notifyUpdated();
         assertThat(mChangeCnt, is(2));
     }
 
@@ -285,22 +349,103 @@ public class RemovableUserStorageTest {
                 RemovableUserStorage.FormattingState.Step.CLEARING_DATA, 10));
 
         // Updating main state to a non formatting state should reset formatting state
-        mRemovableUserStorageImpl.updateState(RemovableUserStorage.State.FORMATTING_SUCCEEDED).notifyUpdated();
+        mRemovableUserStorageImpl.updateFileSystemState(RemovableUserStorage.FileSystemState.FORMATTING_SUCCEEDED).notifyUpdated();
         assertThat(mChangeCnt, is(5));
         assertThat(mRemovableUserStorage.formattingState(), nullValue());
+    }
+
+    @Test
+    public void testFormatWithEncryption() {
+        mRemovableUserStorageImpl.publish();
+        assertThat(mChangeCnt, is(1));
+        assertThat(mRemovableUserStorageImpl.isEncryptionSupported(), is(false));
+
+        // formatting should not start as canFormat and isEncryptionSupported are not set
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(false));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "MediaName"), is(false));
+        assertThat(mChangeCnt, is(1));
+        assertThat(mBackend.mFormatWithEncryptionCnt, is(0));
+
+        // formatting should not start as isEncryptionSupported is not set
+        mRemovableUserStorageImpl.updateCanFormat(true).notifyUpdated();
+        assertThat(mChangeCnt, is(2));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(false));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "MediaName"), is(false));
+        assertThat(mBackend.mFormatWithEncryptionCnt, is(0));
+
+
+        // format and encryption should start with the supported type
+        mRemovableUserStorageImpl.updateIsEncryptionSupported(true).notifyUpdated();
+        assertThat(mChangeCnt, is(3));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(true));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "MediaName"), is(true));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.QUICK,
+                ""),
+                is(false));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.QUICK,
+                "MediaName"), is(false));
+        assertThat(mBackend.mFormatWithEncryptionCnt, is(2));
+
+        // formatting should not start as isEncryptionSupported is unset
+        mRemovableUserStorageImpl.updateIsEncryptionSupported(false).notifyUpdated();
+        assertThat(mChangeCnt, is(4));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                ""),
+                is(false));
+        assertThat(mRemovableUserStorage.formatWithEncryption("password", RemovableUserStorage.FormattingType.FULL,
+                "MediaName"), is(false));
+        assertThat(mBackend.mFormatWithEncryptionCnt, is(2));
+    }
+
+    @Test
+    public void testSendPassword() {
+        mRemovableUserStorageImpl.publish();
+
+        assertThat(mChangeCnt, is(1));
+        assertThat(mBackend.mPasswordSent, is(false));
+
+        assertThat(mRemovableUserStorage.sendPassword("password", RemovableUserStorage.PasswordUsage.RECORD),
+                is(true));
+        assertThat(mBackend.mPasswordSent, is(true));
     }
 
     private static final class Backend implements RemovableUserStorageCore.Backend {
 
         int mFormatCnt;
+        int mFormatWithEncryptionCnt;
+        boolean mPasswordSent;
 
         void reset() {
             mFormatCnt = 0;
+            mFormatWithEncryptionCnt = 0;
+            mPasswordSent = false;
         }
 
         @Override
         public boolean format(@NonNull RemovableUserStorage.FormattingType type, @NonNull String name) {
             mFormatCnt++;
+            return true;
+        }
+
+        @Override
+        public boolean formatWithEncryption(@NonNull String password, @NonNull RemovableUserStorage.FormattingType type,
+                                            @NonNull String name) {
+            mFormatWithEncryptionCnt++;
+            return true;
+        }
+
+        @Override
+        public boolean sendPassword(@NonNull String password, @NonNull RemovableUserStorage.PasswordUsage usage) {
+            mPasswordSent = true;
             return true;
         }
     }

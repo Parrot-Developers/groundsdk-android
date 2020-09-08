@@ -44,6 +44,7 @@ import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.RemovableUserStorage;
 import com.parrot.drone.groundsdkdemo.FormatDialogFragment;
 import com.parrot.drone.groundsdkdemo.R;
+import com.parrot.drone.groundsdkdemo.StoragePasswordFragment;
 
 import java.util.EnumSet;
 
@@ -52,7 +53,13 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
     interface OnUserStorageFormatRequestListener {
 
         void onUserStorageFormatRequest(@Nullable FormatDialogFragment.Listener listener,
-                                        @NonNull EnumSet<RemovableUserStorage.FormattingType> supportedTypes);
+                                        @NonNull EnumSet<RemovableUserStorage.FormattingType> supportedTypes,
+                                        boolean isEncryptionSupported);
+    }
+
+    interface OnUserStorageEnterPasswordListener {
+
+        void onUserStorageEnterPassword(@Nullable StoragePasswordFragment.Listener listener);
     }
 
     RemovableUserStorageContent(@NonNull Drone drone) {
@@ -68,7 +75,10 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
             extends PeripheralContent.ViewHolder<RemovableUserStorageContent, RemovableUserStorage> {
 
         @NonNull
-        private final TextView mStateView;
+        private final TextView mFileSystemStateView;
+
+        @NonNull
+        private final TextView mPhysicalStateView;
 
         @NonNull
         private final TextView mNameView;
@@ -80,6 +90,9 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
         private final TextView mAvailableSpaceView;
 
         @NonNull
+        private final TextView mIsEncryptedView;
+
+        @NonNull
         private final TextView mFormattingTypesView;
 
         @NonNull
@@ -88,22 +101,50 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
         @NonNull
         private final Button mFormatButton;
 
+        @NonNull
+        private final Button mEnterPasswordButton;
+
         ViewHolder(@NonNull View rootView) {
             super(rootView);
-            mStateView = findViewById(R.id.user_storage_state);
+            mFileSystemStateView = findViewById(R.id.user_storage_fs_state);
+            mPhysicalStateView = findViewById(R.id.user_storage_phy_state);
             mNameView = findViewById(R.id.user_storage_name);
             mCapacityView = findViewById(R.id.user_storage_capacity);
             mAvailableSpaceView = findViewById(R.id.user_storage_available);
+            mIsEncryptedView = findViewById(R.id.user_storage_encrypted);
             mFormattingTypesView = findViewById(R.id.user_storage_formatting_types);
             mFormattingStateView = findViewById(R.id.user_storage_formatting_state);
             mFormatButton = findViewById(R.id.btn_format);
+            mEnterPasswordButton = findViewById(R.id.btn_enter_password);
+            RefContent.ViewHolder<RemovableUserStorageContent, RemovableUserStorage>.OnClickListener mClickListener =
+                    new OnClickListener() {
+                        @Override
+                        void onClick(View v, @NonNull RemovableUserStorageContent content,
+                                     @NonNull RemovableUserStorage userStorage) {
+                            if (v == mFormatButton) {
+                                if (mContext instanceof OnUserStorageFormatRequestListener) {
+                                    ((OnUserStorageFormatRequestListener) mContext).onUserStorageFormatRequest(
+                                            getFormatAcceptListener(userStorage),
+                                            userStorage.supportedFormattingTypes(),
+                                            userStorage.isEncryptionSupported());
+                                }
+                            } else if (v == mEnterPasswordButton) {
+                                if (mContext instanceof OnUserStorageEnterPasswordListener) {
+                                    ((OnUserStorageEnterPasswordListener) mContext).onUserStorageEnterPassword(
+                                            userStorage::sendPassword);
+                                }
+                            }
+                        }
+                    };
             mFormatButton.setOnClickListener(mClickListener);
+            mEnterPasswordButton.setOnClickListener(mClickListener);
         }
 
         @Override
         void onBind(@NonNull RemovableUserStorageContent content, @NonNull RemovableUserStorage userStorage) {
             String noValue = mContext.getString(R.string.no_value);
-            mStateView.setText(userStorage.getState().name());
+            mPhysicalStateView.setText(userStorage.getPhysicalState().name());
+            mFileSystemStateView.setText(userStorage.getFileSystemState().name());
             RemovableUserStorage.MediaInfo mediaInfo = userStorage.getMediaInfo();
             if (mediaInfo != null) {
                 mNameView.setText(mediaInfo.getName());
@@ -119,6 +160,7 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
             } else {
                 mAvailableSpaceView.setText(noValue);
             }
+            mIsEncryptedView.setText(Boolean.toString(userStorage.isEncrypted()));
             mFormattingTypesView.setText(userStorage.supportedFormattingTypes().toString());
             RemovableUserStorage.FormattingState state = userStorage.formattingState();
             if (state != null) {
@@ -128,19 +170,24 @@ class RemovableUserStorageContent extends PeripheralContent<Drone, RemovableUser
                 mFormattingStateView.setText(noValue);
             }
             mFormatButton.setEnabled(userStorage.canFormat());
+            mEnterPasswordButton.setEnabled(userStorage.getFileSystemState() == RemovableUserStorage.FileSystemState.PASSWORD_NEEDED);
         }
 
-        @SuppressWarnings("FieldCanBeLocal")
-        private final OnClickListener mClickListener = new OnClickListener() {
-
-            @Override
-            void onClick(View v, @NonNull RemovableUserStorageContent content,
-                         @NonNull RemovableUserStorage userStorage) {
-                if (mContext instanceof OnUserStorageFormatRequestListener) {
-                    ((OnUserStorageFormatRequestListener) mContext).onUserStorageFormatRequest(userStorage::format,
-                            userStorage.supportedFormattingTypes());
+        private static FormatDialogFragment.Listener getFormatAcceptListener(
+                @NonNull RemovableUserStorage userStorage) {
+            return new FormatDialogFragment.Listener() {
+                @Override
+                public void onFormatAccept(@NonNull RemovableUserStorage.FormattingType type, @NonNull String name) {
+                    userStorage.format(type, name);
                 }
-            }
-        };
+
+                @Override
+                public void onFormatWithEncryptionAccept(@NonNull String password,
+                                                         @NonNull RemovableUserStorage.FormattingType type,
+                                                         @NonNull String name) {
+                    userStorage.formatWithEncryption(password, type, name);
+                }
+            };
+        }
     }
 }

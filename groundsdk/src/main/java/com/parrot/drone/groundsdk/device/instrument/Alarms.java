@@ -132,7 +132,20 @@ public interface Alarms extends Instrument {
              * fly properly, indicating a serious drone malfunction.</li>
              * </ul>
              */
-            STRONG_VIBRATIONS
+            STRONG_VIBRATIONS,
+
+            /**
+             * A magnetic element disturbs the drone's magnetometer and alters the drone ability to fly safely.
+             */
+            MAGNETOMETER_PERTURBATION,
+
+            /**
+             * The local terrestrial magnetic field is too weak to allow to fly safely.
+             */
+            MAGNETOMETER_LOW_EARTH_FIELD,
+
+            /** Location information sent by the controller is unreliable. */
+            UNRELIABLE_CONTROLLER_LOCATION
         }
 
         /** Level of an alarm. */

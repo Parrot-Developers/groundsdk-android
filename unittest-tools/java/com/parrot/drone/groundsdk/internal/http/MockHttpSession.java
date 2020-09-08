@@ -35,6 +35,9 @@ package com.parrot.drone.groundsdk.internal.http;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public final class MockHttpSession {
 
     private static final HttpSession.ClientFactory REAL_FACTORY = HttpSession.FACTORY;
@@ -43,17 +46,17 @@ public final class MockHttpSession {
         HttpSession.FACTORY = REAL_FACTORY;
     }
 
-    public static void registerOnly(@NonNull HttpClient client) {
+    public static void registerOnly(@NonNull HttpClient... clients) {
         HttpSession.FACTORY = new HttpSession.ClientFactory() {
 
             @SuppressWarnings("unchecked")
             @Nullable
             @Override
             public <H extends HttpClient> H create(@NonNull HttpSession session, @NonNull Class<H> clientType) {
-                if (clientType.isInstance(client)) {
-                    return (H) client;
-                }
-                return null;
+                return (H) Arrays.stream(clients)
+                                 .filter(clientType::isInstance)
+                                 .findFirst()
+                                 .orElse(null);
             }
         };
     }

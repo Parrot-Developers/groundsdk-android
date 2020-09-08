@@ -55,8 +55,12 @@ final class FramerateAdapter {
     @NonNull
     static CameraRecording.Framerate from(@NonNull ArsdkFeatureCamera.Framerate framerate) {
         switch (framerate) {
+            case FPS_8_6:
+                return CameraRecording.Framerate.FPS_8_6;
             case FPS_9:
                 return CameraRecording.Framerate.FPS_9;
+            case FPS_10:
+                return CameraRecording.Framerate.FPS_10;
             case FPS_15:
                 return CameraRecording.Framerate.FPS_15;
             case FPS_20:
@@ -99,8 +103,12 @@ final class FramerateAdapter {
     @NonNull
     static ArsdkFeatureCamera.Framerate from(@NonNull CameraRecording.Framerate framerate) {
         switch (framerate) {
+            case FPS_8_6:
+                return ArsdkFeatureCamera.Framerate.FPS_8_6;
             case FPS_9:
                 return ArsdkFeatureCamera.Framerate.FPS_9;
+            case FPS_10:
+                return ArsdkFeatureCamera.Framerate.FPS_10;
             case FPS_15:
                 return ArsdkFeatureCamera.Framerate.FPS_15;
             case FPS_20:

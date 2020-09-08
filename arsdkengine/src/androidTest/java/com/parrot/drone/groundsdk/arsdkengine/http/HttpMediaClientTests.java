@@ -42,6 +42,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.parrot.drone.groundsdk.DateParser;
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
 import com.parrot.drone.groundsdk.internal.http.HttpSession;
 import com.parrot.drone.groundsdk.internal.http.MockHttpService;
@@ -244,7 +245,7 @@ public class HttpMediaClientTests {
     public void testBrowseSuccess() {
         openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
 
-        HttpRequest request = mClient.browse(mMediaListResultCb);
+        HttpRequest request = mClient.browse(null, mMediaListResultCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
@@ -267,7 +268,7 @@ public class HttpMediaClientTests {
     public void testBrowseFailure() {
         openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
 
-        HttpRequest request = mClient.browse(mMediaListResultCb);
+        HttpRequest request = mClient.browse(null, mMediaListResultCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
@@ -286,12 +287,136 @@ public class HttpMediaClientTests {
     public void testBrowseCancel() {
         openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
 
-        HttpRequest request = mClient.browse(mMediaListResultCb);
+        HttpRequest request = mClient.browse(null, mMediaListResultCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
                 .get()
                 .url("http://test/api/v1/media/medias"));
+
+        request.cancel();
+        mMockService.pingForCancel();
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(
+                HttpRequest.Status.CANCELED, HttpRequest.STATUS_CODE_UNKNOWN, null);
+    }
+
+    @Test
+    public void testBrowseInternalSuccess() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.INTERNAL, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=internal"));
+
+        mMockService.mockResponse(it -> it
+                .code(200)
+                .body(ResponseBody.create(GSON.toJson(MOCK_LIST), MediaType.parse("application/json"))));
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(eq(HttpRequest.Status.SUCCESS), eq(200),
+                mMediaListCaptor.capture());
+
+        assertThat(mMediaListCaptor.getValue(), mediaListEquals(MOCK_LIST));
+    }
+
+    @Test
+    public void testBrowseInternalFailure() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.INTERNAL, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=internal"));
+
+        mMockService.mockResponse(it -> it
+                .code(500));
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(HttpRequest.Status.FAILED, 500, null);
+    }
+
+    @Test
+    public void testBrowseInternalCancel() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.INTERNAL, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=internal"));
+
+        request.cancel();
+        mMockService.pingForCancel();
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(
+                HttpRequest.Status.CANCELED, HttpRequest.STATUS_CODE_UNKNOWN, null);
+    }
+
+    @Test
+    public void testBrowseRemovableSuccess() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.REMOVABLE, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=sdcard"));
+
+        mMockService.mockResponse(it -> it
+                .code(200)
+                .body(ResponseBody.create(GSON.toJson(MOCK_LIST), MediaType.parse("application/json"))));
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(eq(HttpRequest.Status.SUCCESS), eq(200),
+                mMediaListCaptor.capture());
+
+        assertThat(mMediaListCaptor.getValue(), mediaListEquals(MOCK_LIST));
+    }
+
+    @Test
+    public void testBrowseRemovableFailure() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.REMOVABLE, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=sdcard"));
+
+        mMockService.mockResponse(it -> it
+                .code(500));
+
+        mFgLock.block();
+
+        verify(mMediaListResultCb).onRequestComplete(HttpRequest.Status.FAILED, 500, null);
+    }
+
+    @Test
+    public void testBrowseRemovableCancel() {
+        openLockWhen(mMediaListResultCb, mFgLock).onRequestComplete(any(), anyInt(), any());
+
+        HttpRequest request = mClient.browse(MediaStore.StorageType.REMOVABLE, mMediaListResultCb);
+        assertThat(request, notNullValue());
+
+        mMockService.assertPendingRequest(it -> it
+                .get()
+                .url("http://test/api/v1/media/medias?storage=sdcard"));
 
         request.cancel();
         mMockService.pingForCancel();

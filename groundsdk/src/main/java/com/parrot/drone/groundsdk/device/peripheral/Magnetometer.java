@@ -32,6 +32,8 @@
 
 package com.parrot.drone.groundsdk.device.peripheral;
 
+import androidx.annotation.NonNull;
+
 import com.parrot.drone.groundsdk.Ref;
 
 /**
@@ -51,13 +53,27 @@ import com.parrot.drone.groundsdk.Ref;
  */
 public interface Magnetometer extends Peripheral {
 
+    /** Magnetometer calibration state. */
+    enum MagnetometerCalibrationState {
+
+        /** Magnetometer is calibrated. */
+        CALIBRATED,
+
+        /** Magnetometer calibration is required. */
+        REQUIRED,
+
+        /** Magnetometer calibration is recommended. */
+        RECOMMENDED
+    }
+
     /**
-     * Whether the magnetometer is calibrated or not.
+     * The magnetometer calibration state.
      * <p>
      * Note: the magnetometer should be calibrated to make positioning related actions, such as ReturnToHome,
      * FlightPlan...
      *
-     * @return true if the magnetometer is calibrated, false otherwise.
+     * @return the magnetometer calibration state.
      */
-    boolean isCalibrated();
+    @NonNull
+    MagnetometerCalibrationState calibrationState();
 }

@@ -85,13 +85,19 @@ public final class CameraRecording {
         RES_720P_4_3,
 
         /** 856x480 pixels. */
-        RES_480P
+        RES_480P,
+
+        /** 7680x4320 pixels (UHD). */
+        RES_UHD_8K,
+
+        /** 5120x2880 pixels. */
+        RES_5K
     }
 
     /** Camera recording framerate. */
     public enum Framerate {
 
-        /** 240 frames per second. */
+        /** 239.76 frames per second. */
         FPS_240,
 
         /** 200 frames per second. */
@@ -100,7 +106,7 @@ public final class CameraRecording {
         /** 191.81 frames per second. */
         FPS_192,
 
-        /** 120 frames per second. */
+        /** 119.88 frames per second. */
         FPS_120,
 
         /** 100 frames per second. */
@@ -115,7 +121,7 @@ public final class CameraRecording {
         /** 50 frames per second. */
         FPS_50,
 
-        /** 48 frames per second. */
+        /** 47.952 frames per second. */
         FPS_48,
 
         /** 29.97 frames per second. */
@@ -133,8 +139,14 @@ public final class CameraRecording {
         /** 15 frames per second. */
         FPS_15,
 
-        /** 9 frames per second. */
-        FPS_9
+        /** 10 frames per second. */
+        FPS_10,
+
+        /** 9 frames per second.  */
+        FPS_9,
+
+        /** 8.57 frames per second. */
+        FPS_8_6
     }
 
     /** Camera recording hyperlapse value for {@link Mode#HYPERLAPSE hyperlapse mode}. */

@@ -52,13 +52,13 @@
 
             <TextView
                 android:layout_gravity="center_vertical|start"
-                android:text="@string/peripheral_target_tracker"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                android:text="@string/peripheral_target_tracker"/>
 
             <Button
-                android:id="@id/btn_edit"
                 style="?android:attr/buttonBarButtonStyle"
+                android:id="@id/btn_edit"
                 android:layout_gravity="center_vertical|end"
                 android:text="@string/action_edit"
                 tools:ignore="ContentDescription"/>
@@ -66,7 +66,8 @@
 
         <TableRow>
 
-            <TextView android:text="@string/property_target_tracker_trajectory"/>
+            <TextView
+                android:text="@string/property_target_tracker_trajectory"/>
 
             <TextView
                 android:id="@+id/trajectory"
@@ -76,11 +77,11 @@
         </TableRow>
 
         <Button
-            android:id="@+id/btn_track"
             style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btn_track"
             android:layout_gravity="center"
-            tools:ignore="ContentDescription"
-            tools:text="@string/action_disable_tracking"/>
+            tools:text="@string/action_disable_tracking"
+            tools:ignore="ContentDescription"/>
 
     </TableLayout>
 

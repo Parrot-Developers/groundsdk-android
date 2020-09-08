@@ -32,9 +32,6 @@
 
 package com.parrot.drone.groundsdk.arsdkengine.pilotingitf.anafi;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.ActivablePilotingItfController;
 import com.parrot.drone.groundsdk.device.pilotingitf.Activable;
@@ -47,8 +44,9 @@ import com.parrot.drone.sdkcore.ulog.ULog;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_TRACKING_PITF;
 
@@ -242,17 +240,8 @@ abstract class AnafiTrackingPilotingItfBase extends ActivablePilotingItfControll
                                           + ", improvable inputs: " + improvableInputs + "]");
             }
 
-            Supplier<EnumSet<TrackingIssue>> trackingIssueSetFactory = () -> EnumSet.noneOf(TrackingIssue.class);
-
-            mAvailabilityIssues.put(mode, missingInputs
-                    .stream()
-                    .map(AnafiTrackingPilotingItfBase::convert)
-                    .collect(Collectors.toCollection(trackingIssueSetFactory)));
-
-            mQualityIssues.put(mode, improvableInputs
-                    .stream()
-                    .map(AnafiTrackingPilotingItfBase::convert)
-                    .collect(Collectors.toCollection(trackingIssueSetFactory)));
+            mAvailabilityIssues.put(mode, convert(missingInputs));
+            mQualityIssues.put(mode, convert(improvableInputs));
 
             updateState();
         }
@@ -326,31 +315,48 @@ abstract class AnafiTrackingPilotingItfBase extends ActivablePilotingItfControll
     }
 
     /**
-     * Converts an arsdk {@link ArsdkFeatureFollowMe.Input input} into its groundsdk {@link TrackingIssue
+     * Converts an arsdk {@link ArsdkFeatureFollowMe.Input input} set into its groundsdk {@link TrackingIssue
      * representation}.
      *
-     * @param input arsdk input to convert
+     * @param inputs arsdk input set to convert
      *
-     * @return groundsdk representation of the specified input
+     * @return groundsdk representation of the specified input set
      */
     @NonNull
-    private static TrackingIssue convert(@NonNull ArsdkFeatureFollowMe.Input input) {
-        switch (input) {
-            case DRONE_CALIBRATED:
-                return TrackingIssue.DRONE_NOT_CALIBRATED;
-            case DRONE_GPS_GOOD_ACCURACY:
-                return TrackingIssue.DRONE_GPS_INFO_INACCURATE;
-            case TARGET_GPS_GOOD_ACCURACY:
-                return TrackingIssue.TARGET_GPS_INFO_INACCURATE;
-            case TARGET_BAROMETER_OK:
-                return TrackingIssue.TARGET_BAROMETER_INFO_INACCURATE;
-            case DRONE_FAR_ENOUGH:
-                return TrackingIssue.DRONE_TOO_CLOSE_TO_TARGET;
-            case DRONE_HIGH_ENOUGH:
-                return TrackingIssue.DRONE_TOO_CLOSE_TO_GROUND;
-            case IMAGE_DETECTION:
-                return TrackingIssue.TARGET_DETECTION_INFO_MISSING;
+    private static EnumSet<TrackingIssue> convert(@NonNull EnumSet<ArsdkFeatureFollowMe.Input> inputs) {
+        EnumSet<TrackingIssue> issues = EnumSet.noneOf(TrackingIssue.class);
+        for (ArsdkFeatureFollowMe.Input input : inputs) {
+            switch (input) {
+                case DRONE_CALIBRATED:
+                    issues.add(TrackingIssue.DRONE_NOT_CALIBRATED);
+                    break;
+                case DRONE_GPS_GOOD_ACCURACY:
+                    issues.add(TrackingIssue.DRONE_GPS_INFO_INACCURATE);
+                    break;
+                case TARGET_GPS_GOOD_ACCURACY:
+                    issues.add(TrackingIssue.TARGET_GPS_INFO_INACCURATE);
+                    break;
+                case TARGET_BAROMETER_OK:
+                    issues.add(TrackingIssue.TARGET_BAROMETER_INFO_INACCURATE);
+                    break;
+                case DRONE_FAR_ENOUGH:
+                    issues.add(TrackingIssue.DRONE_TOO_CLOSE_TO_TARGET);
+                    break;
+                case DRONE_HIGH_ENOUGH:
+                    issues.add(TrackingIssue.DRONE_TOO_CLOSE_TO_GROUND);
+                    break;
+                case IMAGE_DETECTION:
+                    issues.add(TrackingIssue.TARGET_DETECTION_INFO_MISSING);
+                    break;
+                case TARGET_GOOD_SPEED:
+                    issues.add(TrackingIssue.TARGET_HORIZONTAL_SPEED_TOO_HIGH);
+                    issues.add(TrackingIssue.TARGET_VERTICAL_SPEED_TOO_HIGH);
+                    break;
+                case DRONE_CLOSE_ENOUGH:
+                    issues.add(TrackingIssue.DRONE_TOO_FAR_FROM_TARGET);
+                    break;
+            }
         }
-        return null;
+        return issues;
     }
 }

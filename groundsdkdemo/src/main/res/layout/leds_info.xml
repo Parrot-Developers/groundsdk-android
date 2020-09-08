@@ -68,7 +68,8 @@
 
         <TableRow>
 
-            <TextView android:text="@string/property_leds_state"/>
+            <TextView
+                android:text="@string/property_switch_state"/>
 
             <TextView
                 android:id="@+id/state"

@@ -65,8 +65,11 @@ public interface ThermalControl extends Peripheral {
         /** Thermal is disabled. */
         DISABLED,
 
-        /** Thermal is enabled. */
-        STANDARD
+        /** Thermal is enabled, blending on device. */
+        STANDARD,
+
+        /** Thermal is enabled, blending on drone.  */
+        EMBEDDED
     }
 
     /**

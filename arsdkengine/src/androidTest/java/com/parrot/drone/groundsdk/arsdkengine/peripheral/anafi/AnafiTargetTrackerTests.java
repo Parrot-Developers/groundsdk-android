@@ -186,7 +186,7 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         Object enforcementToken;
 
         // at first, tracking should be disabled, monitoring should not have started anyhow
-        verifyZeroInteractions(mMockBarometer, mMockLocation);
+        verifyZeroInteractions(mMockLocation);
 
         // we assume that targetIsController is 0 drone side.
         // test that targetIsController command is not sent after connection.
@@ -194,9 +194,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
                 ArsdkEncoder.encodeFollowMeTargetIsController(0)));
 
         assertThat(mChangeCnt, is(1));
-
-        // verify that barometer tracking is not started
-        verify(mMockBarometer, never()).monitorWith(any());
 
         // verify that WIFI location is not forced
         verify(mMockLocation, never()).enforceWifiUsage(any());
@@ -217,31 +214,17 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
 
-        // verify that barometer is now tracked
-        verify(mMockBarometer).monitorWith(monitorCaptor.capture());
-
         // verify that WIFI location is now forced
         verify(mMockLocation).enforceWifiUsage(enforcementTokenCaptor.capture());
 
-        barometerMonitor = monitorCaptor.getValue();
-        assertThat(barometerMonitor, notNullValue());
-
         enforcementToken = enforcementTokenCaptor.getValue();
         assertThat(enforcementToken, notNullValue());
-
-        // test that barometer info is sent when received
-        long now = System.currentTimeMillis();
-        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.controllerInfoBarometer(1.0f, now)));
-        barometerMonitor.onAirPressureMeasure(1.0, now);
 
         // test that all monitoring stops on disconnect
         disconnectDrone(mDrone, 1);
 
         assertThat(mChangeCnt, is(2));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
-
-        // verify that barometer tracking stops
-        verify(mMockBarometer).disposeMonitor(barometerMonitor);
 
         // verify that WIFI location forcing is revoked
         verify(mMockLocation).revokeWifiUsageEnforcement(enforcementToken);
@@ -253,14 +236,8 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(2));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
 
-        // verify that barometer is now tracked
-        verify(mMockBarometer, times(2)).monitorWith(monitorCaptor.capture());
-
         // verify that WIFI location is now forced
         verify(mMockLocation, times(2)).enforceWifiUsage(enforcementTokenCaptor.capture());
-
-        barometerMonitor = monitorCaptor.getValue();
-        assertThat(barometerMonitor, notNullValue());
 
         enforcementToken = enforcementTokenCaptor.getValue();
         assertThat(enforcementToken, notNullValue());
@@ -281,9 +258,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(3));
         assertThat(mTracker.isControllerTrackingEnabled(), is(false));
 
-        // verify that barometer tracking stops
-        verify(mMockBarometer, times(2)).disposeMonitor(barometerMonitor);
-
         // verify that WIFI location forcing is revoked
         verify(mMockLocation, times(2)).revokeWifiUsageEnforcement(enforcementToken);
 
@@ -301,7 +275,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
 
         // verify that monitoring is not started
-        verify(mMockBarometer, times(2)).monitorWith(monitorCaptor.capture());
         verify(mMockLocation, times(2)).enforceWifiUsage(enforcementTokenCaptor.capture());
 
         // test that setTargetController is send automatically after connection
@@ -315,9 +288,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(4));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
 
-        // verify that barometer is now tracked
-        verify(mMockBarometer, times(3)).monitorWith(monitorCaptor.capture());
-
         // verify that WIFI location is now forced
         verify(mMockLocation, times(3)).enforceWifiUsage(enforcementTokenCaptor.capture());
 
@@ -326,9 +296,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
 
         assertThat(mChangeCnt, is(4));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
-
-        // verify that barometer tracking stops
-        verify(mMockBarometer, times(3)).disposeMonitor(barometerMonitor);
 
         // verify that WIFI location forcing is revoked
         verify(mMockLocation, times(3)).revokeWifiUsageEnforcement(enforcementToken);
@@ -351,7 +318,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mTracker.isControllerTrackingEnabled(), is(false));
 
         // verify that monitoring is not started
-        verify(mMockBarometer, times(3)).monitorWith(monitorCaptor.capture());
         verify(mMockLocation, times(3)).enforceWifiUsage(enforcementTokenCaptor.capture());
 
         // test spurious targetIsController notification from drone (note that this is unexpected, but we should handle
@@ -361,9 +327,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
         assertThat(mChangeCnt, is(6));
         assertThat(mTracker.isControllerTrackingEnabled(), is(true));
 
-        // verify that barometer is now tracked
-        verify(mMockBarometer, times(4)).monitorWith(monitorCaptor.capture());
-
         // verify that WIFI location is now forced
         verify(mMockLocation, times(4)).enforceWifiUsage(enforcementTokenCaptor.capture());
 
@@ -372,9 +335,6 @@ public class AnafiTargetTrackerTests extends ArsdkEngineTestBase {
 
         assertThat(mChangeCnt, is(7));
         assertThat(mTracker.isControllerTrackingEnabled(), is(false));
-
-        // verify that barometer tracking stops
-        verify(mMockBarometer, times(4)).monitorWith(monitorCaptor.capture());
 
         // verify that WIFI location forcing is revoked
         verify(mMockLocation, times(4)).enforceWifiUsage(enforcementTokenCaptor.capture());

@@ -35,15 +35,15 @@ package com.parrot.drone.groundsdkdemo.facility;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.parrot.drone.groundsdk.facility.UserAccount;
 import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.R;
 
 public class UserAccountActivity extends GroundSdkActivityBase {
 
-    private Switch mAllowAnonymousDataSwitch;
+    private SwitchMaterial mAllowAnonymousDataSwitch;
 
     private UserAccount mUserAccount;
 
@@ -55,7 +55,7 @@ public class UserAccountActivity extends GroundSdkActivityBase {
 
         EditText providerEdit = findViewById(R.id.provider_edit);
         EditText accountIdEdit = findViewById(R.id.account_id_edit);
-        Switch allowAccountlessDataSwitch = findViewById(R.id.enable_accountless_data);
+        SwitchMaterial allowAccountlessDataSwitch = findViewById(R.id.enable_accountless_data);
         Button setUserAccountButton = findViewById(R.id.btn_set_user_account);
         Button clearButton = findViewById(R.id.btn_clear);
         mAllowAnonymousDataSwitch = findViewById(R.id.enable_anonymous_data);

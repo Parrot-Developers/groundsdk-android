@@ -146,6 +146,8 @@ public final class EphemerisStore {
         switch (droneModel) {
             case ANAFI_4K:
             case ANAFI_THERMAL:
+            case ANAFI_UA:
+            case ANAFI_USA:
                 ephemeris = mUbloxEphemeris.getValidEphemeris();
                 break;
         }

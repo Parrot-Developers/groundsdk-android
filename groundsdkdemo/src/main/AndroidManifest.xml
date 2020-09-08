@@ -218,6 +218,11 @@
             android:name=".hud.HmdActivity"
             android:theme="@style/AppTheme.FullScreen"/>
 
+        <activity
+            android:name=".settings.DriSettingsActivity"
+            android:label="@string/title_activity_dri_settings"
+            android:theme="@style/AppTheme"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/gsdkdemo_google_geo_api_key"/>

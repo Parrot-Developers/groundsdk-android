@@ -37,26 +37,18 @@ import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.PilotingItfActivationController;
 import com.parrot.drone.groundsdk.arsdkengine.pilotingitf.ActivablePilotingItfController;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.Directive;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.FinishedFlightInfo;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective.Orientation;
-import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.RelativeMoveDirective;
+import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf;
 import com.parrot.drone.groundsdk.internal.device.pilotingitf.ActivablePilotingItfCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.FinishedLocationFlightInfoCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.FinishedRelativeMoveFlightInfoCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.LocationDirectiveCore;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.RelativeMoveDirectiveCore;
+import com.parrot.drone.groundsdk.internal.device.pilotingitf.guided.GuidedPilotingItfCore;
+import com.parrot.drone.groundsdk.internal.device.pilotingitf.guided.FinishedFlightInfoCore;
+import com.parrot.drone.groundsdk.internal.device.pilotingitf.guided.FinishedFlightInfoCore.Relative;
 import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.Piloting;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingMovetoOrientationMode;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingeventMovebyendError;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedOrientationMode;
-import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus;
+import com.parrot.drone.sdkcore.arsdk.ArsdkFeatureMove;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 
-import static com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.Type.ABSOLUTE_LOCATION;
-import static com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.Type.RELATIVE_MOVE;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /** Guided piloting interface controller for Anafi family drones. */
 public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
@@ -65,20 +57,23 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
     @NonNull
     private final GuidedPilotingItfCore mPilotingItf;
 
+    /** Whether guided flight is started. */
+    private boolean mGuidedFlightOngoing;
+
     /** {@code true} if the drone is flying. */
     private boolean mDroneFlying;
 
     /** Current guided flight directive. */
     @Nullable
-    private Directive mCurrentDirective;
+    private GuidedPilotingItf.Directive mCurrentDirective;
 
     /** Previous guided flight directive, used to properly manage relative move interruption. */
     @Nullable
-    private Directive mPreviousDirective;
+    private GuidedPilotingItf.Directive mPreviousDirective;
 
     /** Latest terminated guided flight information. */
     @Nullable
-    private FinishedFlightInfo mLatestFinishedFlightInfo;
+    private GuidedPilotingItf.FinishedFlightInfo mLatestFinishedFlightInfo;
 
     /**
      * Constructor.
@@ -104,9 +99,11 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
 
     @Override
     public void onDisconnected() {
+        mGuidedFlightOngoing = false;
         mCurrentDirective = null;
         mPreviousDirective = null;
         mPilotingItf.updateCurrentDirective(null);
+        mPilotingItf.updateUnavailabilityReasons(EnumSet.noneOf(GuidedPilotingItf.UnavailabilityReason.class));
         mPilotingItf.unpublish();
         updateFlyingState(false);
         super.onDisconnected();
@@ -118,27 +115,19 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
     }
 
     @Override
+    public boolean canActivate() {
+        return super.canActivate() && isGuidedPilotingAvailable();
+    }
+
+    @Override
     public void requestActivation() {
         super.requestActivation();
         if (mCurrentDirective != null) {
-            switch (mCurrentDirective.getType()) {
-                case ABSOLUTE_LOCATION:
-                    LocationDirectiveCore locDir = (LocationDirectiveCore) mCurrentDirective;
-                    sendCommand(Piloting.encodeMoveTo(locDir.getLatitude(), locDir.getLongitude(), locDir.getAltitude(),
-                            getArsdkOrientationMode(locDir.getOrientation()),
-                            (float) locDir.getOrientation().getHeading()));
-                    break;
-                case RELATIVE_MOVE:
-                    RelativeMoveDirectiveCore relDir = (RelativeMoveDirectiveCore) mCurrentDirective;
-                    sendCommand(Piloting.encodeMoveBy((float) relDir.getForwardComponent(),
-                            (float) relDir.getRightComponent(),
-                            (float) relDir.getDownwardComponent(),
-                            (float) Math.toRadians(relDir.getHeadingRotation())));
-                    break;
-            }
+            sendDirective(mCurrentDirective);
             mPilotingItf.updateCurrentDirective(mCurrentDirective);
-            notifyActive(); // calls mPilotingItf.notifyUpdated()
+            mGuidedFlightOngoing = true;
         }
+        updateState(); // will call notifyUpdated()
     }
 
     @Override
@@ -148,40 +137,40 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
             notifyIdle();
         } else switch (mCurrentDirective.getType()) {
             case ABSOLUTE_LOCATION:
-                sendCommand(Piloting.encodeCancelMoveTo());
+                sendCommand(ArsdkFeatureArdrone3.Piloting.encodeCancelMoveTo());
                 break;
             case RELATIVE_MOVE:
-                sendCommand(Piloting.encodeMoveBy(0, 0, 0, 0));
+                sendCommand(ArsdkFeatureArdrone3.Piloting.encodeMoveBy(0, 0, 0, 0));
                 break;
         }
     }
 
     /**
-     * Converts GroundSdk {@link LocationDirectiveCore.OrientationCore.Mode} to SdkCore {@link
-     * PilotingMovetoOrientationMode}.
+     * Tells whether guided piloting is available.
+     * <p>
+     * Guided piloting is available when the drone is flying and no unavailability reason is present.
      *
-     * @param orientation the orientation containing the mode to convert
-     *
-     * @return the converted {@code PilotingMovetoOrientationMode}
+     * @return {@code true} if guided piloting is available, {@code false} otherwise
      */
-    @NonNull
-    private static PilotingMovetoOrientationMode getArsdkOrientationMode(@NonNull Orientation orientation) {
-        PilotingMovetoOrientationMode mode = null;
-        switch (orientation.getMode()) {
-            case NONE:
-                mode = PilotingMovetoOrientationMode.NONE;
-                break;
-            case TO_TARGET:
-                mode = PilotingMovetoOrientationMode.TO_TARGET;
-                break;
-            case START:
-                mode = PilotingMovetoOrientationMode.HEADING_START;
-                break;
-            case DURING:
-                mode = PilotingMovetoOrientationMode.HEADING_DURING;
-                break;
+    private boolean isGuidedPilotingAvailable() {
+        return mDroneFlying && mPilotingItf.getUnavailabilityReasons().isEmpty();
+    }
+
+    /**
+     * Updates the piloting interface state.
+     * <p>
+     * If the drone is not flying, or at least one unavailability reason is present, the interface state is set to
+     * {@code UNAVAILABLE}.<br> Otherwise, the interface state is set to {@code ACTIVE} if guided piloting is started
+     * or to {@code IDLE} if guided piloting is not started.
+     */
+    private void updateState() {
+        if (!isGuidedPilotingAvailable()) {
+            notifyUnavailable();
+        } else if (mGuidedFlightOngoing) {
+            notifyActive();
+        } else {
+            notifyIdle();
         }
-        return mode;
     }
 
     /**
@@ -192,11 +181,7 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
     private void updateFlyingState(boolean flying) {
         if (mDroneFlying != flying) {
             mDroneFlying = flying;
-            if (flying) {
-                notifyIdle();
-            } else {
-                notifyUnavailable();
-            }
+            updateState();
         }
     }
 
@@ -206,9 +191,9 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
      * @param success {@code true} if the move was successful, {@code false} otherwise
      */
     private void onLocationMoveFinished(boolean success) {
-        if (mCurrentDirective != null && mCurrentDirective.getType() == ABSOLUTE_LOCATION) {
-            mLatestFinishedFlightInfo =
-                    new FinishedLocationFlightInfoCore((LocationDirectiveCore) mCurrentDirective, success);
+        if (mCurrentDirective != null && mCurrentDirective.getType() == GuidedPilotingItf.Type.ABSOLUTE_LOCATION) {
+            mLatestFinishedFlightInfo = new FinishedFlightInfoCore.Location(
+                    (GuidedPilotingItf.LocationDirective) mCurrentDirective, success);
             mCurrentDirective = null;
             mPilotingItf.updateCurrentDirective(null);
             mPilotingItf.updateLatestFinishedFlightInfo(mLatestFinishedFlightInfo);
@@ -225,9 +210,9 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
      * @param dpsi    desired relative rotation of heading, in degrees
      */
     private void onRelativeMoveFinished(boolean success, float dx, float dy, float dz, float dpsi) {
-        if (mCurrentDirective != null && mCurrentDirective.getType() == RELATIVE_MOVE) {
-            mLatestFinishedFlightInfo = new FinishedRelativeMoveFlightInfoCore(
-                    (RelativeMoveDirective) mCurrentDirective, success, dx, dy, dz, dpsi);
+        if (mCurrentDirective != null && mCurrentDirective.getType() == GuidedPilotingItf.Type.RELATIVE_MOVE) {
+            mLatestFinishedFlightInfo = new Relative(
+                    (GuidedPilotingItf.RelativeMoveDirective) mCurrentDirective, success, dx, dy, dz, dpsi);
             mCurrentDirective = null;
             mPilotingItf.updateCurrentDirective(null);
             mPilotingItf.updateLatestFinishedFlightInfo(mLatestFinishedFlightInfo);
@@ -247,18 +232,111 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
      * @param actualDpsi heading rotation component of the actual move
      */
     private void onRelativeMoveInterrupted(double actualDx, double actualDy, double actualDz, double actualDpsi) {
-        if (mPreviousDirective != null && mPreviousDirective.getType() == RELATIVE_MOVE) {
-            mLatestFinishedFlightInfo = new FinishedRelativeMoveFlightInfoCore(
-                    (RelativeMoveDirective) mPreviousDirective, false, actualDx, actualDy, actualDz, actualDpsi);
+        if (mPreviousDirective != null && mPreviousDirective.getType() == GuidedPilotingItf.Type.RELATIVE_MOVE) {
+            mLatestFinishedFlightInfo = new Relative(
+                    (GuidedPilotingItf.RelativeMoveDirective) mPreviousDirective, false, actualDx, actualDy, actualDz, actualDpsi);
             mPreviousDirective = null;
             mPilotingItf.updateLatestFinishedFlightInfo(mLatestFinishedFlightInfo);
-        } else if (mCurrentDirective != null && mCurrentDirective.getType() == RELATIVE_MOVE) {
-            mLatestFinishedFlightInfo = new FinishedRelativeMoveFlightInfoCore(
-                    (RelativeMoveDirective) mCurrentDirective, false, actualDx, actualDy, actualDz, actualDpsi);
+        } else if (mCurrentDirective != null && mCurrentDirective.getType() == GuidedPilotingItf.Type.RELATIVE_MOVE) {
+            mLatestFinishedFlightInfo = new Relative(
+                    (GuidedPilotingItf.RelativeMoveDirective) mCurrentDirective, false, actualDx, actualDy, actualDz, actualDpsi);
             mCurrentDirective = null;
             mPilotingItf.updateCurrentDirective(null);
             mPilotingItf.updateLatestFinishedFlightInfo(mLatestFinishedFlightInfo);
         }
+    }
+
+    /**
+     * Converts a groundsdk {@link GuidedPilotingItf.LocationDirective.Orientation orientation mode} into its arsdk
+     * {@link ArsdkFeatureArdrone3.PilotingMovetoOrientationMode representation}.
+     *
+     * @param orientation groundsdk orientation to convert
+     *
+     * @return arsdk representation of the specified orientation
+     */
+    @NonNull
+    private static ArsdkFeatureArdrone3.PilotingMovetoOrientationMode toArsdkPilotingMoveToOrientationMode(
+            @NonNull GuidedPilotingItf.LocationDirective.Orientation orientation) {
+        ArsdkFeatureArdrone3.PilotingMovetoOrientationMode mode = null;
+        switch (orientation.getMode()) {
+            case NONE:
+                mode = ArsdkFeatureArdrone3.PilotingMovetoOrientationMode.NONE;
+                break;
+            case TO_TARGET:
+                mode = ArsdkFeatureArdrone3.PilotingMovetoOrientationMode.TO_TARGET;
+                break;
+            case START:
+                mode = ArsdkFeatureArdrone3.PilotingMovetoOrientationMode.HEADING_START;
+                break;
+            case DURING:
+                mode = ArsdkFeatureArdrone3.PilotingMovetoOrientationMode.HEADING_DURING;
+                break;
+        }
+        return mode;
+    }
+
+    /**
+     * Converts a groundsdk {@link GuidedPilotingItf.LocationDirective.Orientation orientation mode} into its arsdk
+     * {@link ArsdkFeatureMove.OrientationMode representation}.
+     *
+     * @param orientation groundsdk orientation to convert
+     *
+     * @return arsdk representation of the specified orientation
+     */
+    @NonNull
+    private static ArsdkFeatureMove.OrientationMode toArsdkFeatureMoveOrientationMode(
+            @NonNull GuidedPilotingItf.LocationDirective.Orientation orientation) {
+        ArsdkFeatureMove.OrientationMode mode = null;
+        switch (orientation.getMode()) {
+            case NONE:
+                mode = ArsdkFeatureMove.OrientationMode.NONE;
+                break;
+            case TO_TARGET:
+                mode = ArsdkFeatureMove.OrientationMode.TO_TARGET;
+                break;
+            case START:
+                mode = ArsdkFeatureMove.OrientationMode.HEADING_START;
+                break;
+            case DURING:
+                mode = ArsdkFeatureMove.OrientationMode.HEADING_DURING;
+                break;
+        }
+        return mode;
+    }
+
+    /**
+     * Converts an arsdk {@link ArsdkFeatureMove.Indicator indicator} into its groundsdk
+     * {@link GuidedPilotingItf.UnavailabilityReason representation}.
+     *
+     * @param indicator arsdk indicator to convert
+     *
+     * @return groundsdk representation of the specified indicator
+     */
+    @Nullable
+    private static GuidedPilotingItf.UnavailabilityReason convert(@NonNull ArsdkFeatureMove.Indicator indicator) {
+        switch (indicator) {
+            case DRONE_GPS:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_GPS_INFO_INACCURATE;
+            case DRONE_MAGNETO:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_CALIBRATED;
+            case DRONE_FLYING:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_NOT_FLYING;
+            case DRONE_GEOFENCE:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_OUT_GEOFENCE;
+            case DRONE_MIN_ALTITUDE:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_TOO_CLOSE_TO_GROUND;
+            case DRONE_MAX_ALTITUDE:
+                return GuidedPilotingItf.UnavailabilityReason.DRONE_ABOVE_MAX_ALTITUDE;
+            case TARGET_POSITION_ACCURACY:
+            case TARGET_IMAGE_DETECTION:
+            case DRONE_TARGET_DISTANCE_MIN:
+            case DRONE_TARGET_DISTANCE_MAX:
+            case TARGET_HORIZ_SPEED:
+            case TARGET_VERT_SPEED:
+            case TARGET_ALTITUDE_ACCURACY:
+                return null;
+        }
+        return null;
     }
 
     @Override
@@ -270,6 +348,9 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
                 break;
             case ArsdkFeatureArdrone3.PilotingEvent.UID:
                 ArsdkFeatureArdrone3.PilotingEvent.decode(command, mPilotingEventCallback);
+                break;
+            case ArsdkFeatureMove.UID:
+                ArsdkFeatureMove.decode(command, mMoveCallback);
                 break;
         }
     }
@@ -303,53 +384,49 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
                 }
 
                 @Override
-                public void onMoveToChanged(double latitude, double longitude, double altitude,
-                                            @Nullable PilotingstateMovetochangedOrientationMode orientationMode,
-                                            float heading, @Nullable PilotingstateMovetochangedStatus status) {
+                public void onMoveToChanged(
+                        double latitude, double longitude, double altitude,
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateMovetochangedOrientationMode orientationMode,
+                        float heading, @Nullable ArsdkFeatureArdrone3.PilotingstateMovetochangedStatus status) {
                     if (Double.compare(latitude, UNKNOWN_COORDINATE) != 0
                         && Double.compare(longitude, UNKNOWN_COORDINATE) != 0
                         && Double.compare(altitude, UNKNOWN_COORDINATE) != 0
                         && orientationMode != null) {
-                        Orientation orientation = null;
+                        GuidedPilotingItf.LocationDirective.Orientation orientation = null;
                         switch (orientationMode) {
                             case NONE:
-                                orientation = Orientation.NONE;
+                                orientation = GuidedPilotingItf.LocationDirective.Orientation.NONE;
                                 break;
                             case TO_TARGET:
-                                orientation = Orientation.TO_TARGET;
+                                orientation = GuidedPilotingItf.LocationDirective.Orientation.TO_TARGET;
                                 break;
                             case HEADING_START:
-                                orientation = Orientation.headingStart(heading);
+                                orientation = GuidedPilotingItf.LocationDirective.Orientation.headingStart(heading);
                                 break;
                             case HEADING_DURING:
-                                orientation = Orientation.headingDuring(heading);
+                                orientation = GuidedPilotingItf.LocationDirective.Orientation.headingDuring(heading);
                                 break;
                         }
-                        mCurrentDirective = new LocationDirectiveCore(latitude, longitude, altitude, orientation);
+                        mCurrentDirective = new GuidedPilotingItf.LocationDirective(latitude, longitude, altitude,
+                                orientation, mCurrentDirective == null ? null : mCurrentDirective.getSpeed());
                         mPilotingItf.updateCurrentDirective(mCurrentDirective);
                     }
 
                     if (status != null) switch (status) {
                         case RUNNING:
-                            notifyActive();
+                            mGuidedFlightOngoing = true;
                             break;
                         case DONE:
                             onLocationMoveFinished(true);
-                            // We need to check if drone is flying because onMoveToChanged() is called on connection
-                            if (mDroneFlying) {
-                                notifyIdle();
-                            }
+                            mGuidedFlightOngoing = false;
                             break;
                         case CANCELED:
                         case ERROR:
                             onLocationMoveFinished(false);
-                            // We need to check if drone is flying because onMoveToChanged() is called on connection
-                            if (mDroneFlying) {
-                                notifyIdle();
-                            }
+                            mGuidedFlightOngoing = false;
                             break;
                     }
-                    mPilotingItf.notifyUpdated();
+                    updateState(); // will call notifyUpdated()
                 }
             };
 
@@ -359,23 +436,43 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
 
                 @Override
                 public void onMoveByEnd(float dx, float dy, float dz, float dpsi,
-                                        @Nullable PilotingeventMovebyendError error) {
+                                        @Nullable ArsdkFeatureArdrone3.PilotingeventMovebyendError error) {
                     if (error != null) switch (error) {
                         case OK:
                             onRelativeMoveFinished(true, dx, dy, dz, dpsi);
-                            notifyIdle(); // calls mPilotingItf.notifyUpdated()
+                            mGuidedFlightOngoing = false;
                             break;
                         case UNKNOWN:
                         case BUSY:
                         case NOTAVAILABLE:
                             onRelativeMoveFinished(false, dx, dy, dz, dpsi);
-                            notifyIdle(); // calls mPilotingItf.notifyUpdated()
+                            mGuidedFlightOngoing = false;
                             break;
                         case INTERRUPTED:
                             onRelativeMoveInterrupted(dx, dy, dz, dpsi);
-                            mPilotingItf.notifyUpdated();
                             break;
                     }
+                    updateState(); // will call notifyUpdated()
+                }
+            };
+
+    /** Callbacks called when a command of the feature ArsdkFeatureMove is decoded. */
+    private final ArsdkFeatureMove.Callback mMoveCallback =
+            new ArsdkFeatureMove.Callback() {
+
+                @Override
+                public void onInfo(int missingInputsBitField) {
+                    EnumSet<ArsdkFeatureMove.Indicator> missingInputs =
+                            ArsdkFeatureMove.Indicator.fromBitfield(missingInputsBitField);
+
+                    EnumSet<GuidedPilotingItf.UnavailabilityReason> reasons = missingInputs
+                            .stream()
+                            .map(AnafiGuidedPilotingItf::convert)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toCollection(() -> EnumSet.noneOf(
+                                    GuidedPilotingItf.UnavailabilityReason.class)));
+                    mPilotingItf.updateUnavailabilityReasons(reasons);
+                    updateState(); // will call notifyUpdated()
                 }
             };
 
@@ -384,39 +481,57 @@ public class AnafiGuidedPilotingItf extends ActivablePilotingItfController {
             implements GuidedPilotingItfCore.Backend {
 
         @Override
-        public void moveToLocation(double latitude, double longitude, double altitude,
-                                   @NonNull Orientation orientation) {
-            mCurrentDirective = new LocationDirectiveCore(latitude, longitude, altitude, orientation);
+        public void move(@NonNull GuidedPilotingItf.Directive directive) {
+            mPreviousDirective = mCurrentDirective;
+            mCurrentDirective = directive;
             switch (mPilotingItf.getState()) {
                 case IDLE:
                     activate();
                     break;
                 case ACTIVE:
-                    sendCommand(Piloting.encodeMoveTo(latitude, longitude, altitude,
-                            getArsdkOrientationMode(orientation), (float) orientation.getHeading()));
+                    sendDirective(mCurrentDirective);
                     mPilotingItf.updateCurrentDirective(mCurrentDirective).notifyUpdated();
                     break;
                 case UNAVAILABLE:
                     break;
             }
         }
+    }
 
-        @Override
-        public void moveToRelativePosition(double dx, double dy, double dz, double dpsi) {
-            mPreviousDirective = mCurrentDirective;
-            mCurrentDirective = new RelativeMoveDirectiveCore(dx, dy, dz, dpsi);
-            switch (mPilotingItf.getState()) {
-                case IDLE:
-                    activate();
-                    break;
-                case ACTIVE:
-                    sendCommand(Piloting.encodeMoveBy((float) dx, (float) dy, (float) dz,
-                            (float) Math.toRadians(dpsi)));
-                    mPilotingItf.updateCurrentDirective(mCurrentDirective).notifyUpdated();
-                    break;
-                case UNAVAILABLE:
-                    break;
-            }
+    /**
+     * Sends the given movement directive to the drone.
+     *
+     * @param directive directive to send
+     */
+    private void sendDirective(@NonNull GuidedPilotingItf.Directive directive) {
+        GuidedPilotingItf.Directive.Speed speed = directive.getSpeed();
+        switch (directive.getType()) {
+            case ABSOLUTE_LOCATION:
+                GuidedPilotingItf.LocationDirective locDir = (GuidedPilotingItf.LocationDirective) directive;
+                if (speed == null) {
+                    sendCommand(ArsdkFeatureArdrone3.Piloting.encodeMoveTo(locDir.getLatitude(), locDir.getLongitude(),
+                            locDir.getAltitude(), toArsdkPilotingMoveToOrientationMode(locDir.getOrientation()),
+                            (float) locDir.getOrientation().getHeading()));
+                } else {
+                    sendCommand(ArsdkFeatureMove.encodeExtendedMoveTo(locDir.getLatitude(), locDir.getLongitude(),
+                            locDir.getAltitude(), toArsdkFeatureMoveOrientationMode(locDir.getOrientation()),
+                            (float) locDir.getOrientation().getHeading(), (float) speed.getHorizontalMax(),
+                            (float) speed.getVerticalMax(), (float) speed.getRotationMax()));
+                }
+                break;
+            case RELATIVE_MOVE:
+                GuidedPilotingItf.RelativeMoveDirective relDir = (GuidedPilotingItf.RelativeMoveDirective) directive;
+                if (speed == null) {
+                    sendCommand(ArsdkFeatureArdrone3.Piloting.encodeMoveBy((float) relDir.getForwardComponent(),
+                            (float) relDir.getRightComponent(), (float) relDir.getDownwardComponent(),
+                            (float) Math.toRadians(relDir.getHeadingRotation())));
+                } else {
+                    sendCommand(ArsdkFeatureMove.encodeExtendedMoveBy((float) relDir.getForwardComponent(),
+                            (float) relDir.getRightComponent(), (float) relDir.getDownwardComponent(),
+                            (float) Math.toRadians(relDir.getHeadingRotation()), (float) speed.getHorizontalMax(),
+                            (float) speed.getVerticalMax(), (float) speed.getRotationMax()));
+                }
+                break;
         }
     }
 }

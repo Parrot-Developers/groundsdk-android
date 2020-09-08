@@ -36,7 +36,7 @@ import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective;
 import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective.Orientation;
-import com.parrot.drone.groundsdk.internal.device.pilotingitf.GuidedPilotingItfCore.LocationDirectiveCore.OrientationCore.Mode;
+import com.parrot.drone.groundsdk.device.pilotingitf.GuidedPilotingItf.LocationDirective.Orientation.Mode;
 
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
