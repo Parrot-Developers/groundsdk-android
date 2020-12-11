@@ -235,11 +235,11 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
         testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_LEFT_2),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_19, 0);
         testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_1),
-                EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_17, 0);
-        testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_2),
-                EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_20, 0);
-        testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_3),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_21, 0);
+        testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_2),
+                EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_17, 0);
+        testGrab(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_3),
+                EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_20, 0);
         testGrab(EnumSet.of(SkyControllerUaGamepad.Button.REAR_LEFT),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class), MASK_BUTTON_2, 0);
         testGrab(EnumSet.of(SkyControllerUaGamepad.Button.REAR_RIGHT),
@@ -373,11 +373,11 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
         testButtonEvents(MASK_BUTTON_13, ButtonEvent.LEFT_SLIDER_UP);
         testButtonEvents(MASK_BUTTON_14, ButtonEvent.RIGHT_SLIDER_UP);
         testButtonEvents(MASK_BUTTON_15, ButtonEvent.RIGHT_SLIDER_DOWN);
-        testButtonEvents(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
+        testButtonEvents(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
         testButtonEvents(MASK_BUTTON_18, ButtonEvent.FRONT_BOTTOM_LEFT_1_BUTTON);
         testButtonEvents(MASK_BUTTON_19, ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON);
-        testButtonEvents(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
-        testButtonEvents(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+        testButtonEvents(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+        testButtonEvents(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
 
         // unregister listener
         mSkyControllerUaGamepad.setButtonEventListener(null);
@@ -554,13 +554,13 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
                 EnumSet.of(ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON), MASK_BUTTON_19, 0);
         testInputsGrabState(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_1),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class),
-                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON), MASK_BUTTON_17, 0);
+                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON), MASK_BUTTON_21, 0);
         testInputsGrabState(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_2),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class),
-                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON), MASK_BUTTON_20, 0);
+                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON), MASK_BUTTON_17, 0);
         testInputsGrabState(EnumSet.of(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_3),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class),
-                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON), MASK_BUTTON_21, 0);
+                EnumSet.of(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON), MASK_BUTTON_20, 0);
         testInputsGrabState(EnumSet.of(SkyControllerUaGamepad.Button.REAR_LEFT),
                 EnumSet.noneOf(SkyControllerUaGamepad.Axis.class),
                 EnumSet.of(ButtonEvent.REAR_LEFT_BUTTON), MASK_BUTTON_2, 0);
@@ -866,11 +866,11 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
         testButtonsMappingsList(MASK_BUTTON_13, ButtonEvent.LEFT_SLIDER_UP);
         testButtonsMappingsList(MASK_BUTTON_14, ButtonEvent.RIGHT_SLIDER_UP);
         testButtonsMappingsList(MASK_BUTTON_15, ButtonEvent.RIGHT_SLIDER_DOWN);
-        testButtonsMappingsList(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
+        testButtonsMappingsList(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
         testButtonsMappingsList(MASK_BUTTON_18, ButtonEvent.FRONT_BOTTOM_LEFT_1_BUTTON);
         testButtonsMappingsList(MASK_BUTTON_19, ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON);
-        testButtonsMappingsList(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
-        testButtonsMappingsList(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+        testButtonsMappingsList(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+        testButtonsMappingsList(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
 
         // test ButtonMappableAction values are mapped properly
         testButtonsMappingsList(ArsdkFeatureMapper.ButtonAction.APP_0, ButtonsMappableAction.APP_ACTION_SETTINGS);
@@ -1114,11 +1114,11 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
         testMapButtonsAction(ButtonEvent.LEFT_SLIDER_DOWN, MASK_BUTTON_12);
         testMapButtonsAction(ButtonEvent.RIGHT_SLIDER_UP, MASK_BUTTON_14);
         testMapButtonsAction(ButtonEvent.RIGHT_SLIDER_DOWN, MASK_BUTTON_15);
-        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON, MASK_BUTTON_17);
+        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON, MASK_BUTTON_17);
         testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_LEFT_1_BUTTON, MASK_BUTTON_18);
         testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON, MASK_BUTTON_19);
-        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON, MASK_BUTTON_20);
-        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON, MASK_BUTTON_21);
+        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON, MASK_BUTTON_20);
+        testMapButtonsAction(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON, MASK_BUTTON_21);
 
         // test unregister
         MappingEntry entry = new ButtonsMappingEntry(Drone.Model.ANAFI_4K, ButtonsMappableAction.APP_ACTION_SETTINGS,
@@ -1200,11 +1200,11 @@ public class ScUaGamepadTests extends ArsdkEngineTestBase {
         testMapAxisAction(ButtonEvent.LEFT_SLIDER_DOWN, MASK_BUTTON_12);
         testMapAxisAction(ButtonEvent.RIGHT_SLIDER_UP, MASK_BUTTON_14);
         testMapAxisAction(ButtonEvent.RIGHT_SLIDER_DOWN, MASK_BUTTON_15);
-        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON, MASK_BUTTON_17);
+        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON, MASK_BUTTON_17);
         testMapAxisAction(ButtonEvent.FRONT_BOTTOM_LEFT_1_BUTTON, MASK_BUTTON_18);
         testMapAxisAction(ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON, MASK_BUTTON_19);
-        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON, MASK_BUTTON_20);
-        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON, MASK_BUTTON_21);
+        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON, MASK_BUTTON_20);
+        testMapAxisAction(ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON, MASK_BUTTON_21);
 
         // test unregister
         MappingEntry entry = new AxisMappingEntry(Drone.Model.ANAFI_4K, AxisMappableAction.PAN_CAMERA,

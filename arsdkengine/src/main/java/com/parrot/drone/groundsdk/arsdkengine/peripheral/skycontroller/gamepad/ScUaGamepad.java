@@ -542,11 +542,11 @@ public final class ScUaGamepad extends GamepadControllerBase {
             map(MASK_BUTTON_13, ButtonEvent.LEFT_SLIDER_UP);
             map(MASK_BUTTON_14, ButtonEvent.RIGHT_SLIDER_UP);
             map(MASK_BUTTON_15, ButtonEvent.RIGHT_SLIDER_DOWN);
-            map(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
+            map(MASK_BUTTON_17, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
             map(MASK_BUTTON_18, ButtonEvent.FRONT_BOTTOM_LEFT_1_BUTTON);
             map(MASK_BUTTON_19, ButtonEvent.FRONT_BOTTOM_LEFT_2_BUTTON);
-            map(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_2_BUTTON);
-            map(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+            map(MASK_BUTTON_20, ButtonEvent.FRONT_BOTTOM_RIGHT_3_BUTTON);
+            map(MASK_BUTTON_21, ButtonEvent.FRONT_BOTTOM_RIGHT_1_BUTTON);
         }
     }
 
@@ -748,11 +748,11 @@ public final class ScUaGamepad extends GamepadControllerBase {
             map(SkyControllerUaGamepad.Button.FRONT_TOP_RIGHT, MASK_BUTTON_1);
             map(SkyControllerUaGamepad.Button.REAR_LEFT, MASK_BUTTON_2);
             map(SkyControllerUaGamepad.Button.REAR_RIGHT, MASK_BUTTON_3);
-            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_1, MASK_BUTTON_17);
+            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_2, MASK_BUTTON_17);
             map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_LEFT_1, MASK_BUTTON_18);
             map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_LEFT_2, MASK_BUTTON_19);
-            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_2, MASK_BUTTON_20);
-            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_3, MASK_BUTTON_21);
+            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_3, MASK_BUTTON_20);
+            map(SkyControllerUaGamepad.Button.FRONT_BOTTOM_RIGHT_1, MASK_BUTTON_21);
             map(SkyControllerUaGamepad.Axis.LEFT_STICK_HORIZONTAL, MASK_BUTTON_4 | MASK_BUTTON_5, MASK_AXIS_0);
             map(SkyControllerUaGamepad.Axis.LEFT_STICK_VERTICAL, MASK_BUTTON_6 | MASK_BUTTON_7, MASK_AXIS_1);
             map(SkyControllerUaGamepad.Axis.RIGHT_STICK_HORIZONTAL, MASK_BUTTON_8 | MASK_BUTTON_9, MASK_AXIS_2);

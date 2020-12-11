@@ -4,4 +4,4 @@ python_path:
     - $ROOT
 custom_config:
     extensions:
-        - sphinx-ext
+        - sphinx-prompt

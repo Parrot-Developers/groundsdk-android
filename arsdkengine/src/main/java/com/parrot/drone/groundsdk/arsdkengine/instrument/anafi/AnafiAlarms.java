@@ -306,6 +306,26 @@ public class AnafiAlarms extends DroneInstrumentController {
                         mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.STRONG_VIBRATIONS, level).notifyUpdated();
                     }
                 }
+
+                @Override
+                public void onHeadingLockedStateChanged(
+                        @Nullable ArsdkFeatureArdrone3.PilotingstateHeadinglockedstatechangedState state) {
+                    if (state != null) {
+                        Alarms.Alarm.Level level = null;
+                        switch (state) {
+                            case OK:
+                                level = Alarms.Alarm.Level.OFF;
+                                break;
+                            case WARNING:
+                                level = Alarms.Alarm.Level.WARNING;
+                                break;
+                            case CRITICAL:
+                                level = Alarms.Alarm.Level.CRITICAL;
+                                break;
+                        }
+                        mAlarms.updateAlarmLevel(Alarms.Alarm.Kind.HEADING_LOCK, level).notifyUpdated();
+                    }
+                }
             };
 
     /** Callbacks called when a command of the feature ArsdkFeatureArdrone3.SettingsState is decoded. */

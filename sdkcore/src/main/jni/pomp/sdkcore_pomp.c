@@ -80,7 +80,7 @@ static int on_pomp_event(int fd, int events, void *userdata)
 		*self->context_flag = flag;
 	}
 
-	RETURN_VAL_IF_ERR(res, 0);
+	LOG_IF_ERR(res);
 
 	return 1;
 }

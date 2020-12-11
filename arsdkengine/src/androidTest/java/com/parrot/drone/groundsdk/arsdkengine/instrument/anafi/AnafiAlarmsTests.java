@@ -941,4 +941,34 @@ public class AnafiAlarmsTests extends ArsdkEngineTestBase {
         assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.UNRELIABLE_CONTROLLER_LOCATION).getLevel(),
                 is(Alarms.Alarm.Level.OFF));
     }
+
+    @Test
+    public void testHeadingLock() {
+        connectDrone(mDrone, 1);
+
+        // check default value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HEADING_LOCK).getLevel(), is(Alarms.Alarm.Level.OFF));
+
+        // drone sends heading lock warning
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateHeadingLockedStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateHeadinglockedstatechangedState.WARNING));
+
+        assertThat(mChangeCnt, is(2));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HEADING_LOCK).getLevel(), is(Alarms.Alarm.Level.WARNING));
+
+        // drone sends heading lock ok
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateHeadingLockedStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateHeadinglockedstatechangedState.OK));
+
+        assertThat(mChangeCnt, is(3));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HEADING_LOCK).getLevel(), is(Alarms.Alarm.Level.OFF));
+
+        // drone sends heading lock at the critical level
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeArdrone3PilotingStateHeadingLockedStateChanged(
+                ArsdkFeatureArdrone3.PilotingstateHeadinglockedstatechangedState.CRITICAL));
+
+        assertThat(mChangeCnt, is(4));
+        assertThat(mAlarms.getAlarm(Alarms.Alarm.Kind.HEADING_LOCK).getLevel(), is(Alarms.Alarm.Level.CRITICAL));
+    }
 }

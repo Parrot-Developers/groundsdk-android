@@ -1163,6 +1163,10 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
      * Applies component's persisted presets.
      */
     private void applyPresets() {
+        // NOTE: due to possible race condition on the firmware side, apply auto HDR first,
+        //       before any photo and (in particular) recording configuration.
+        applyAutoHdr(AUTO_HDR_ENABLE_PRESET.load(mPresetDict));
+
         Camera.Mode modeBeforeSwitch = mMode;
         // first configure settings for the mode the drone is NOT in, to avoid extraneous pipeline reconfiguration
         if (modeBeforeSwitch != Camera.Mode.PHOTO) {
@@ -1192,7 +1196,6 @@ final class CameraController extends AnafiCameraRouter.CameraControllerBase {
         applyStyleParameters(SATURATION_PRESET.load(mPresetDict), CONTRAST_PRESET.load(mPresetDict),
                 SHARPNESS_PRESET.load(mPresetDict));
         applyAutoRecord(AUTO_RECORD_ENABLE_PRESET.load(mPresetDict));
-        applyAutoHdr(AUTO_HDR_ENABLE_PRESET.load(mPresetDict));
         applyMaxZoomSpeed(MAX_ZOOM_SPEED_PRESET.load(mPresetDict));
         applyZoomQualityDegradationAllowance(QUALITY_DEGRADATION_ALLOWANCE_PRESET.load(mPresetDict));
     }

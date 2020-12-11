@@ -136,13 +136,31 @@ public interface Alarms extends Instrument {
 
             /**
              * A magnetic element disturbs the drone's magnetometer and alters the drone ability to fly safely.
+             *
+             * @deprecated use {@link #HEADING_LOCK} instead
              */
+            @Deprecated
             MAGNETOMETER_PERTURBATION,
 
             /**
              * The local terrestrial magnetic field is too weak to allow to fly safely.
+             *
+             * @deprecated use {@link #HEADING_LOCK} instead
              */
+            @Deprecated
             MAGNETOMETER_LOW_EARTH_FIELD,
+
+            /**
+             * Drone heading lock is altered by magnetic perturbations.
+             * <p>
+             * When at level <ul>
+             * <li>{@link Level#OFF}, magnetometer state allows heading lock;</li>
+             * <li>{@link Level#WARNING}, magnetometer detects a weak magnetic field (close to Earth pole), or a
+             * disturbed local magnetic field; magnetometer has not lost heading lock yet;</li>
+             * <li>{@link Level#CRITICAL}, magnetometer lost heading lock.</li>
+             * </ul>
+             */
+            HEADING_LOCK,
 
             /** Location information sent by the controller is unreliable. */
             UNRELIABLE_CONTROLLER_LOCATION

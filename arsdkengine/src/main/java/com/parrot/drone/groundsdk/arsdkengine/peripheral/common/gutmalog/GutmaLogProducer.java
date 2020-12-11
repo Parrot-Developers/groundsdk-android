@@ -35,6 +35,7 @@ package com.parrot.drone.groundsdk.arsdkengine.peripheral.common.gutmalog;
 import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DeviceController;
 import com.parrot.drone.groundsdk.arsdkengine.peripheral.common.flightlog.HttpFlightLogDownloader;
 import com.parrot.drone.groundsdk.internal.io.Files;
+import com.parrot.drone.groundsdk.internal.tasks.Executor;
 import com.parrot.drone.groundsdk.internal.utility.GutmaLogStorage;
 import com.parrot.drone.sdkcore.flightlogconverter.FlightLogConverter;
 import com.parrot.drone.sdkcore.ulog.ULog;
@@ -100,7 +101,7 @@ public final class GutmaLogProducer implements HttpFlightLogDownloader.Converter
         boolean success = FlightLogConverter.toGutma(flightLog, gutmaFile);
         if (success) {
             ULog.d(TAG_GUTMALOG, "GUTMA log file created: " + gutmaFile);
-            mStorage.notifyGutmaLogFileReady(gutmaFile);
+            Executor.postOnMainThread(() -> mStorage.notifyGutmaLogFileReady(gutmaFile));
         } else {
             ULog.w(TAG_GUTMALOG, "Failed to convert flight log file to GUTMA log file: " + flightLog);
         }
