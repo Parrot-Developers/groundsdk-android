@@ -64,7 +64,7 @@ static void device_connecting(void *userdata)
 			s_jni_cache.jmid_device_connecting);
 }
 
-static void device_connected(void *userdata)
+static void device_connected(enum arsdk_device_api api, void *userdata)
 {
 	JNIEnv *env = NULL;
 	int res = (*sdkcore_jvm)->GetEnv(sdkcore_jvm, (void **) &env,
@@ -72,7 +72,7 @@ static void device_connected(void *userdata)
 	RETURN_IF_FAILED(env != NULL, res);
 
 	(*env)->CallVoidMethod(env, (jobject) userdata,
-			s_jni_cache.jmid_device_connected);
+			s_jni_cache.jmid_device_connected, (jint)api);
 }
 
 static void device_disconnected(int removing, void *userdata)
@@ -150,7 +150,7 @@ Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkDevice_nativeClassInit(
 	s_jni_cache.jmid_device_connecting = (*env)->GetMethodID(env, clazz,
 			"onConnecting", "()V");
 	s_jni_cache.jmid_device_connected = (*env)->GetMethodID(env, clazz,
-			"onConnected", "()V");
+			"onConnected", "(I)V");
 	s_jni_cache.jmid_device_disconnected = (*env)->GetMethodID(env, clazz,
 			"onDisconnected", "(Z)V");
 	s_jni_cache.jmid_device_connection_canceled = (*env)->GetMethodID(env,

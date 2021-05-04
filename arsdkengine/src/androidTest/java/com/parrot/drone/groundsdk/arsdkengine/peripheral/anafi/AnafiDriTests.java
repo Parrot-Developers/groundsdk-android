@@ -45,13 +45,17 @@ import com.parrot.drone.sdkcore.arsdk.ExpectedCmd;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabling;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabling;
+import static com.parrot.drone.groundsdk.DroneIdMatcher.is;
 import static com.parrot.drone.groundsdk.SettingMatcher.settingIsUpToDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -303,5 +307,218 @@ public class AnafiDriTests extends ArsdkEngineTestBase {
         assertThat(mDri.state(), allOf(
                 booleanSettingIsEnabled(),
                 settingIsUpToDate()));
+    }
+
+    @Test
+    public void testSupportedTypes() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(
+                        ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                                ArsdkFeatureDri.SupportedCapabilities.ON_OFF))));
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDri.supportedTypes(), empty());
+
+        // receive supported types
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                        ArsdkFeatureDri.SupportedCapabilities.FRENCH_REGULATION)));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDri.supportedTypes(), is(EnumSet.of(Dri.TypeConfig.Type.FRENCH)));
+
+        // receive supported types
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                        ArsdkFeatureDri.SupportedCapabilities.FRENCH_REGULATION,
+                        ArsdkFeatureDri.SupportedCapabilities.EN4709_002_REGULATION)));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.supportedTypes(), is(EnumSet.of(Dri.TypeConfig.Type.FRENCH, Dri.TypeConfig.Type.EN4709_002)));
+
+        // receive same supported types, should change nothing
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                        ArsdkFeatureDri.SupportedCapabilities.FRENCH_REGULATION,
+                        ArsdkFeatureDri.SupportedCapabilities.EN4709_002_REGULATION)));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.supportedTypes(), is(EnumSet.of(Dri.TypeConfig.Type.FRENCH, Dri.TypeConfig.Type.EN4709_002)));
+    }
+
+    @Test
+    public void testTypeConfigState() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(
+                        ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                                ArsdkFeatureDri.SupportedCapabilities.ON_OFF))));
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("", ArsdkFeatureDri.DriType.FRENCH, ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofFrench()));
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("operator1", ArsdkFeatureDri.DriType.EN4709_002,
+                        ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator1")));
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("operator2", ArsdkFeatureDri.DriType.EN4709_002,
+                        ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator2")));
+
+        // receive same type, should change nothing
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("operator2", ArsdkFeatureDri.DriType.EN4709_002,
+                        ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator2")));
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("", ArsdkFeatureDri.DriType.FRENCH,
+                        ArsdkFeatureDri.Status.FAILURE));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.FAILURE, Dri.TypeConfig.ofFrench()));
+    }
+
+    @Test
+    public void testTypeConfig() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(
+                        ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                                ArsdkFeatureDri.SupportedCapabilities.ON_OFF))));
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // try to change to an unsupported type, should do nothing
+        mDri.setTypeConfig(Dri.TypeConfig.ofFrench());
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // receive supported types
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                        ArsdkFeatureDri.SupportedCapabilities.FRENCH_REGULATION,
+                        ArsdkFeatureDri.SupportedCapabilities.EN4709_002_REGULATION)));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDri.supportedTypes(), is(EnumSet.of(Dri.TypeConfig.Type.FRENCH, Dri.TypeConfig.Type.EN4709_002)));
+
+        // change type from api
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.driSetDriType(ArsdkFeatureDri.DriType.FRENCH, "")));
+        mDri.setTypeConfig(Dri.TypeConfig.ofFrench());
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofFrench()));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.UPDATING, Dri.TypeConfig.ofFrench()));
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("", ArsdkFeatureDri.DriType.FRENCH, ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(4));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofFrench()));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofFrench()));
+
+        // change type from api
+        mMockArsdkCore.expect(new Expectation.Command(1,
+                ExpectedCmd.driSetDriType(ArsdkFeatureDri.DriType.EN4709_002, "FIN87astrdge12k8-xyz")));
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"));
+        assertThat(mChangeCnt, is(5));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.UPDATING,
+                Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+
+        // receive type change
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriDriType("FIN87astrdge12k8", ArsdkFeatureDri.DriType.EN4709_002,
+                        ArsdkFeatureDri.Status.SUCCESS));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8")));
+
+        // set to same type from api, should do nothing
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"));
+        assertThat(mChangeCnt, is(6));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8")));
+
+        // reset type from api, should not send a command
+        mDri.setTypeConfig(null);
+        assertThat(mChangeCnt, is(7));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8")));
+
+        // disconnect drone, type config state should be reset
+        disconnectDrone(mDrone, 1);
+        assertThat(mChangeCnt, is(8));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mDri.getTypeConfigState(), nullValue());
+    }
+
+    @Test
+    public void testTypeConfigPersistence() {
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(
+                        ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                                ArsdkFeatureDri.SupportedCapabilities.values()))));
+
+        // check initial value
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // disconnect drone
+        disconnectDrone(mDrone, 1);
+
+        // change type from api
+        mDri.setTypeConfig(Dri.TypeConfig.ofFrench());
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofFrench()));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // change type from api
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // connect drone, type configuration should be sent
+        connectDrone(mDrone, 1, () -> mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDriCapabilities(
+                        ArsdkFeatureDri.SupportedCapabilities.toBitField(
+                                ArsdkFeatureDri.SupportedCapabilities.values())))
+                .expect(new Expectation.Command(1, ExpectedCmd.driSetDriType(ArsdkFeatureDri.DriType.EN4709_002,
+                        "FIN87astrdge12k8-xyz"))));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // disconnect drone, type configuration should not change
+        disconnectDrone(mDrone, 1);
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+
+        // reset engine, type configuration should be loaded from persisted data
+        resetEngine();
+        assertThat(mChangeCnt, is(0));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
     }
 }

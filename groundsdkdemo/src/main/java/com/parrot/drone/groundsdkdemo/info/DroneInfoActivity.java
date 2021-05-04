@@ -52,6 +52,7 @@ import com.parrot.drone.groundsdk.device.peripheral.RemovableUserStorage;
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Animation;
 import com.parrot.drone.groundsdk.device.pilotingitf.animation.Flip;
 import com.parrot.drone.groundsdk.facility.FirmwareManager;
+import com.parrot.drone.groundsdkdemo.DebugTagDialogFragment;
 import com.parrot.drone.groundsdkdemo.FormatDialogFragment;
 import com.parrot.drone.groundsdkdemo.GroundSdkActivityBase;
 import com.parrot.drone.groundsdkdemo.PasswordDialogFragment;
@@ -74,7 +75,7 @@ public class DroneInfoActivity extends GroundSdkActivityBase
                    AnimationContent.OnAnimationConfigRequestListener, PickAnimationDialog.Listener,
                    PickFlipDirectionDialog.Listener, RemovableUserStorageContent.OnUserStorageFormatRequestListener,
                    RemovableUserStorageContent.OnUserStorageEnterPasswordListener,
-                   OnPickFileRequestListener, PickFileDialog.Listener {
+                   OnPickFileRequestListener, PickFileDialog.Listener, DevToolboxContent.OnDebugTagRequestListener {
 
     private Button mHudButton;
 
@@ -314,5 +315,12 @@ public class DroneInfoActivity extends GroundSdkActivityBase
     @Override
     public void onFileSelected(@NonNull File file) {
         mFileResponse.setFile(file);
+    }
+
+    @Override
+    public void onDebugTagRequest(@NonNull DebugTagDialogFragment.Listener listener) {
+        DebugTagDialogFragment debugTagDialog = new DebugTagDialogFragment();
+        debugTagDialog.setListener(listener);
+        debugTagDialog.show(getSupportFragmentManager(), null);
     }
 }

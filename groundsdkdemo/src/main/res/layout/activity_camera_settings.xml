@@ -200,7 +200,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:format="integer_format"
+                    app:format="double_format"
                     app:title="@string/property_camera_exposure_lock_center_x"/>
 
                 <com.parrot.drone.groundsdkdemo.settings.RangedSettingView
@@ -208,7 +208,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    app:format="integer_format"
+                    app:format="double_format"
                     app:title="@string/property_camera_exposure_lock_center_y"/>
 
             </LinearLayout>

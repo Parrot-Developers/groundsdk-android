@@ -127,12 +127,19 @@ static void update_histogram(JNIEnv *env, struct joverlayer *jself,
  * Updates SdkCoreOverlayer fields and calls onOverlay.
  * @param[in] render_zone: render zone update to apply
  * @param[in] content_zone: content zone update to apply
+ * @param[in] session_info: PDRAW session info
+ * @param[in] session_meta: session metadata
+ * @param[in] frame_meta: frame metadata
  * @param[in] extra: PDRAW frame extraneous data, containing histogram data to
- *                   apply
+ *                   apply; NULL in case of redrawing old frame to keep
+ *                   the frame rate.
  * @param[in] userdata: SdkCoreOverlayer instance cache
  */
 static void on_overlay(const struct pdraw_rect *render_zone,
 		const struct pdraw_rect *content_zone,
+		const struct pdraw_session_info *session_info,
+		const struct vmeta_session *session_meta,
+		const struct vmeta_frame *frame_meta,
 		const struct pdraw_video_frame_extra *extra, void *userdata)
 {
 	JNIEnv *env = NULL;
@@ -146,12 +153,15 @@ static void on_overlay(const struct pdraw_rect *render_zone,
 	update_zone(env, jself->render_zone, render_zone);
 	update_zone(env, jself->content_zone, content_zone);
 
-	for (enum pdraw_histogram_channel channel = 0;
-			channel < PDRAW_HISTOGRAM_CHANNEL_MAX; ++channel) {
-		update_histogram(env, jself, extra, channel);
+	if (extra != NULL) {
+		for (enum pdraw_histogram_channel channel = 0;
+		     channel < PDRAW_HISTOGRAM_CHANNEL_MAX; ++channel) {
+			update_histogram(env, jself, extra, channel);
+		}
 	}
 
-	(*env)->CallVoidMethod(env, jself->self, s_jni_cache.jmid_on_overlay);
+	(*env)->CallVoidMethod(env, jself->self, s_jni_cache.jmid_on_overlay,
+			session_info, session_meta, frame_meta);
 }
 
 /**
@@ -268,7 +278,7 @@ Java_com_parrot_drone_sdkcore_stream_SdkCoreOverlayer_nativeClassInit(
 		JNIEnv *env, jclass clazz)
 {
 	s_jni_cache.jmid_on_overlay = (*env)->GetMethodID(env, clazz, "onOverlay",
-			"()V");
+			"(JJJ)V");
 	s_jni_cache.jfid_render_zone = (*env)->GetFieldID(env, clazz, "mRenderZone",
 			"Landroid/graphics/Rect;");
 	s_jni_cache.jfid_content_zone = (*env)->GetFieldID(env, clazz,

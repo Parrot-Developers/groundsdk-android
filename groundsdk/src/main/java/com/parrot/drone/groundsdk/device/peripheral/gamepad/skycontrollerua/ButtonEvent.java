@@ -91,12 +91,12 @@ public enum ButtonEvent {
     FRONT_BOTTOM_RIGHT_3_BUTTON,
 
     /**
-     * Event sent when {@link SkyControllerUaGamepad.Button#REAR_LEFT_BUTTON rear left button} is pressed or released.
+     * Event sent when {@link SkyControllerUaGamepad.Button#REAR_LEFT rear left button} is pressed or released.
      */
     REAR_LEFT_BUTTON,
 
     /**
-     * Event sent when the {@link SkyControllerUaGamepad.Button#REAR_RIGHT_BUTTON rear right button} is pressed or
+     * Event sent when the {@link SkyControllerUaGamepad.Button#REAR_RIGHT rear right button} is pressed or
      * released.
      */
     REAR_RIGHT_BUTTON,

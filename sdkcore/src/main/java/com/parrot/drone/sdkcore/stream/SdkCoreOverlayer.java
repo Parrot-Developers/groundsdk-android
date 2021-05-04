@@ -93,6 +93,15 @@ public final class SdkCoreOverlayer {
     @NonNull
     private final Rect mContentZone;
 
+    /** Native pointer on the video session info. */
+    private long mSessionInfoNativePtr;
+
+    /** Native pointer on the video session metadata. */
+    private long mSessionMetadataNativePtr;
+
+    /** Native pointer on the current frame metadata. */
+    private long mFrameMetadataNativePtr;
+
     /**
      * Red color channel histogram data. Updated from native on the rendering thread right before {@link #onOverlay()}
      * is called.
@@ -162,7 +171,7 @@ public final class SdkCoreOverlayer {
     /**
      * Gives access to render zone.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}.
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}.
      *
      * @return current render zone
      */
@@ -176,7 +185,7 @@ public final class SdkCoreOverlayer {
      * <p>
      * This informs about the actual stream content zone, after scaling and excluding padding.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}.
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}.
      *
      * @return current content zone
      */
@@ -186,9 +195,42 @@ public final class SdkCoreOverlayer {
     }
 
     /**
+     * Gives access to the video session info.
+     * <p>
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}.
+     *
+     * @return handle to the video session info.
+     */
+    public long sessionInfoHandle() {
+        return mSessionInfoNativePtr;
+    }
+
+    /**
+     * Gives access to the video session metadata.
+     * <p>
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}.
+     *
+     * @return handle to the video session metadata.
+     */
+    public long sessionMetadataHandle() {
+        return mSessionMetadataNativePtr;
+    }
+
+    /**
+     * Gives access to current frame metadata.
+     * <p>
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}.
+     *
+     * @return handle to the current frame metadata.
+     */
+    public long frameMetadataHandle() {
+        return mFrameMetadataNativePtr;
+    }
+
+    /**
      * Gives access to red color channel histogram.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}, when
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}, when
      * {@link SdkCoreRenderer#enableHistogram histogram computation} is enabled.
      *
      * @return histogram for red color channel
@@ -201,7 +243,7 @@ public final class SdkCoreOverlayer {
     /**
      * Gives access to green color channel histogram.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}, when
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}, when
      * {@link SdkCoreRenderer#enableHistogram histogram computation} is enabled.
      *
      * @return histogram for green color channel
@@ -214,7 +256,7 @@ public final class SdkCoreOverlayer {
     /**
      * Gives access to blue color channel histogram.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}, when
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}, when
      * {@link SdkCoreRenderer#enableHistogram histogram computation} is enabled.
      *
      * @return histogram for blue color channel
@@ -227,7 +269,7 @@ public final class SdkCoreOverlayer {
     /**
      * Gives access to luminance channel histogram.
      * <p>
-     * Returned value is only meaningful during a call to {@link Callback#onOverlay() overlay callback}, when
+     * Returned value is only meaningful during a call to {@link Callback#onOverlay overlay callback}, when
      * {@link SdkCoreRenderer#enableHistogram histogram computation} is enabled.
      *
      * @return histogram for luminance channel
@@ -255,11 +297,19 @@ public final class SdkCoreOverlayer {
      * <p>
      * Called from native on the rendering thread.
      * <p>
+     * @param sessionInfo PDRAW session info
+     * @param sessionMetadata session metadata
+     * @param frameMetadata frame metadata
+     * <p>
      * {@link #mRenderZone}, {@link #mContentZone}, {@link #mHistogramRed}, {@link #mHistogramGreen},
      * {@link #mHistogramBlue} and {@link #mHistogramLuma} are updated from native right before this method is called.
      */
     @SuppressWarnings("unused") /* native callback */
-    private void onOverlay() {
+    private void onOverlay(long sessionInfo, long sessionMetadata, long frameMetadata) {
+        mSessionInfoNativePtr = sessionInfo;
+        mSessionMetadataNativePtr = sessionMetadata;
+        mFrameMetadataNativePtr = frameMetadata;
+
         mCallback.onOverlay(this);
     }
 

@@ -1,5 +1,5 @@
 /*
- *     Copyright (C) 2019 Parrot Drones SAS
+ *     Copyright (C) 2021 Parrot Drones SAS
  *
  *     Redistribution and use in source and binary forms, with or without
  *     modification, are permitted provided that the following conditions
@@ -39,16 +39,13 @@ import androidx.annotation.NonNull;
 /**
  * Allows to overlay custom graphics on top of a stream rendered by a {@link GsdkStreamView}.
  * <p>
- * After each frame is rendered, {@link #overlay(Rect, Rect, Histogram)} will be called; client code must
+ * After each frame is rendered, {@link #overlay(OverlayContext)} will be called; client code must
  * implement this method to render the appropriate overlay on top of the rendered frame.
  * <p>
  * Overlayer interface also allows to receive color histogram computations, when
  * {@link GsdkStreamView#enableHistogram(boolean) enabled} onto which the overlayer is installed.
- *
- * @deprecated Use {@link Overlayer2} instead.
  */
-@Deprecated
-public interface Overlayer {
+public interface Overlayer2 {
 
     /** Color histogram information. */
     interface Histogram {
@@ -87,15 +84,63 @@ public interface Overlayer {
     }
 
     /**
+     * Contextual information on an overlay.
+     */
+    interface OverlayContext {
+        /**
+         * Retrieves area where the frame was rendered
+         * (including any padding introduced by scaling).
+         *
+         * @return render zone
+         */
+        @NonNull
+        Rect renderZone();
+
+        /**
+         * Retrieves area where frame content was rendered
+         * (excluding any padding introduced by scaling).
+         *
+         * @return content zone
+         */
+        @NonNull
+        Rect contentZone();
+
+        /**
+         * Gives access to the video session info.
+         *
+         * @return handle to the video session info.
+         */
+        long sessionInfoHandle();
+
+        /**
+         * Gives access to the video session metadata.
+         *
+         * @return handle to the video session metadata.
+         */
+        long sessionMetadataHandle();
+
+        /**
+         * Gives access to current frame metadata.
+         *
+         * @return handle to the current frame metadata.
+         */
+        long frameMetadataHandle();
+
+        /**
+         * Color histogram info.
+         *
+         * @return Color histogram
+         */
+        @NonNull
+        Histogram histogram();
+    }
+
+    /**
      * Renders custom overlay on top of current frame.
      * <p>
      * Called on {@link GsdkStreamView} GL rendering thread.
      *
-     * @param renderZone  area where the frame was rendered (including any padding introduced by scaling),
-     *                    invalid after this method returns
-     * @param contentZone area where frame content was rendered (excluding any padding introduced by scaling),
-     *                    invalid after this method returns
-     * @param histogram   color histogram info, invalid after this method returns
+     * @param overlayContext contextual information about the overlay, invalid after this method returns
      */
-    void overlay(@NonNull Rect renderZone, @NonNull Rect contentZone, @NonNull Histogram histogram);
+    void overlay(@NonNull OverlayContext overlayContext);
 }

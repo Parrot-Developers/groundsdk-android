@@ -42,27 +42,55 @@
     card_view:cardCornerRadius="4dp"
     card_view:contentPadding="@dimen/content_margin">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:stretchColumns="0">
 
-        <TextView
-            android:id="@android:id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/peripheral_dev_box"
-            android:textAllCaps="true"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAllCaps="true"
+                android:text="@string/peripheral_dev_box"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/btn_debug_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:text="@string/action_see_debug_settings"
+                tools:ignore="ContentDescription"/>
+        </LinearLayout>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_debug_tag_id"/>
+
+            <TextView
+                android:id="@+id/debug_tag_id"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="@string/no_value"/>
+        </TableRow>
 
         <Button
-            android:id="@+id/btn_debug_settings"
             style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btn_debug_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:text="@string/action_see_debug_settings"
+            android:layout_gravity="top|center_horizontal"
+            android:text="@string/action_debug_tag"
             tools:ignore="ContentDescription"/>
-    </LinearLayout>
+
+    </TableLayout>
 
 </androidx.cardview.widget.CardView>

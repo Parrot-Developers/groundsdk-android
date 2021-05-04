@@ -63,14 +63,19 @@ struct sdkcore_overlayer *sdkcore_overlayer_create(
 int sdkcore_overlayer_overlay(struct sdkcore_overlayer *self,
 		const struct pdraw_rect *render_zone,
 		const struct pdraw_rect *content_zone,
+		const struct pdraw_session_info *session_info,
+		const struct vmeta_session *session_meta,
+		const struct vmeta_frame *frame_meta,
 		const struct pdraw_video_frame_extra *extra)
 {
 	RETURN_ERRNO_IF_FAILED(self != NULL, -EINVAL);
 	RETURN_ERRNO_IF_FAILED(render_zone != NULL, -EINVAL);
 	RETURN_ERRNO_IF_FAILED(content_zone != NULL, -EINVAL);
-	RETURN_ERRNO_IF_FAILED(extra != NULL, -EINVAL);
+	RETURN_ERRNO_IF_FAILED(session_info != NULL, -EINVAL);
+	RETURN_ERRNO_IF_FAILED(session_meta != NULL, -EINVAL);
 
-	self->cbs.on_overlay(render_zone, content_zone, extra, self->userdata);
+	self->cbs.on_overlay(render_zone, content_zone, session_info, session_meta,
+			frame_meta, extra, self->userdata);
 
 	return 0;
 }

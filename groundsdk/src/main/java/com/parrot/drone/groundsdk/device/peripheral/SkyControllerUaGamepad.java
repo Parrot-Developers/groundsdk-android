@@ -230,7 +230,7 @@ public interface SkyControllerUaGamepad extends Peripheral {
         RIGHT_STICK_VERTICAL,
 
         /**
-         * Slider on the rear, to the left of the controller, immediately below {@link Button#REAR_LEFT_BUTTON},
+         * Slider on the rear, to the left of the controller, immediately below {@link Button#REAR_LEFT},
          * featuring a gimbal icon print.
          * <p>
          * Produces {@link ButtonEvent#LEFT_SLIDER_UP}, {@link ButtonEvent#LEFT_SLIDER_DOWN} and
@@ -239,7 +239,7 @@ public interface SkyControllerUaGamepad extends Peripheral {
         LEFT_SLIDER,
 
         /**
-         * Slider on the rear, to the right of the controller, immediately below {@link Button#REAR_RIGHT_BUTTON},
+         * Slider on the rear, to the right of the controller, immediately below {@link Button#REAR_RIGHT},
          * featuring a zoom icon print.
          * <p>
          * Produces {@link ButtonEvent#RIGHT_SLIDER_UP}, {@link ButtonEvent#RIGHT_SLIDER_DOWN} and

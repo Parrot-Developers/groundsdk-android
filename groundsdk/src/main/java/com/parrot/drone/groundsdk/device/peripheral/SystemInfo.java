@@ -69,6 +69,13 @@ public interface SystemInfo extends Peripheral {
     boolean isFirmwareBlacklisted();
 
     /**
+     * Tells whether an update is required.
+     *
+     * @return {@code true} if an update is required, otherwise {@code false}.
+     */
+    boolean isUpdateRequired();
+
+    /**
      * Gets the device hardware version.
      *
      * @return a string identifying the device hardware version

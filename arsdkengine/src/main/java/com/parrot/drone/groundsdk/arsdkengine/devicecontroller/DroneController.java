@@ -61,6 +61,7 @@ import com.parrot.drone.sdkcore.ulog.ULog;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.parrot.drone.groundsdk.arsdkengine.Logging.TAG_CTRL;
 
@@ -337,18 +338,12 @@ public abstract class DroneController extends DeviceController<DroneCore> {
 
     /** Processes system atmospheric pressure measurements and sends them to the drone. */
     private final SystemBarometer.Monitor mBarometerMonitor = (pressure, measureTimeStamp) -> {
-        // same as Free Flight 4
-        // TODO : what relationship with other timestamps ( time we send to the drone, pcmd timestamps,
-        // TODO   barometer timestamps, etc.) ?
-        sendCommand(ArsdkFeatureControllerInfo.encodeBarometer((float) pressure, measureTimeStamp));
+        sendCommand(ArsdkFeatureControllerInfo.encodeBarometer((float) pressure,
+                TimeUnit.NANOSECONDS.toMillis(measureTimeStamp)));
     };
 
     /** Processes system geographic location changes and sends them to the drone. */
     private final SystemLocation.Monitor mLocationMonitor = location -> {
-        // same as Free Flight 4
-        // TODO : why use getTime() (milliseconds) vs getElapsedRealTimeNanos() ? what relationship with
-        // TODO   other timestamps: time we send to the drone, pcmd timestamps, barometer timestamps
-        // TODO   (which is in _nanoseconds_), etc. ?
         double northSpeed = 0, eastSpeed = 0;
         if (location.hasSpeed() && location.hasBearing()) {
             double speed = location.getSpeed(), bearing = Math.toRadians(location.getBearing());
@@ -357,7 +352,7 @@ public abstract class DroneController extends DeviceController<DroneCore> {
         }
         sendCommand(ArsdkFeatureControllerInfo.encodeGps(location.getLatitude(), location.getLongitude(),
                 (float) location.getAltitude(), location.getAccuracy(), -1, (float) northSpeed,
-                (float) eastSpeed, 0, location.getTime()));
+                (float) eastSpeed, 0, TimeUnit.NANOSECONDS.toMillis(location.getElapsedRealtimeNanos())));
     };
 
     @Override

@@ -39,7 +39,7 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.parrot.drone.groundsdk.stream.Overlayer;
+import com.parrot.drone.groundsdk.stream.Overlayer2;
 import com.parrot.drone.groundsdk.stream.Stream;
 import com.parrot.drone.groundsdk.stream.TextureLoader;
 
@@ -185,13 +185,13 @@ public interface GlRenderSink extends Stream.Sink {
          * Configures color histogram computation.
          * <p>
          * When enabled, color histogram statistics are computed for each rendered frame. <br>
-         * Those computation can be retrieved through the configured {@link Overlayer}, if any.
+         * Those computation can be retrieved through the configured {@link Overlayer2}, if any.
          *
          * @param enable {@code true} to enable color histogram computation, {@code false} to disable it
          *
          * @return {@code true} if color histogram computation could be enabled, otherwise {@code false}
          *
-         * @see #setOverlayer(Overlayer)
+         * @see #setOverlayer(Overlayer2)
          */
         boolean enableHistogram(boolean enable);
 
@@ -202,7 +202,7 @@ public interface GlRenderSink extends Stream.Sink {
          *
          * @return {@code true} if rendering overlayer could be configured, otherwise {@code false}
          */
-        boolean setOverlayer(@Nullable Overlayer overlayer);
+        boolean setOverlayer(@Nullable Overlayer2 overlayer);
 
         /**
          * Renders current frame.

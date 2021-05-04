@@ -67,6 +67,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical|end"
                 tools:text="1.0.4-rc5"/>
+
         </TableRow>
 
         <TableRow>
@@ -78,6 +79,19 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical|end"
                 tools:text="false"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView android:text="@string/property_sysinfo_update_required"/>
+
+            <TextView
+                android:id="@+id/update_required"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="false" />
         </TableRow>
 
         <TableRow>

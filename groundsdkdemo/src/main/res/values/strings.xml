@@ -78,8 +78,10 @@
     <string name="title_dialog_edit_color">Edit color</string>
     <string name="title_dialog_storage_password">Enter Password and Usage</string>
     <string name="title_dialog_pick_certificate_file">Select certificate file</string>
+    <string name="title_debug_tag">Send debug tag</string>
     <string name="label_password">Password</string>
     <string name="label_storage_name">Storage Name</string>
+    <string name="label_debug_tag">Debug tag</string>
     <string name="known">KNOWN</string>
     <string name="unknown">UNKNOWN</string>
     <string name="unsupported">N/A</string>
@@ -150,6 +152,9 @@
     <string name="action_enter_password">Enter password</string>
     <string name="action_decrypt">Decrypt</string>
     <string name="action_deactivate_log_storage">Deactivate log storage</string>
+    <string name="action_debug_tag">Send debug tag</string>
+    <string name="action_send">Send</string>
+    <string name="action_dri_type_reset">Reset type configuration</string>
     <string name="header_instruments">Instruments</string>
     <string name="header_piloting_itf">Piloting interfaces</string>
     <string name="header_peripherals">Peripherals</string>
@@ -189,8 +194,6 @@
     <string name="property_speedometer_drone_speed">Speed (drone referential)</string>
     <string name="property_speedometer_air_speed">Air speed</string>
     <string name="property_magnetometer_sensor_status">Sensor status</string>
-    <string name="property_magnetometer_calibrated">Calibrated</string>
-    <string name="property_magnetometer_not_calibrated">Not calibrated</string>
     <string name="property_photo_progress_remaining_time">Remaining time</string>
     <string name="property_photo_progress_remaining_distance">Remaining distance</string>
     <string name="property_return_home_reason">Return reason</string>
@@ -224,6 +227,7 @@
     <string name="property_copilot_source">Source</string>
     <string name="property_sysinfo_firmware">Firmware version</string>
     <string name="property_sysinfo_firmware_blacklisted">Firmware blacklisted</string>
+    <string name="property_sysinfo_update_required">Update required</string>
     <string name="property_sysinfo_hardware">Hardware version</string>
     <string name="property_sysinfo_serial">Serial number</string>
     <string name="property_sysinfo_cpu_id">CPU Identifier</string>
@@ -401,9 +405,15 @@
     <string name="property_battery_gauge_updater_state">State</string>
     <string name="property_battery_gauge_updater_unavailability_reasons">Unavailability reasons</string>
     <string name="property_battery_gauge_updater_current_progress">Current progress</string>
+    <string name="property_dri_state">Enable</string>
     <string name="property_dri_id_type">ID Type</string>
     <string name="property_dri_id">ID</string>
+    <string name="property_dri_type_state">Type state</string>
+    <string name="property_dri_type_state_detail">%1$s %2$s %3$s</string>
+    <string name="property_dri_type_config">Type config</string>
+    <string name="property_dri_type_config_operator">Operator ID</string>
     <string name="property_log_control_storage_enabled">Log storage state</string>
+    <string name="property_debug_tag_id">Latest debug tag id</string>
     <string name="boolean_setting_enabled">On</string>
     <string name="boolean_setting_disabled">Off</string>
     <string name="valid">Valid</string>

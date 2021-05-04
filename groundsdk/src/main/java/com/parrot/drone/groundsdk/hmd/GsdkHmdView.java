@@ -53,6 +53,7 @@ import com.parrot.drone.groundsdk.R;
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;
 import com.parrot.drone.groundsdk.internal.view.GlView;
 import com.parrot.drone.groundsdk.stream.Overlayer;
+import com.parrot.drone.groundsdk.stream.Overlayer2;
 import com.parrot.drone.groundsdk.stream.Stream;
 
 /**
@@ -100,7 +101,7 @@ public final class GsdkHmdView extends FrameLayout {
 
     /** Configured drone stream rendering overlayer. */
     @Nullable
-    private Overlayer mStreamOverlayer;
+    private Overlayer2 mStreamOverlayer;
 
     /**
      * {@code true} when see-through (device rear camera) is enabled. See through supersedes any attached drone
@@ -411,8 +412,22 @@ public final class GsdkHmdView extends FrameLayout {
      * Configures drone stream rendering overlayer.
      *
      * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
+     *
+     * @deprecated use #setStreamOverlayer2(Overlayer2) instead.
      */
+    @Deprecated
     public void setStreamOverlayer(@Nullable Overlayer overlayer) {
+        setStreamOverlayer2(overlayer == null ? null : frameContext ->
+                overlayer.overlay(frameContext.renderZone(), frameContext.contentZone(),
+                        (Overlayer.Histogram) frameContext.histogram()));
+    }
+
+    /**
+     * Configures drone stream rendering overlayer.
+     *
+     * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
+     */
+    public void setStreamOverlayer2(@Nullable Overlayer2 overlayer) {
         if (mStreamOverlayer == overlayer) {
             return;
         }

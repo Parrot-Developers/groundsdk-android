@@ -7,7 +7,6 @@ android {
 
     sourceSets.main {
         java.srcDirs += "${project.buildDir}/generated/arsdk/gen"
-        jni.srcDirs = [] // This prevents the auto generation of Android.mk
         jniLibs.srcDirs = [
                 "${project.buildDir}/../../jni/sdkcore/libs",
                 "${project.asan_libs}"

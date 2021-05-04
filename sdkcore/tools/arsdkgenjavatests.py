@@ -17,7 +17,8 @@ arg_reader = {
     arsdkparser.ArArgType.U64: "dec.readUnsignedLong()",
     arsdkparser.ArArgType.FLOAT: "dec.readFloat()",
     arsdkparser.ArArgType.DOUBLE: "dec.readDouble()",
-    arsdkparser.ArArgType.STRING: "dec.readString()"
+    arsdkparser.ArArgType.STRING: "dec.readString()",
+    arsdkparser.ArArgType.BINARY: "dec.readBinary()"
 }
 
 arg_writer = {
@@ -31,31 +32,19 @@ arg_writer = {
     arsdkparser.ArArgType.U64: "enc.writeLong(%s)",
     arsdkparser.ArArgType.FLOAT: "enc.writeFloat(%s)",
     arsdkparser.ArArgType.DOUBLE: "enc.writeDouble(%s)",
-    arsdkparser.ArArgType.STRING: "enc.writeString(%s)"
+    arsdkparser.ArArgType.STRING: "enc.writeString(%s)",
+    arsdkparser.ArArgType.BINARY: "enc.writeBinary(%s)"
 }
-
 
 def java_comparator(arg, val):
     if isinstance(arg.argType, arsdkparser.ArEnum):
         return "(" + val + " == " + java_arg_name(arg) + ".value)"
-    elif isinstance(arg.argType, arsdkparser.ArBitfield):
-        return "(" + val + " == "+ java_arg_name(arg) + ")"
+    elif arg.argType == arsdkparser.ArArgType.STRING:
+        return "(" + val + ".equals(" + java_arg_name(arg) + "))"
+    elif arg.argType == arsdkparser.ArArgType.BINARY:
+        return "java.util.Arrays.equals(" + val + ", " + java_arg_name(arg) + ")"
     else:
-        if (arg.argType != arsdkparser.ArArgType.STRING):
-            return "(" + val + " == "+ java_arg_name(arg)+ ")"
-        else:
-            return "(" + val + ".equals(" + java_arg_name(arg) + "))"
-
-def java_comparator2(arg):
-    if isinstance(arg.argType, arsdkparser.ArEnum):
-        return "(dec.readUnsignedInt() == " + java_arg_name(arg) + ".value)"
-    elif isinstance(arg.argType, arsdkparser.ArBitfield):
-        return "(" + arg_reader[arg.argType.btfType] + " == " + java_arg_name(arg) + ")"
-    else:
-        if (arg.argType != arsdkparser.ArArgType.STRING):
-            return "(" + arg_reader[arg.argType] + " == " + java_arg_name(arg)+ ")"
-        else:
-            return "(dec.readString().equals(" + java_arg_name(arg) + "))"
+         return "(" + val + " == "+ java_arg_name(arg)+ ")"
 
 def java_arg_reader(arg):
     if isinstance(arg.argType, arsdkparser.ArEnum):

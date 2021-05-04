@@ -118,6 +118,22 @@ public class SystemInfoTest {
     }
 
     @Test
+    public void testIsUpdateRequired() {
+        mSystemInfoImpl.publish();
+        assertThat(mComponentChangeCnt, is(1));
+
+        assertThat(mSystemInfo.isUpdateRequired(), is(false));
+
+        mSystemInfoImpl.updateIsUpdateRequired(true).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mSystemInfo.isUpdateRequired(), is(true));
+
+        // check value does not trigger a change
+        mSystemInfoImpl.updateIsUpdateRequired(true).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+    }
+
+    @Test
     public void testHardwareVersion() {
         mSystemInfoImpl.publish();
         assertThat(mComponentChangeCnt, is(1));

@@ -35,17 +35,24 @@ package com.parrot.drone.groundsdkdemo.info;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.parrot.drone.groundsdk.device.Drone;
 import com.parrot.drone.groundsdk.device.peripheral.DevToolbox;
+import com.parrot.drone.groundsdkdemo.DebugTagDialogFragment;
 import com.parrot.drone.groundsdkdemo.R;
 import com.parrot.drone.groundsdkdemo.peripheral.DebugSettingsActivity;
 
 import static com.parrot.drone.groundsdkdemo.Extras.EXTRA_DEVICE_UID;
 
 class DevToolboxContent extends PeripheralContent<Drone, DevToolbox> {
+
+    interface OnDebugTagRequestListener {
+
+        void onDebugTagRequest(@NonNull DebugTagDialogFragment.Listener listener);
+    }
 
     DevToolboxContent(@NonNull Drone drone) {
         super(R.layout.dev_toolbox_info, drone, DevToolbox.class);
@@ -62,24 +69,43 @@ class DevToolboxContent extends PeripheralContent<Drone, DevToolbox> {
         @NonNull
         private final Button mDebugSettingsButton;
 
+        @NonNull
+        private final Button mSendDebugTagButton;
+
+        @NonNull
+        private final TextView mLatestDebugTagIdView;
+
         ViewHolder(@NonNull View rootView) {
             super(rootView);
             mDebugSettingsButton = findViewById(R.id.btn_debug_settings);
+            mSendDebugTagButton = findViewById(R.id.btn_debug_tag);
+            mLatestDebugTagIdView = findViewById(R.id.debug_tag_id);
+
             mDebugSettingsButton.setOnClickListener(mClickListener);
+            mSendDebugTagButton.setOnClickListener(mClickListener);
         }
 
         @Override
         void onBind(@NonNull DevToolboxContent content, @NonNull DevToolbox devToolbox) {
-
+            String latestDebugTagId = devToolbox.getLatestDebugTagId();
+            if (latestDebugTagId != null) {
+                mLatestDebugTagIdView.setText(latestDebugTagId);
+            } else {
+                mLatestDebugTagIdView.setText(R.string.no_value);
+            }
         }
 
         @SuppressWarnings("FieldCanBeLocal")
         private final OnClickListener mClickListener = new OnClickListener() {
 
             @Override
-            void onClick(View v, @NonNull DevToolboxContent content, @NonNull DevToolbox devToolbox) {
-                mContext.startActivity(new Intent(mContext, DebugSettingsActivity.class)
-                        .putExtra(EXTRA_DEVICE_UID, content.mDevice.getUid()));
+            void onClick(View view, @NonNull DevToolboxContent content, @NonNull DevToolbox devToolbox) {
+                if (view == mDebugSettingsButton) {
+                    mContext.startActivity(new Intent(mContext, DebugSettingsActivity.class)
+                            .putExtra(EXTRA_DEVICE_UID, content.mDevice.getUid()));
+                } else if (mContext instanceof OnDebugTagRequestListener) {
+                    ((OnDebugTagRequestListener) mContext).onDebugTagRequest(devToolbox::sendDebugTag);
+                }
             }
         };
     }

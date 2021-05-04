@@ -75,9 +75,9 @@ public class DebugDevToolbox extends DronePeripheralController {
 
     @Override
     protected final void onConnected() {
-        // when connected, ask all debug settings. If the device has debug settings, the component will be
-        // published.
+        // when connected, ask all debug settings
         sendCommand(ArsdkFeatureDebug.encodeGetAllSettings());
+        mDevToolbox.publish();
     }
 
     @Override
@@ -154,7 +154,7 @@ public class DebugDevToolbox extends DronePeripheralController {
                                    String rangeStep, String value) {
             if (ArsdkFeatureGeneric.ListFlags.EMPTY.inBitField(listFlags)) {
                 mSettings.clear();
-                mDevToolbox.unpublish();
+                mDevToolbox.updateDebugSettings(new ArrayList<>()).notifyUpdated();
             } else {
                 if (ArsdkFeatureGeneric.ListFlags.FIRST.inBitField(listFlags)) {
                     mSettings.clear();
@@ -177,7 +177,6 @@ public class DebugDevToolbox extends DronePeripheralController {
                         settingsArray.add(mSettings.valueAt(i));
                     }
                     mDevToolbox.updateDebugSettings(settingsArray).notifyUpdated();
-                    mDevToolbox.publish();
                 }
             }
         }
@@ -210,23 +209,41 @@ public class DebugDevToolbox extends DronePeripheralController {
                 ULog.w(TAG, "OnSettingList: id " + id + " not known. Ignoring this setting.");
             }
         }
+
+        @Override
+        public void onTagNotify(String id) {
+            if (id != null) {
+                mDevToolbox.updateDebugTagId(id).notifyUpdated();
+            } else if (ULog.w(TAG)) {
+                ULog.w(TAG, "onTagNotify: invalid id");
+            }
+        }
     };
 
     /** Backend of DroneFinderCore implementation. */
     @SuppressWarnings("FieldCanBeLocal")
-    private final DevToolboxCore.Backend mBackend = setting -> {
-        String strValue = null;
-        switch (setting.getType()) {
-            case NUMERIC:
-                strValue = Double.toString(setting.as(DevToolboxCore.NumericDebugSettingCore.class).getValue());
-                break;
-            case BOOLEAN:
-                strValue = setting.as(DevToolboxCore.BooleanDebugSettingCore.class).getValue() ? "1" : "0";
-                break;
-            case TEXT:
-                strValue = setting.as(DevToolboxCore.TextDebugSettingCore.class).getValue();
-                break;
+    private final DevToolboxCore.Backend mBackend = new DevToolboxCore.Backend() {
+
+        @Override
+        public void updateDebugSetting(DevToolboxCore.DebugSettingCore setting) {
+            String strValue = null;
+            switch (setting.getType()) {
+                case NUMERIC:
+                    strValue = Double.toString(setting.as(DevToolboxCore.NumericDebugSettingCore.class).getValue());
+                    break;
+                case BOOLEAN:
+                    strValue = setting.as(DevToolboxCore.BooleanDebugSettingCore.class).getValue() ? "1" : "0";
+                    break;
+                case TEXT:
+                    strValue = setting.as(DevToolboxCore.TextDebugSettingCore.class).getValue();
+                    break;
+            }
+            sendCommand(ArsdkFeatureDebug.encodeSetSetting(setting.getUid(), strValue));
         }
-        sendCommand(ArsdkFeatureDebug.encodeSetSetting(setting.getUid(), strValue));
+
+        @Override
+        public void sendDebugTag(@NonNull String tag) {
+            sendCommand(ArsdkFeatureDebug.encodeTag(tag));
+        }
     };
 }

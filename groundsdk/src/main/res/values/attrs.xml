@@ -74,6 +74,9 @@
     <!-- Configures the luminance threshold for GsdkStreamView to consider a rendered pixel overexposed. -->
     <attr name="gsdk_zebraThreshold" format="fraction"/>
 
+    <!-- Configures to be placed on top of another regular surface view. -->
+    <attr name="gsdk_isMediaOverlay" format="boolean"/>
+
     <!-- GsdkStreamView configuration attributes.
          See com.parrot.drone.groundsdk.stream.GsdkStreamView. -->
     <declare-styleable name="GsdkStreamView">
@@ -93,6 +96,9 @@
         <!-- Configures overexposure zebras threshold. Default value is 0%.
              See com.parrot.drone.groundsdk.stream.GsdkStreamView#setZebraThreshold. -->
         <attr name="gsdk_zebraThreshold"/>
+
+        <!-- Configures to be placed on top of another regular surface view. -->
+        <attr name="gsdk_isMediaOverlay"/>
 
     </declare-styleable>
 

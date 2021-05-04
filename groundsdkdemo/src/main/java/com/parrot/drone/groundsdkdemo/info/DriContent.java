@@ -71,6 +71,12 @@ class DriContent extends PeripheralContent<Drone, Dri> {
         @NonNull
         private final TextView mIdText;
 
+        @NonNull
+        private final TextView mTypeState;
+
+        @NonNull
+        private final TextView mTypeConfig;
+
         ViewHolder(@NonNull View rootView) {
             super(rootView);
             mEditButton = findViewById(R.id.btn_edit);
@@ -78,6 +84,8 @@ class DriContent extends PeripheralContent<Drone, Dri> {
             mStateText = findViewById(R.id.state);
             mTypeIdText = findViewById(R.id.id_type);
             mIdText = findViewById(R.id.id);
+            mTypeState = findViewById(R.id.type_state);
+            mTypeConfig = findViewById(R.id.type_config);
         }
 
         @Override
@@ -93,6 +101,10 @@ class DriContent extends PeripheralContent<Drone, Dri> {
             }
             mTypeIdText.setText(idType);
             mIdText.setText(id);
+            mTypeState.setText(dri.getTypeConfigState() != null ? dri.getTypeConfigState().getState().toString()
+                    : mContext.getString(R.string.no_value));
+            mTypeConfig.setText(dri.getTypeConfig() != null ? dri.getTypeConfig().getType().toString()
+                    : mContext.getString(R.string.no_value));
         }
 
         private final OnClickListener mClickListener = new OnClickListener() {

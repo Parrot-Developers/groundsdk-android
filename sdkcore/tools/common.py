@@ -60,7 +60,8 @@ def java_arg_type(arg, jni, feature = None):
         arsdkparser.ArArgType.U64: "long",
         arsdkparser.ArArgType.FLOAT: "float",
         arsdkparser.ArArgType.DOUBLE: "double",
-        arsdkparser.ArArgType.STRING: "String"
+        arsdkparser.ArArgType.STRING: "String",
+        arsdkparser.ArArgType.BINARY: "byte[]"
     }
     if isinstance(arg.argType, arsdkparser.ArEnum):
         if jni:
@@ -106,7 +107,8 @@ def jni_method_signature(args):
         arsdkparser.ArArgType.U64: "J",
         arsdkparser.ArArgType.FLOAT: "F",
         arsdkparser.ArArgType.DOUBLE: "D",
-        arsdkparser.ArArgType.STRING: "Ljava/lang/String;"
+        arsdkparser.ArArgType.STRING: "Ljava/lang/String;",
+        arsdkparser.ArArgType.BINARY: "[B"
     }
     sig = ""
     for arg in args:
@@ -135,6 +137,7 @@ def jni_arg_type(arg):
         arsdkparser.ArArgType.FLOAT: "jfloat",
         arsdkparser.ArArgType.DOUBLE: "jdouble",
         arsdkparser.ArArgType.STRING: "jstring",
+        arsdkparser.ArArgType.BINARY: "jbyteArray"
     }
     if isinstance(arg.argType, arsdkparser.ArEnum):
         type = "jint"
@@ -163,6 +166,7 @@ def c_arg_type(arg, feature=None):
         arsdkparser.ArArgType.FLOAT: "float",
         arsdkparser.ArArgType.DOUBLE: "double",
         arsdkparser.ArArgType.STRING: "const char *",
+        arsdkparser.ArArgType.BINARY: "struct arsdk_binary",
     }
     if isinstance(arg.argType, arsdkparser.ArEnum):
         type = "int32_t"

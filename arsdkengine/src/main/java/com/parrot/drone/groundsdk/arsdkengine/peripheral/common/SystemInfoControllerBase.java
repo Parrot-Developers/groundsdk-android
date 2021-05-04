@@ -43,6 +43,7 @@ import com.parrot.drone.groundsdk.facility.firmware.FirmwareIdentifier;
 import com.parrot.drone.groundsdk.facility.firmware.FirmwareVersion;
 import com.parrot.drone.groundsdk.internal.device.peripheral.SystemInfoCore;
 import com.parrot.drone.groundsdk.internal.utility.FirmwareBlackList;
+import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;
 
 /** Abstract base implementation for SystemInfo peripheral controller. */
 public abstract class SystemInfoControllerBase extends PeripheralController<DeviceController<?>> {
@@ -64,6 +65,9 @@ public abstract class SystemInfoControllerBase extends PeripheralController<Devi
 
     /** Device board identifier setting. */
     private static final StorageEntry<String> BOARD_ID_SETTING = StorageEntry.ofString("boardId");
+
+    /** Device update requirement. */
+    private static final StorageEntry<Boolean> UPDATE_REQUIREMENT_SETTING = StorageEntry.ofBoolean("updateRequirement");
 
     /** SystemInfo peripheral for which this object is the backend. */
     @NonNull
@@ -129,6 +133,14 @@ public abstract class SystemInfoControllerBase extends PeripheralController<Devi
     @Override
     protected void onDispose() {
         stopMonitoringBlacklist();
+    }
+
+    @Override
+    protected void onApiCapabilities(@ArsdkDevice.Api int api) {
+        boolean isUpdateRequired = (api == ArsdkDevice.API_UPDATE_ONLY);
+        UPDATE_REQUIREMENT_SETTING.save(mDeviceDict, isUpdateRequired);
+        mSystemInfo.updateIsUpdateRequired(isUpdateRequired);
+        mSystemInfo.notifyUpdated();
     }
 
     /**
@@ -261,6 +273,7 @@ public abstract class SystemInfoControllerBase extends PeripheralController<Devi
         if (boardId != null) {
             mSystemInfo.updateBoardId(boardId);
         }
+        mSystemInfo.updateIsUpdateRequired(Boolean.TRUE.equals(UPDATE_REQUIREMENT_SETTING.load(mDeviceDict)));
     }
 
     /**

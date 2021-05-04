@@ -51,7 +51,72 @@ struct arsdkcore_source {
 	uint16_t device_handle;
 	/** Stream URL. */
 	char *url;
+
+	/** Context data only for MUX-proxied devices, undefined otherwise */
+	struct {
+		/** Device RTSP proxy. */
+		struct arsdk_device_tcp_proxy *rtsp_proxy;
+		/** Pdraw intsance to open this source for once the proxy opens. */
+		struct pdraw *pdraw;
+	} proxy_ctx;
 };
+
+/**
+ * Function called at the tcp proxy opening.
+ *
+ * @param self : Proxy object.
+ * @param localport : Proxy local socket port.
+ * @param userdata : User data.
+ */
+static void proxy_open(struct arsdk_device_tcp_proxy *proxy, uint16_t localport,
+		void *userdata)
+{
+	struct arsdkcore_source *self = userdata;
+	RETURN_IF_FAILED(self != NULL, -EINVAL);
+
+	struct arsdk_device *device = arsdkcore_get_device(self->arsdk,
+			self->device_handle);
+	RETURN_IF_FAILED(device != NULL, -ENODEV);
+	RETURN_IF_FAILED(self->proxy_ctx.rtsp_proxy != NULL, -EPROTO);
+	RETURN_IF_FAILED(self->proxy_ctx.pdraw != NULL, -EPROTO);
+
+	int port = arsdk_device_tcp_proxy_get_port(self->proxy_ctx.rtsp_proxy);
+	RETURN_IF_ERR(port);
+
+	struct arsdkctrl_backend *backend = arsdk_device_get_backend(device);
+	RETURN_IF_FAILED(backend != NULL, -ENODEV);
+
+	struct arsdkctrl_backend_mux *backend_mux =
+			arsdkctrl_backend_get_child(backend);
+	RETURN_IF_FAILED(backend_mux != NULL, -ENODEV);
+
+	struct mux_ctx *mux = arsdkctrl_backend_mux_get_mux_ctx(backend_mux);
+	RETURN_IF_FAILED(mux != NULL, -ENODEV);
+
+	char *url = NULL;
+	int res = asprintf(&url, "rtsp://127.0.0.1:%d/%s", port, self->url) == -1 ?
+			-ENOMEM : 0;
+	GOTO_IF_ERR(res, out);
+
+	res = pdraw_open_url_mux(self->proxy_ctx.pdraw, url, mux);
+	GOTO_IF_ERR(res, out);
+
+out:
+	free(url);
+}
+
+/**
+ * Function called at the tcp proxy closing.
+ *
+ * @param self : Proxy object.
+ * @param userdata : User data.
+ */
+static void proxy_close(struct arsdk_device_tcp_proxy *proxy, void *userdata)
+{
+	// TODO: for the time being, our design does not know how to handle neither
+	//       proxy open failure nor proxy unexpected close.
+	LOG_ERR(-ENOSYS);
+}
 
 /**
  * Opens the source.
@@ -76,46 +141,54 @@ static int source_open(const struct sdkcore_source *source, struct pdraw *pdraw)
 	RETURN_ERRNO_IF_FAILED(info != NULL, res);
 
 	char *url = NULL;
-	if (   info->type == ARSDK_DEVICE_TYPE_ANAFI4K
-	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_THERMAL
-	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_UA
-	    || info->type == ARSDK_DEVICE_TYPE_ANAFI_USA) {
-		res = asprintf(&url, "rtsp://%s/%s", info->addr, self->url) == -1 ?
+	switch (info->backend_type) {
+	case ARSDK_BACKEND_TYPE_NET:
+		switch (info->type) {
+		case ARSDK_DEVICE_TYPE_ANAFI4K:
+		case ARSDK_DEVICE_TYPE_ANAFI_THERMAL:
+		case ARSDK_DEVICE_TYPE_ANAFI_UA:
+		case ARSDK_DEVICE_TYPE_ANAFI_USA:
+			res = asprintf(&url, "rtsp://%s/%s", info->addr, self->url) == -1 ?
 				-ENOMEM : 0;
-		GOTO_IF_ERR(res, out);
-	} else if (info->type == ARSDK_DEVICE_TYPE_SKYCTRL_3
-		|| info->type == ARSDK_DEVICE_TYPE_SKYCTRL_UA) {
-		res = arsdk_device_create_tcp_proxy(device, info->type, 554,
-				&self->rtsp_proxy);
-		GOTO_IF_FAILED(self->rtsp_proxy != NULL, res, out);
+			GOTO_IF_ERR(res, out);
 
-		res = asprintf(&url, "rtsp://127.0.0.1:%d/%s",
-				arsdk_device_tcp_proxy_get_port(self->rtsp_proxy),
-				self->url) == -1 ? -ENOMEM : 0;
-		GOTO_IF_ERR(res, out);
-	} else {
-		res = -ENOSYS;
-		LOG_ERR(res);
-		goto out;
-	}
+			res = pdraw_open_url(pdraw, url);
+			GOTO_IF_ERR(res, out);
+			break;
+		default:
+			res = -ENOSYS;
+			LOG_ERR(res);
+			goto out;
+			break;
+		}
+		break;
+	case ARSDK_BACKEND_TYPE_MUX:
+		switch (info->type) {
+		case ARSDK_DEVICE_TYPE_SKYCTRL_3:
+		case ARSDK_DEVICE_TYPE_SKYCTRL_UA:
 
-	if (info->backend_type == ARSDK_BACKEND_TYPE_NET) {
-		res = pdraw_open_url(pdraw, url);
-		GOTO_IF_ERR(res, out);
-	} else if (info->backend_type == ARSDK_BACKEND_TYPE_MUX) {
-		struct arsdkctrl_backend *backend = arsdk_device_get_backend(device);
-		GOTO_IF_FAILED(backend != NULL, -ENODEV, out);
+			self->proxy_ctx.pdraw = pdraw;
 
-		struct arsdkctrl_backend_mux *backend_mux =
-				arsdkctrl_backend_get_child(backend);
-		GOTO_IF_FAILED(backend_mux != NULL, -ENODEV, out);
+			struct arsdk_device_tcp_proxy_cbs cbs = {
+				.open = proxy_open,
+				.close = proxy_close,
+				.userdata = self
+			};
 
-		struct mux_ctx *mux = arsdkctrl_backend_mux_get_mux_ctx(backend_mux);
-		GOTO_IF_FAILED(mux != NULL, -ENODEV, out);
+			res = arsdk_device_create_tcp_proxy(device, info->type, 554,
+					&cbs, &self->proxy_ctx.rtsp_proxy);
+			GOTO_IF_FAILED(self->proxy_ctx.rtsp_proxy != NULL, res, out);
+			/** wait proxy opening */
+			break;
+		default:
+			res = -ENOSYS;
+			LOG_ERR(res);
+			goto out;
+			break;
 
-		res = pdraw_open_url_mux(pdraw, url, mux);
-		GOTO_IF_ERR(res, out);
-	} else {
+		}
+		break;
+	default:
 		res = -ENOSYS;
 		LOG_ERR(res);
 		goto out;

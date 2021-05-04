@@ -30,100 +30,114 @@
  *
  */
 
-#include "arsdkcore.h"
+#include "arsdkcore_tcp_proxy.h"
 
 #define ARSDK_LOG_TAG device
 #include "arsdk_log.h"
 
 #include <sdkcore/sdkcore_jni.h>
 
+/** Static JNI id cache */
+static struct
+{
+	/* on ArsdkTcpProxy */
+	jmethodID jmid_on_open; /**< onOpen */
+} s_jni_cache;
+
 /**
- * Creates tcp proxy to the device.
- * @param[in] env: JNI env pointer
- * @param[in] jself: reference on java ArsdkTcpProxy instance
- * @param[in] arsdkNativePtr: pointer to the native arsdkcore instance
- * @param[in] deviceHandle: native handle of the device that will handle the proxy
- * @param[in] deviceType: type of the device to access by the proxy
- * @param[in] port: port to access
- * @return the pointer to the ArsdkTcpProxy native backend instance if
- *         successful, 0 otherwise
+ * Calls ArsdkTcpProxy.onOpen.
+ * @param[in] error: 0 in case of open success, a negative errno otherwise
+ * @param[in] address: proxy local address in case of open success, NULL
+ *                     otherwise
+ * @param[in] port: proxy local port in case of open success, undefined
+ *                  otherwise
+ * @param[in] userdata: ArsdkTcpProxy jobject
+ */
+static void on_open(int error, const char *address, uint16_t port,
+		void *userdata)
+{
+	JNIEnv *env = NULL;
+	int res = (*sdkcore_jvm)->GetEnv(sdkcore_jvm, (void **) &env,
+			SDKCORE_JNI_VERSION);
+	RETURN_IF_FAILED(env != NULL, res);
+
+	jobject jself = (jobject) (uintptr_t) userdata;
+	RETURN_IF_FAILED(jself != NULL, -EINVAL);
+
+	(*env)->CallVoidMethod(env, jself, s_jni_cache.jmid_on_open,
+			error == 0 ? (*env)->NewStringUTF(env, address) : NULL,
+			(jint) port);
+}
+
+/**
+ * Initializes ArsdkTcpProxy native backend and open proxy.
+ * @param[in] env: JNI env
+ * @param[in] jself: ArsdkTcpProxy jobject
+ * @param[in] arsdkNativePtr: ArsdkCore native backend.
+ * @param[in] deviceHandle: handle of the device that will handle the proxy
+ * @param[in] deviceType: type of device to be accessed through the proxy
+ * @param[in] port: remote port to proxy
+ * @return a new ArsdkTcpProxy native backend in case of success, otherwise NULL
  */
 JNIEXPORT jlong JNICALL
-Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeCreate(
+Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeOpen(
 		JNIEnv *env, jobject jself, jlong arsdkNativePtr, jshort deviceHandle,
 		jint deviceType, jint port)
 {
-	struct arsdkcore *arsdk = (struct arsdkcore *)(uintptr_t) arsdkNativePtr;
+	struct arsdkcore *arsdk = (struct arsdkcore *) (uintptr_t) arsdkNativePtr;
 	RETURN_VAL_IF_FAILED(arsdk != NULL, -EINVAL, 0);
 
-	struct arsdk_device *device = arsdkcore_get_device(arsdk,
-	(uint16_t) deviceHandle);
-	RETURN_VAL_IF_FAILED(device != NULL, -ENODEV, 0);
+	RETURN_VAL_IF_FAILED(port >= 0 && port <= UINT16_MAX, -EINVAL, 0);
 
-	struct arsdk_device_tcp_proxy *proxy = NULL;
-	int res = arsdk_device_create_tcp_proxy(device,
-			(enum arsdk_device_type) deviceType, port, &proxy);
+	jself = (*env)->NewGlobalRef(env, jself);
+	RETURN_VAL_IF_FAILED(jself != NULL, -ENOMEM, 0);
 
-	GOTO_IF_FAILED(proxy != NULL, res, err);
+	struct arsdkcore_tcp_proxy_cbs cbs = {
+		.on_open = on_open,
+	};
 
-	return (jlong) (uintptr_t) proxy;
+	struct arsdkcore_tcp_proxy *self = arsdkcore_tcp_proxy_create(arsdk,
+			(uint16_t) deviceHandle, (enum arsdk_device_type) deviceType,
+			(uint16_t) port, &cbs, jself);
+	GOTO_IF_FAILED(self != NULL, -ENOMEM, err);
+
+	return (jlong) (uintptr_t) self;
 
 err:
+	(*env)->DeleteGlobalRef(env, jself);
+
 	return 0;
 }
 
 /**
- * Gets proxy port.
- * @param[in] env: JNI env pointer
- * @param[in] clazz: class where this static java method is defined
- * @param[in] nativePtr: pointer to the ArsdkTcpProxy native
- *            backend instance
- * @return port of the proxy in case of success, negative errno value in case of error.
- */
-JNIEXPORT jint JNICALL
-Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeGetPort(
-		JNIEnv *env, jclass clazz, jlong nativePtr)
-{
-	struct arsdk_device_tcp_proxy*proxy =
-			(struct arsdk_device_tcp_proxy *) (uintptr_t) nativePtr;
-	RETURN_VAL_IF_FAILED(proxy != NULL, -EINVAL, 0);
-
-	return arsdk_device_tcp_proxy_get_port(proxy);
-}
-
-/**
- * Gets proxy address.
- * @param[in] env: JNI env pointer
- * @param[in] clazz: class where this static java method is defined
- * @param[in] nativePtr: pointer to the ArsdkTcpProxy native
- *            backend instance
- * @return address of the proxy in case of success, negative errno value in case of error.
- */
-JNIEXPORT jstring JNICALL
-Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeGetAddr(
-		JNIEnv *env, jclass clazz, jlong nativePtr)
-{
-	struct arsdk_device_tcp_proxy *proxy =
-			(struct arsdk_device_tcp_proxy *) (uintptr_t) nativePtr;
-	RETURN_VAL_IF_FAILED(proxy != NULL, -EINVAL, 0);
-
-	return (*env)->NewStringUTF(env, arsdk_device_tcp_proxy_get_addr(proxy));
-}
-
-/**
- * Close a tcp proxy to the device.
- * @param[in] env: JNI env pointer
- * @param[in] clazz: class where this static java method is defined
- * @param[in] nativePtr: pointer to the ArsdkTcpProxy native
- *            backend instance
+ * Closes proxy and destroys ArsdkTcpProxy native backend.
+ * @param[in] env: JNI env
+ * @param[in] clazz: ArsdkTcpProxy class
+ * @param[in] nativePtr: ArsdkMuxBackend native backend
  */
 JNIEXPORT void JNICALL
 Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeClose(
 		JNIEnv *env, jclass clazz, jlong nativePtr)
 {
-	struct arsdk_device_tcp_proxy *proxy =
-			(struct arsdk_device_tcp_proxy *) (uintptr_t) nativePtr;
-	RETURN_IF_FAILED(proxy != NULL, -EINVAL);
+	struct arsdkcore_tcp_proxy *self =
+			(struct arsdkcore_tcp_proxy *) (uintptr_t) nativePtr;
+	RETURN_IF_FAILED(self != NULL, -EINVAL);
 
-	LOG_IF_ERR(arsdk_device_destroy_tcp_proxy(proxy));
+	jobject jself = NULL;
+	RETURN_IF_ERR(arsdkcore_tcp_proxy_destroy(self, (void**) &jself));
+
+	(*env)->DeleteGlobalRef(env, jself);
+}
+
+/**
+ * Initializes the static JNI id cache. Called once from static java block.
+ * @param[in] env: JNI env
+ * @param[in] clazz: ArsdkMuxBackend class
+ */
+JNIEXPORT void JNICALL
+Java_com_parrot_drone_sdkcore_arsdk_device_ArsdkTcpProxy_nativeClassInit(JNIEnv *env,
+		jclass clazz)
+{
+	s_jni_cache.jmid_on_open = (*env)->GetMethodID(env, clazz,
+			"onOpen", "(Ljava/lang/String;I)V");
 }

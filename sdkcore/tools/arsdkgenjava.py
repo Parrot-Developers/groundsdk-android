@@ -295,6 +295,9 @@ def gen_java(feature, out):
         "\n"
     )
 
+    # TODO; make it conditional in case the feature has no binary messages
+    out.write("import java.nio.ByteBuffer;\n")
+
     # add enum specific imports
     if feature.enums:
         out.write("import android.util.SparseArray;\n\n")

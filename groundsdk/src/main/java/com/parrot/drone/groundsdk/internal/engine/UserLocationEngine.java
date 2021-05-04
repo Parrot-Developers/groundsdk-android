@@ -32,9 +32,14 @@
 
 package com.parrot.drone.groundsdk.internal.engine;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.location.Location;
+import android.location.LocationManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -97,10 +102,12 @@ public class UserLocationEngine extends EngineBase {
         // publish facility
         mUserLocation.publish();
         mUserHeading.publish();
+        getContext().registerReceiver(mLocationProviderListener, PROVIDERS_FILTER);
     }
 
     @Override
     protected final void onStopRequested() {
+        getContext().unregisterReceiver(mLocationProviderListener);
         // unpublish facility
         mUserLocation.unpublish();
         mUserHeading.unpublish();
@@ -181,6 +188,18 @@ public class UserLocationEngine extends EngineBase {
             if (mSystemHeading != null) {
                 mSystemHeading.disposeMonitor(mMonitor);
             }
+        }
+    };
+
+    /** IntentFilter to listen to location providers changes. */
+    private static final IntentFilter PROVIDERS_FILTER = new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION);
+
+    /** Broadcast receiver listening on location providers changes. */
+    private final BroadcastReceiver mLocationProviderListener = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mLocationBackend.restartLocationUpdates();
         }
     };
 }

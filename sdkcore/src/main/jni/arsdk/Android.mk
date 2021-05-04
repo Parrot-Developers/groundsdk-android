@@ -38,6 +38,7 @@ $(MY)_SRC_FILES := \
 	arsdkcore_device.c \
 	arsdkcore_media.c \
 	arsdkcore_source.c \
+	arsdkcore_tcp_proxy.c \
 	arsdkctrl_backend_ble.c
 
 # rules to produce generated sources

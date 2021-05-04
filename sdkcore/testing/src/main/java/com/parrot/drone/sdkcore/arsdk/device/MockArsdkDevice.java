@@ -63,7 +63,7 @@ public class MockArsdkDevice extends ArsdkDevice {
 
     public MockArsdkDevice(@NonNull MockArsdkCore arsdkCore, short nativeHandle, @NonNull String uid,
                            @ArsdkDevice.Type int type, @NonNull String name, @Backend.Type int backendType) {
-        super(nativeHandle, uid, type, name, backendType);
+        super(nativeHandle, uid, type, name, backendType, ArsdkDevice.API_FULL);
         mMockArsdkCore = arsdkCore;
         mNoAckEncoders = new HashSet<>();
     }

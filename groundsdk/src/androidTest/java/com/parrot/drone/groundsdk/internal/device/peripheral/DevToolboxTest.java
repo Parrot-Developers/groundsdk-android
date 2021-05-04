@@ -44,6 +44,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 import static com.parrot.drone.groundsdk.DebugSettingMatcher.hasName;
 import static com.parrot.drone.groundsdk.DebugSettingMatcher.hasRange;
 import static com.parrot.drone.groundsdk.DebugSettingMatcher.hasStep;
@@ -315,13 +317,50 @@ public class DevToolboxTest {
                 allOf(hasName("1"), isReadOnly(true), isUpdating(false), hasValue(10), hasRange(-20, 20), hasStep(1)));
     }
 
+    @Test
+    public void testDebugTag() {
+        mDevToolbox = new DevToolboxCore(mStore, mBackend);
+        mDevToolbox.publish();
+        DevToolbox devToolbox = mStore.get(DevToolbox.class);
+        assert devToolbox != null;
+        int[] cnt = new int[1];
+        mStore.registerObserver(DevToolbox.class, () -> cnt[0]++);
+
+        assertThat(cnt[0], is(0));
+        assertThat(devToolbox.getLatestDebugTagId(), is(nullValue()));
+        assertThat(mBackend.mDebugTag, is(nullValue()));
+
+        // send debug tag
+        devToolbox.sendDebugTag("debug tag");
+        assertThat(cnt[0], is(0));
+        assertThat(devToolbox.getLatestDebugTagId(), is(nullValue()));
+        assertThat(mBackend.mDebugTag, is("debug tag"));
+
+        // mock debug tag id update from low level
+        mDevToolbox.updateDebugTagId("debugTagId").notifyUpdated();
+        assertThat(cnt[0], is(1));
+        assertThat(devToolbox.getLatestDebugTagId(), is("debugTagId"));
+
+        // mock debug tag id update from low level with same id, nothing should change
+        mDevToolbox.updateDebugTagId("debugTagId").notifyUpdated();
+        assertThat(cnt[0], is(1));
+        assertThat(devToolbox.getLatestDebugTagId(), is("debugTagId"));
+    }
+
     private static final class Backend implements DevToolboxCore.Backend {
 
         private DevToolboxCore.DebugSettingCore mSetting;
 
+        private String mDebugTag;
+
         @Override
         public void updateDebugSetting(DevToolboxCore.DebugSettingCore setting) {
             mSetting = setting;
+        }
+
+        @Override
+        public void sendDebugTag(@NonNull String tag) {
+            mDebugTag = tag;
         }
     }
 }

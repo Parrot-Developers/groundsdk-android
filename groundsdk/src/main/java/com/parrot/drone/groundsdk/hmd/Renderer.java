@@ -47,7 +47,7 @@ import androidx.annotation.RawRes;
 
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;
 import com.parrot.drone.groundsdk.internal.view.GlView;
-import com.parrot.drone.groundsdk.stream.Overlayer;
+import com.parrot.drone.groundsdk.stream.Overlayer2;
 
 import java.util.function.Consumer;
 
@@ -206,7 +206,7 @@ abstract class Renderer extends GlView.Renderer {
      *
      * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
      */
-    final void setStreamOverlayer(@Nullable Overlayer overlayer) {
+    final void setStreamOverlayer(@Nullable Overlayer2 overlayer) {
         runOnGlThread(() -> mStreamConfig.setOverlayer(overlayer));
     }
 

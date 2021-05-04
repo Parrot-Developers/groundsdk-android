@@ -135,6 +135,8 @@ int sdkcore_pomp_destroy(struct sdkcore_pomp *self)
 	ALooper *looper = ALooper_forThread();
 	RETURN_ERRNO_IF_FAILED(looper == self->looper, -EPROTO);
 
+	RETURN_ERRNO_IF_ERR(pomp_loop_idle_flush(self->loop));
+
 	intptr_t fd = pomp_loop_get_fd(self->loop);
 	RETURN_ERRNO_IF_ERR((int) fd);
 

@@ -101,6 +101,30 @@
                 tools:text="MY_STRING_ID"/>
         </TableRow>
 
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_dri_type_state"/>
+
+            <TextView
+                android:id="@+id/type_state"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="CONFIGURED"/>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="@string/property_dri_type_config"/>
+
+            <TextView
+                android:id="@+id/type_config"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                tools:text="french"/>
+        </TableRow>
+
     </TableLayout>
 
 </androidx.cardview.widget.CardView>

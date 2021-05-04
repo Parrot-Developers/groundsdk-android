@@ -79,6 +79,9 @@ public class SystemInfoCore extends SingletonComponentCore implements SystemInfo
     /** {@code true} if device firmware version is blacklisted. */
     private boolean mFirmwareBlacklisted;
 
+    /** {@code true} if an update is required, otherwise {@code false}. */
+    private boolean mIsUpdateRequired;
+
     /** Device hardware version. */
     @NonNull
     private String mHardwareVersion;
@@ -122,6 +125,11 @@ public class SystemInfoCore extends SingletonComponentCore implements SystemInfo
     @Override
     public boolean isFirmwareBlacklisted() {
         return mFirmwareBlacklisted;
+    }
+
+    @Override
+    public boolean isUpdateRequired()   {
+        return mIsUpdateRequired;
     }
 
     @NonNull
@@ -220,6 +228,21 @@ public class SystemInfoCore extends SingletonComponentCore implements SystemInfo
     public final SystemInfoCore updateFirmwareBlacklisted(boolean blacklisted) {
         if (blacklisted != mFirmwareBlacklisted) {
             mFirmwareBlacklisted = blacklisted;
+            mChanged = true;
+        }
+        return this;
+    }
+
+    /**
+     * Updates whether an update is required.
+     *
+     * @param isUpdateRequired {@code true} if an update is required, otherwise {@code false}
+     *
+     * @return this, to allow call chaining
+     */
+    public final SystemInfoCore updateIsUpdateRequired(boolean isUpdateRequired) {
+        if (isUpdateRequired != mIsUpdateRequired) {
+            mIsUpdateRequired = isUpdateRequired;
             mChanged = true;
         }
         return this;

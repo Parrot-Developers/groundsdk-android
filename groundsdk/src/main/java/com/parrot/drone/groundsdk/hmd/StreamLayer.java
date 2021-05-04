@@ -40,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.internal.stream.GlRenderSink;
-import com.parrot.drone.groundsdk.stream.Overlayer;
+import com.parrot.drone.groundsdk.stream.Overlayer2;
 
 import static android.opengl.GLES30.*;
 
@@ -186,7 +186,7 @@ final class StreamLayer extends Compositor.Layer {
 
         /** Video stream overlayer, {@code null} when disabled. */
         @Nullable
-        private Overlayer mOverlayer;
+        private Overlayer2 mOverlayer;
 
         /** {@code true} when configuration changed and the stream renderer must be reconfigured. */
         boolean mConfigure;
@@ -226,7 +226,7 @@ final class StreamLayer extends Compositor.Layer {
          *
          * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
          */
-        void setOverlayer(@Nullable Overlayer overlayer) {
+        void setOverlayer(@Nullable Overlayer2 overlayer) {
             mOverlayer = overlayer;
             mConfigure = true;
         }

@@ -45,6 +45,8 @@ import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.EnumSet;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -62,6 +64,13 @@ public class AnafiDri extends DronePeripheralController {
 
     /** Drone identifier device setting. */
     private static final StorageEntry<DriCore.Id> ID_SETTING = new IdStorageEntry("id");
+
+    /** DRI type preset entry. */
+    private static final StorageEntry<DriCore.TypeConfigCore> TYPE_PRESET = new TypeConfigStorageEntry("type");
+
+    /** Supported DRI types device setting. */
+    private static final StorageEntry<EnumSet<Dri.TypeConfig.Type>> SUPPORTED_TYPES_SETTING =
+            StorageEntry.ofEnumSet("supportedTypes", Dri.TypeConfig.Type.class);
 
     /** Dri peripheral for which this object is the backend. */
     @NonNull
@@ -112,7 +121,8 @@ public class AnafiDri extends DronePeripheralController {
 
     @Override
     protected void onDisconnected() {
-        mDri.cancelSettingsRollbacks();
+        mDri.updateTypeConfigState(null)
+                .cancelSettingsRollbacks();
 
         mSupported = false;
 
@@ -153,6 +163,11 @@ public class AnafiDri extends DronePeripheralController {
             mDri.updateDroneId(id);
         }
 
+        EnumSet<Dri.TypeConfig.Type> supportedTypes = SUPPORTED_TYPES_SETTING.load(mDeviceDict);
+        if (supportedTypes != null) {
+            mDri.updateSupportedTypes(supportedTypes);
+        }
+
         applyPresets();
     }
 
@@ -161,6 +176,7 @@ public class AnafiDri extends DronePeripheralController {
      */
     private void applyPresets() {
         applyState(STATE_PRESET.load(mPresetDict));
+        applyTypeConfig(TYPE_PRESET.load(mPresetDict));
     }
 
     /**
@@ -203,6 +219,33 @@ public class AnafiDri extends DronePeripheralController {
     }
 
     /**
+     * Applies DRI type configuration.
+     * <ul>
+     * <li>Verifies if the given configuration is supported;</li>
+     * <li>Sends the configuration to the drone;</li>
+     * <li>Updates the component's setting accordingly.</li>
+     * </ul>
+     *
+     * @param config DRI type configuration to apply
+     *
+     * @return {@code true} if a command was sent to the device and the component's setting should arm its updating
+     *         flag
+     */
+    private boolean applyTypeConfig(@Nullable DriCore.TypeConfigCore config) {
+        if (config != null && !mDri.supportedTypes().contains(config.getType())) {
+            return false;
+        }
+
+        boolean updating = false;
+        if (config != null) {
+            updating = sendType(config);
+        }
+
+        mDri.updateTypeConfig(config);
+        return updating;
+    }
+
+    /**
      * Sends DRI state to the device.
      *
      * @param enabled {@code true} to enable DRI, otherwise {@code false}
@@ -213,6 +256,18 @@ public class AnafiDri extends DronePeripheralController {
         return sendCommand(ArsdkFeatureDri.encodeDriMode(
                 enabled ? ArsdkFeatureDri.Mode.ENABLED : ArsdkFeatureDri.Mode.DISABLED)
         );
+    }
+
+    /**
+     * Sends DRI type configuration to the device.
+     *
+     * @param config type config to send
+     *
+     * @return {@code true} if any command was sent to the device, otherwise {@code false}
+     */
+    private boolean sendType(@NonNull Dri.TypeConfig config) {
+        String operatorId = config.getOperatorId() != null ? config.getOperatorId() : "";
+        return sendCommand(ArsdkFeatureDri.encodeSetDriType(DriTypeAdapter.from(config.getType()), operatorId));
     }
 
     /**
@@ -239,6 +294,20 @@ public class AnafiDri extends DronePeripheralController {
             }
             return updating;
         }
+
+        @Override
+        public void setTypeConfig(@Nullable DriCore.TypeConfigCore typeConfig) {
+            boolean updating = applyTypeConfig(typeConfig);
+            TYPE_PRESET.save(mPresetDict, typeConfig);
+
+            if (updating) {
+                DriCore.TypeConfigStateCore state =
+                        new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.UPDATING, typeConfig);
+                mDri.updateTypeConfigState(state);
+            }
+
+            mDri.notifyUpdated();
+        }
     };
 
     /** Callbacks called when a command of the feature ArsdkFeatureDri is decoded. */
@@ -248,7 +317,7 @@ public class AnafiDri extends DronePeripheralController {
         public void onDroneId(@Nullable ArsdkFeatureDri.IdType type, @NonNull String value) {
             if (type == null) throw new ArsdkCommand.RejectedEventException("Invalid drone id type");
 
-            DriCore.Id id = new DriCore.Id(DriTypeAdapter.from(type), value);
+            DriCore.Id id = new DriCore.Id(DriIdTypeAdapter.from(type), value);
             ID_SETTING.save(mDeviceDict, id);
             mDri.updateDroneId(id).notifyUpdated();
         }
@@ -259,6 +328,16 @@ public class AnafiDri extends DronePeripheralController {
             if (ArsdkFeatureDri.SupportedCapabilities.ON_OFF.inBitField(supportedCapabilitiesBitField)) {
                 STATE_SUPPORT_SETTING.save(mDeviceDict, true);
             }
+
+            EnumSet<Dri.TypeConfig.Type> supportedTypes = EnumSet.noneOf(Dri.TypeConfig.Type.class);
+            if (ArsdkFeatureDri.SupportedCapabilities.EN4709_002_REGULATION.inBitField(supportedCapabilitiesBitField)) {
+                supportedTypes.add(Dri.TypeConfig.Type.EN4709_002);
+            }
+            if (ArsdkFeatureDri.SupportedCapabilities.FRENCH_REGULATION.inBitField(supportedCapabilitiesBitField)) {
+                supportedTypes.add(Dri.TypeConfig.Type.FRENCH);
+            }
+            SUPPORTED_TYPES_SETTING.save(mDeviceDict, supportedTypes);
+            mDri.updateSupportedTypes(supportedTypes).notifyUpdated();
         }
 
         @Override
@@ -270,19 +349,46 @@ public class AnafiDri extends DronePeripheralController {
                 mDri.notifyUpdated();
             }
         }
+
+        @Override
+        public void onDriType(String operatorId, @Nullable ArsdkFeatureDri.DriType type,
+                              @Nullable ArsdkFeatureDri.Status status) {
+            if (type == null || status == null) {
+                throw new ArsdkCommand.RejectedEventException("Invalid DRI state");
+            }
+
+            DriCore.TypeConfigCore config = new DriCore.TypeConfigCore(DriTypeAdapter.from(type),
+                    operatorId != null ? operatorId : "");
+
+            DriCore.TypeConfigStateCore state;
+            switch (status) {
+                case SUCCESS:
+                    state = new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.CONFIGURED, config);
+                    break;
+                case INVALID_ID:
+                    state = new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.INVALID_OPERATOR_ID, config);
+                    break;
+                case FAILURE:
+                    state = new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.FAILURE, config);
+                    break;
+                default:
+                    throw new ArsdkCommand.RejectedEventException("Unknown DRI status");
+            }
+            mDri.updateTypeConfigState(state).notifyUpdated();
+        }
     };
 
     /**
-     * Utility class to adapt {@link ArsdkFeatureDri.IdType dri feature} to {@link Dri.IdType groundsdk} ID type.
+     * Utility class to adapt {@link ArsdkFeatureDri.IdType DRI feature} to {@link Dri.IdType groundsdk} ID type.
      */
-    private static final class DriTypeAdapter {
+    private static final class DriIdTypeAdapter {
 
         /**
          * Converts a {@code ArsdkFeatureDri.IdType} to its {@code Dri.IdType} equivalent.
          *
-         * @param idType arsdk dri ID type to convert
+         * @param idType arsdk DRI ID type to convert
          *
-         * @return the equivalent groundsdk dri ID type
+         * @return the equivalent groundsdk DRI ID type
          */
         @NonNull
         static Dri.IdType from(@NonNull ArsdkFeatureDri.IdType idType) {
@@ -291,6 +397,48 @@ public class AnafiDri extends DronePeripheralController {
                     return Dri.IdType.FR_30_OCTETS;
                 case ANSI_CTA_2063:
                     return Dri.IdType.ANSI_CTA_2063;
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Utility class to adapt {@link ArsdkFeatureDri.DriType DRI feature} to {@link Dri.TypeConfig.Type groundsdk} type.
+     */
+    private static final class DriTypeAdapter {
+
+        /**
+         * Converts a {@code ArsdkFeatureDri.DriType} to its {@code Dri.TypeConfig.Type} equivalent.
+         *
+         * @param type arsdk DRI type to convert
+         *
+         * @return the equivalent groundsdk DRI type
+         */
+        @NonNull
+        static Dri.TypeConfig.Type from(@NonNull ArsdkFeatureDri.DriType type) {
+            switch (type) {
+                case EN4709_002:
+                    return Dri.TypeConfig.Type.EN4709_002;
+                case FRENCH:
+                    return Dri.TypeConfig.Type.FRENCH;
+            }
+            return null;
+        }
+
+        /**
+         * Converts a {@code Dri.TypeConfig.Type} to its {@code ArsdkFeatureDri.DriType} equivalent.
+         *
+         * @param type groundsdk DRI type to convert
+         *
+         * @return the equivalent arsdk DRI type
+         */
+        @NonNull
+        static ArsdkFeatureDri.DriType from(@NonNull Dri.TypeConfig.Type type) {
+            switch (type) {
+                case EN4709_002:
+                    return ArsdkFeatureDri.DriType.EN4709_002;
+                case FRENCH:
+                    return ArsdkFeatureDri.DriType.FRENCH;
             }
             return null;
         }
@@ -334,6 +482,50 @@ public class AnafiDri extends DronePeripheralController {
                 return new JSONObject()
                         .put(KEY_FORMAT, Converter.serializeEnum(id.getType()))
                         .put(KEY_DATA, id.getId());
+            } catch (JSONException e) {
+                throw new Error(e); // never happens
+            }
+        }
+    }
+
+    /** A specific {@code StorageEntry} implementation for {@link Dri.TypeConfig}. */
+    private static final class TypeConfigStorageEntry extends StorageEntry<DriCore.TypeConfigCore> {
+
+        /** DRI type key. */
+        private static final String KEY_TYPE = "type";
+
+        /** DRI operator identifier key. */
+        private static final String KEY_OPERATOR = "operator";
+
+        /**
+         * Constructor.
+         *
+         * @param key storage key
+         */
+        TypeConfigStorageEntry(@NonNull String key) {
+            super(key);
+        }
+
+        @NonNull
+        @Override
+        protected DriCore.TypeConfigCore parse(@NonNull Object serializedObject) {
+            try {
+                JSONObject serializedConfig = (JSONObject) serializedObject;
+                return new DriCore.TypeConfigCore(
+                        Converter.parseEnum(serializedConfig.getString(KEY_TYPE), Dri.TypeConfig.Type.class),
+                        serializedConfig.getString(KEY_OPERATOR));
+            } catch (ClassCastException | JSONException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+
+        @NonNull
+        @Override
+        protected Object serialize(@NonNull DriCore.TypeConfigCore config) {
+            try {
+                return new JSONObject()
+                        .put(KEY_TYPE, Converter.serializeEnum(config.getType()))
+                        .put(KEY_OPERATOR, config.getOperatorId());
             } catch (JSONException e) {
                 throw new Error(e); // never happens
             }

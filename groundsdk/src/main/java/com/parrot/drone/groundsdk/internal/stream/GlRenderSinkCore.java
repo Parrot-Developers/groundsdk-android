@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.parrot.drone.groundsdk.stream.Overlayer;
+import com.parrot.drone.groundsdk.stream.Overlayer2;
 import com.parrot.drone.groundsdk.stream.TextureLoader;
 import com.parrot.drone.sdkcore.stream.SdkCoreOverlayer;
 import com.parrot.drone.sdkcore.stream.SdkCoreRenderer;
@@ -171,7 +172,7 @@ final class GlRenderSinkCore extends StreamCore.Sink implements GlRenderSink {
         }
 
         @Override
-        public boolean setOverlayer(@Nullable Overlayer overlayer) {
+        public boolean setOverlayer(@Nullable Overlayer2 overlayer) {
             return mSdkCoreRenderer != null && mSdkCoreRenderer.setOverlayCallback(
                     overlayer == null ? null : newOverlayerCallback(overlayer));
         }
@@ -199,16 +200,50 @@ final class GlRenderSinkCore extends StreamCore.Sink implements GlRenderSink {
          * @return a new {@code SdkCoreOverlayer.Callback} instance
          */
         @NonNull
-        private SdkCoreOverlayer.Callback newOverlayerCallback(@NonNull Overlayer overlayer) {
+        private SdkCoreOverlayer.Callback newOverlayerCallback(@NonNull Overlayer2 overlayer) {
             return new SdkCoreOverlayer.Callback() {
 
-                /** Adapts {@code SdkCoreOverlayer} histogram information. */
-                final class Histogram implements Overlayer.Histogram {
+                /** Adapts {@code SdkCoreOverlayer} contextual information. */
+                final class Context implements Overlayer2.OverlayContext,
+                        Overlayer2.Histogram, Overlayer.Histogram {
 
                     /** SdkCoreOverlayer delegate. */
-                    @SuppressWarnings("NullableProblems") // always set before Histogram is forwarded
+                    @SuppressWarnings("NullableProblems") // always set before Context is forwarded
                     @NonNull
                     SdkCoreOverlayer mSdkCoreOverlayer;
+
+                    @NonNull
+                    @Override
+                    public Rect renderZone() {
+                        return mSdkCoreOverlayer.renderZone();
+                    }
+
+                    @NonNull
+                    @Override
+                    public Rect contentZone() {
+                        return mSdkCoreOverlayer.contentZone();
+                    }
+
+                    @Override
+                    public long sessionInfoHandle() {
+                        return mSdkCoreOverlayer.sessionInfoHandle();
+                    }
+
+                    @Override
+                    public long sessionMetadataHandle() {
+                        return mSdkCoreOverlayer.sessionMetadataHandle();
+                    }
+
+                    @Override
+                    public long frameMetadataHandle() {
+                        return mSdkCoreOverlayer.frameMetadataHandle();
+                    }
+
+                    @NonNull
+                    @Override
+                    public Overlayer2.Histogram histogram() {
+                        return this;
+                    }
 
                     @NonNull
                     @Override
@@ -235,14 +270,14 @@ final class GlRenderSinkCore extends StreamCore.Sink implements GlRenderSink {
                     }
                 }
 
-                /** Latest histogram state. Reused across {@link #onOverlay} calls to reduce allocations. */
+                /** Latest context state. Reused across {@link #onOverlay} calls to reduce allocations. */
                 @NonNull
-                private final Histogram mHistogram = new Histogram();
+                private final Context mContext = new Context();
 
                 @Override
                 public void onOverlay(@NonNull SdkCoreOverlayer sdkCoreOverlayer) {
-                    mHistogram.mSdkCoreOverlayer = sdkCoreOverlayer;
-                    overlayer.overlay(sdkCoreOverlayer.renderZone(), sdkCoreOverlayer.contentZone(), mHistogram);
+                    mContext.mSdkCoreOverlayer = sdkCoreOverlayer;
+                    overlayer.overlay(mContext);
                 }
             };
         }

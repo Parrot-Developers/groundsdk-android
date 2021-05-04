@@ -34,35 +34,46 @@ package com.parrot.drone.groundsdk;
 
 import com.parrot.drone.groundsdk.device.peripheral.Dri;
 
-import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
-import static org.hamcrest.Matchers.equalTo;
+import androidx.annotation.NonNull;
+
+import static com.parrot.drone.groundsdk.MatcherBuilders.featureMatcher;
+import static com.parrot.drone.groundsdk.MatcherBuilders.valueMatcher;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * DRI IdInfo matcher
  */
-@SuppressWarnings({"unused", "UtilityClassWithoutPrivateConstructor"})
+@SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 public final class DroneIdMatcher {
     public static Matcher<Dri.DroneId> is(Dri.IdType idType, String name) {
-        return Matchers.allOf(
-                new FeatureMatcher<Dri.DroneId, String>(equalTo(name),
-                        "ID is", "ID") {
+        return allOf(
+                valueMatcher(name, "ID", Dri.DroneId::getId),
+                valueMatcher(idType, "ID type", Dri.DroneId::getType)
+        );
+    }
 
-                    @Override
-                    protected String featureValueOf(Dri.DroneId info) {
-                        return info.getId();
-                    }
-                },
-                new FeatureMatcher<Dri.DroneId, Dri.IdType>(equalTo(idType),
-                        "ID type is", "ID type") {
+    public static Matcher<Dri.TypeConfig> is(@NonNull Dri.TypeConfig config) {
+        return allOf(
+                valueMatcher(config.getType(), "type", Dri.TypeConfig::getType),
+                valueMatcher(config.getOperatorId(), "operator", Dri.TypeConfig::getOperatorId)
+        );
+    }
 
-                    @Override
-                    protected Dri.IdType featureValueOf(Dri.DroneId info) {
-                        return info.getType();
-                    }
-                }
+    public static Matcher<Dri.TypeConfigState> is(@NonNull Dri.TypeConfigState.State state,
+                                                  @NonNull Dri.TypeConfig config) {
+        return allOf(
+                valueMatcher(state, "state", Dri.TypeConfigState::getState),
+                featureMatcher(is(config), "config", Dri.TypeConfigState::getConfig)
+        );
+    }
+
+    public static Matcher<Dri.TypeConfigState> is(@NonNull Dri.TypeConfigState.State state) {
+        return allOf(
+                valueMatcher(state, "state", Dri.TypeConfigState::getState),
+                featureMatcher(nullValue(), "config", Dri.TypeConfigState::getConfig)
         );
     }
 }

@@ -56,6 +56,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -92,42 +93,19 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
         assertThat(mDevToolbox, is(nullValue()));
 
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mDevToolbox, is(nullValue()));
-        assertThat(mChangeCnt, is(0));
-
-        // receiving a non-empty list of debug settings should make the peripheral published
-        mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
-                        ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
-                        ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "", "1"));
         assertThat(mDevToolbox, is(notNullValue()));
         assertThat(mChangeCnt, is(1));
 
-        // receiving an empty list of debug settings should make the peripheral unpublished
-        mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
-                        ArsdkFeatureGeneric.ListFlags.EMPTY, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
-                        ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "", "1"));
-        assertThat(mDevToolbox, is(nullValue()));
-        assertThat(mChangeCnt, is(2));
-
-        // publish it again
-        mMockArsdkCore.commandReceived(1,
-                ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
-                        ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
-                        ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "", "1"));
-        assertThat(mDevToolbox, is(notNullValue()));
-        assertThat(mChangeCnt, is(3));
-
         disconnectDrone(mDrone, 1);
         assertThat(mDevToolbox, is(nullValue()));
-        assertThat(mChangeCnt, is(4));
+        assertThat(mChangeCnt, is(2));
     }
 
     @Test
     public void testDebugSettings() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
@@ -162,7 +140,7 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
                         ArsdkFeatureDebug.SettingType.DECIMAL, ArsdkFeatureDebug.SettingMode.READ_ONLY, "5", "6.5",
                         "0.5", "-100"));
 
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), containsInAnyOrder(
                 allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(true)),
                 allOf(hasName("label2"), isReadOnly(true), isUpdating(false), hasValue(false)),
@@ -176,18 +154,27 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
                         hasRange(5, 6)),
                 allOf(hasName("label8"), isReadOnly(true), isUpdating(false), hasValue(-100), hasStep(0.5),
                         hasRange(5, 6.5))));
+
+        // empty list of debug settings
+        mMockArsdkCore.commandReceived(1,
+                ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
+                        ArsdkFeatureGeneric.ListFlags.EMPTY, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
+                        ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "", "1"));
+        assertThat(mChangeCnt, is(3));
+        assertThat(mDevToolbox.getDebugSettings(), empty());
     }
 
     @Test
     public void testWritableBooleanDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "", "1"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(true))));
 
@@ -197,38 +184,39 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
         // change its value
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.debugSetSetting(1, "0")));
         boolean result = setting.setValue(false);
-        assertThat(mChangeCnt, is(2));
+        assertThat(mChangeCnt, is(3));
         assertThat(result, is(true));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(true), hasValue(false)));
 
         // mock answer from low-level
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugSettingsList(1, "0"));
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(4));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(false)));
 
         // change its value back to true
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.debugSetSetting(1, "1")));
         result = setting.setValue(true);
-        assertThat(mChangeCnt, is(4));
+        assertThat(mChangeCnt, is(5));
         assertThat(result, is(true));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(true), hasValue(true)));
 
         // mock answer from low-level
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugSettingsList(1, "1"));
-        assertThat(mChangeCnt, is(5));
+        assertThat(mChangeCnt, is(6));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(true)));
     }
 
     @Test
     public void testReadOnlyBooleanDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.BOOL, ArsdkFeatureDebug.SettingMode.READ_ONLY, "", "", "", "1"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue(true))));
 
@@ -237,7 +225,7 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
 
         // try to change its value
         boolean result = setting.setValue(false);
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(result, is(false));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue(true)));
     }
@@ -245,14 +233,15 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
     @Test
     public void testWritableTextDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.TEXT, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "",
                         "val"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue("val"))));
 
@@ -262,27 +251,28 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
         // change its value
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.debugSetSetting(1, "newVal")));
         boolean result = setting.setValue("newVal");
-        assertThat(mChangeCnt, is(2));
+        assertThat(mChangeCnt, is(3));
         assertThat(result, is(true));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(true), hasValue("newVal")));
 
         // mock answer from low-level
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugSettingsList(1, "newVal"));
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(4));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue("newVal")));
     }
 
     @Test
     public void testReadOnlyTextDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.TEXT, ArsdkFeatureDebug.SettingMode.READ_ONLY, "", "", "",
                         "val"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue("val"))));
 
@@ -291,7 +281,7 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
 
         // try to change its value
         boolean result = setting.setValue("newVal");
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(result, is(false));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue("val")));
     }
@@ -299,14 +289,15 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
     @Test
     public void testWritableNumericDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.DECIMAL, ArsdkFeatureDebug.SettingMode.READ_WRITE, "", "", "",
                         "0"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(0))));
 
@@ -316,27 +307,28 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
         // change its value
         mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.debugSetSetting(1, "2.65")));
         boolean result = setting.setValue(2.65);
-        assertThat(mChangeCnt, is(2));
+        assertThat(mChangeCnt, is(3));
         assertThat(result, is(true));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(true), hasValue(2.65)));
 
         // mock answer from low-level
         mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugSettingsList(1, "2.65"));
-        assertThat(mChangeCnt, is(3));
+        assertThat(mChangeCnt, is(4));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(false), isUpdating(false), hasValue(2.65)));
     }
 
     @Test
     public void testReadOnlyNumericDebugSetting() {
         connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
-        assertThat(mChangeCnt, is(0));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mChangeCnt, is(1));
 
         mMockArsdkCore.commandReceived(1,
                 ArsdkEncoder.encodeDebugSettingsInfo(ArsdkFeatureGeneric.ListFlags.toBitField(
                         ArsdkFeatureGeneric.ListFlags.FIRST, ArsdkFeatureGeneric.ListFlags.LAST), 1, "label1",
                         ArsdkFeatureDebug.SettingType.DECIMAL, ArsdkFeatureDebug.SettingMode.READ_ONLY, "", "", "",
                         "0"));
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(mDevToolbox.getDebugSettings(), contains(
                 allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue(0))));
 
@@ -345,9 +337,33 @@ public class DebugDevToolboxTests extends ArsdkEngineTestBase {
 
         // try to change its value
         boolean result = setting.setValue(2.65);
-        assertThat(mChangeCnt, is(1));
+        assertThat(mChangeCnt, is(2));
         assertThat(result, is(false));
         assertThat(setting, allOf(hasName("label1"), isReadOnly(true), isUpdating(false), hasValue(0)));
+    }
+
+    @Test
+    public void testDebugTag() {
+        connectDrone(mDrone, 1, mGetAllDebugSettingsRunnable);
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDevToolbox, is(notNullValue()));
+        assertThat(mDevToolbox.getLatestDebugTagId(), is(nullValue()));
+
+        // send debug tag
+        mMockArsdkCore.expect(new Expectation.Command(1, ExpectedCmd.debugTag("debug tag")));
+        mDevToolbox.sendDebugTag("debug tag");
+        assertThat(mChangeCnt, is(1));
+        assertThat(mDevToolbox.getLatestDebugTagId(), is(nullValue()));
+
+        // mock debug tag id notification
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugTagNotify("debugTagId"));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDevToolbox.getLatestDebugTagId(), is("debugTagId"));
+
+        // mock same debug tag id notification
+        mMockArsdkCore.commandReceived(1, ArsdkEncoder.encodeDebugTagNotify("debugTagId"));
+        assertThat(mChangeCnt, is(2));
+        assertThat(mDevToolbox.getLatestDebugTagId(), is("debugTagId"));
     }
 
     private final Runnable mGetAllDebugSettingsRunnable = () -> mMockArsdkCore.expect(

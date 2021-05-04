@@ -32,12 +32,13 @@
 
 package com.parrot.drone.sdkcore.arsdk.device;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.parrot.drone.sdkcore.arsdk.ArsdkCore;
 
 import javax.net.SocketFactory;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * TCP Proxy to the device.
@@ -99,24 +100,38 @@ public final class ArsdkTcpProxy {
     /** Native request pointer. */
     private long mNativePtr;
 
+    /** TCP proxy creation listener. */
+    @NonNull
+    private final Listener mListener;
+
+    /** Socket factory. */
+    @Nullable
+    private final SocketFactory mSocketFactory;
+
     /**
      * Constructor.
      *
-     * @param arsdkCore    ArsdkCore instance
-     * @param deviceHandle handle of the device that will handle the proxy
-     * @param deviceType   type of the device to access
-     * @param port         port to access
-     * @param listener     listener to be notified when TCP proxy creation completes
+     * @param arsdkCore     ArsdkCore instance
+     * @param deviceHandle  handle of the device that will handle the proxy
+     * @param deviceType    type of the device to access
+     * @param port          port to access
+     * @param listener      listener to be notified when TCP proxy creation completes
+     * @param socketFactory factory for creating sockets bound to the network through which this proxy communicates,
+     *                      may be {@code null} in case using this proxy does not require binding sockets to a
+     *                      specific network
      */
     private ArsdkTcpProxy(@NonNull ArsdkCore arsdkCore, short deviceHandle, @ArsdkDevice.Type int deviceType,
                           int port, @NonNull Listener listener, @Nullable SocketFactory socketFactory) {
         mArsdkCore = arsdkCore;
-        arsdkCore.dispatchToPomp(() -> {
+        mListener = listener;
+        mSocketFactory = socketFactory;
+
+        mArsdkCore.dispatchToPomp(() -> {
             if (!mClosed) {
-                mNativePtr = nativeCreate(arsdkCore.getNativePtr(), deviceHandle, deviceType, port);
-                int proxyPort = mNativePtr == 0 ? 0 : nativeGetPort(mNativePtr);
-                String proxyAddress = mNativePtr == 0 ? null : nativeGetAddr(mNativePtr);
-                mArsdkCore.dispatchToMain(() -> listener.onComplete(proxyAddress, proxyPort, socketFactory));
+                mNativePtr = nativeOpen(arsdkCore.getNativePtr(), deviceHandle, deviceType, port);
+                if (mNativePtr == 0) {
+                    onOpen(null, 0);
+                }
             }
         });
     }
@@ -136,13 +151,26 @@ public final class ArsdkTcpProxy {
         }
     }
 
+    /**
+     * Notifies proxy opening success or failure.
+     *
+     * @param address proxy local address in case of success, otherwise {@code NULL}
+     * @param port    proxy local port in case of success, undefined otherwise
+     */
+    @SuppressWarnings("SameParameterValue") /* native-cb */
+    private void onOpen(@Nullable String address, @IntRange(from = 0, to = 0xFFFF) int port) {
+        mArsdkCore.dispatchToMain(() -> mListener.onComplete(address, port, mSocketFactory));
+    }
+
     /* JNI declarations and setup */
-    private native long nativeCreate(long arsdkNativePtr, short deviceHandle, @ArsdkDevice.Type int deviceType,
-                                     int port);
+    private native long nativeOpen(long arsdkNativePtr, short deviceHandle, @ArsdkDevice.Type int deviceType,
+                                   @IntRange(from = 0, to = 0xFFFF) int port);
 
     private static native void nativeClose(long nativePtr);
 
-    private static native int nativeGetPort(long nativePtr);
+    private static native void  nativeClassInit();
 
-    private static native String nativeGetAddr(long nativePtr);
+    static {
+        nativeClassInit();
+    }
 }

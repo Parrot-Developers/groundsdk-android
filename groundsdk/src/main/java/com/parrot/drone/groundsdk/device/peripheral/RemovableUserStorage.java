@@ -185,7 +185,7 @@ public interface RemovableUserStorage extends Peripheral {
 
         /**
          * Standard usage. If the connection succeeded, the drone can write on the removable storage and the user can
-         * read & write its content through the sdk.
+         * read and write its content through the sdk.
          */
         RECORD,
 

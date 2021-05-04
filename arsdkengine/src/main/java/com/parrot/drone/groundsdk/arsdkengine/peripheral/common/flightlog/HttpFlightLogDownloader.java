@@ -39,6 +39,7 @@ import com.parrot.drone.groundsdk.arsdkengine.devicecontroller.DeviceController;
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpFdrClient;
 import com.parrot.drone.groundsdk.arsdkengine.http.HttpFdrInfo;
 import com.parrot.drone.groundsdk.internal.http.HttpRequest;
+import com.parrot.drone.groundsdk.internal.tasks.Executor;
 import com.parrot.drone.groundsdk.internal.utility.FlightLogStorage;
 
 import java.io.File;
@@ -144,7 +145,10 @@ public final class HttpFlightLogDownloader extends FlightLogDownloadController {
      * Downloads the next available flight log from the drone.
      */
     private void downloadNextFlightLog() {
-        assert mHttpClient != null;
+        if (mHttpClient == null) {
+            onDownloadEnd(false);
+            return;
+        }
 
         HttpFdrInfo record = mPendingFlightLogs.poll();
         if (record == null) {
@@ -156,20 +160,30 @@ public final class HttpFlightLogDownloader extends FlightLogDownloadController {
             assert url != null && name != null;
 
             File dest = new File(mStorage.getWorkDir(), mDeviceController.getUid() + "_" + name);
-            mHttpClient.downloadRecord(url, dest, mConverter::onFlightLogDownloaded,
-                    (status, code) -> {
-                        if (status == HttpRequest.Status.CANCELED) {
-                            onDownloadEnd(false);
+            mHttpClient.downloadRecord(url, dest, (status, code) -> {
+                if (status == HttpRequest.Status.CANCELED) {
+                    onDownloadEnd(false);
+                } else {
+                    // delete this record
+                    mHttpClient.deleteRecord(name, (s, c) -> {
+                        if (status == HttpRequest.Status.SUCCESS) {
+                            Executor.runInBackground(() -> {
+                                // convert downloaded file
+                                mConverter.onFlightLogDownloaded(dest);
+                                return null;
+                            }).whenComplete((result, error, canceled) -> {
+                                if (mHttpClient != null) {
+                                    onDownloaded(dest);
+                                }
+                                // process next record
+                                downloadNextFlightLog();
+                            });
                         } else {
-                            if (status == HttpRequest.Status.SUCCESS) {
-                                onDownloaded(dest);
-                            }
-                            // delete this record
-                            mHttpClient.deleteRecord(name, HttpRequest.StatusCallback.IGNORE);
-                            // process next record
                             downloadNextFlightLog();
                         }
                     });
+                }
+            });
             onDownloadingFlightLog();
         }
     }

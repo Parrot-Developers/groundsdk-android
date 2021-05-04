@@ -83,7 +83,8 @@ Java_com_parrot_drone_sdkcore_arsdk_backend_net_ArsdkNetBackend_nativeInit(
 	RETURN_VAL_IF_FAILED(arsdk != NULL, -EINVAL, 0);
 
 	struct arsdkctrl_backend_net_cfg cfg = {
-		.stream_supported = 1
+		.stream_supported = 1,
+		.proto_v_max = 1,
 	};
 
 	struct arsdk_backend_net_jni *self =

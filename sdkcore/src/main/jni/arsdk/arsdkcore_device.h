@@ -51,9 +51,10 @@ struct arsdkcore_device_cbs {
 
 	/**
 	 * Called back when a device is connected.
+	 * @param[in] api: api capabilites
 	 * @param[in] userdata: opaque pointer from the caller
 	 */
-	void (*device_connected) (void *userdata);
+	void (*device_connected) (enum arsdk_device_api api, void *userdata);
 
 	/**
 	 * Called back when a device is disconnected.

@@ -323,6 +323,8 @@ class Arsdk {
         public void onConnected() {
             LocalDeviceProvider provider = getProviderForBackendType(mDevice.getBackendType());
             assert provider != null;
+
+            mDeviceController.onApiCapabilities(mDevice.getApiCapabilities());
             mDeviceController.onLinkConnected(provider, this);
         }
 

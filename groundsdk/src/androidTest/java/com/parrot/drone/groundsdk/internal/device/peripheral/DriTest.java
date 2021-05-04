@@ -42,13 +42,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.Nullable;
 
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsDisabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabled;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingIsEnabling;
 import static com.parrot.drone.groundsdk.BooleanSettingMatcher.booleanSettingValueIs;
+import static com.parrot.drone.groundsdk.DroneIdMatcher.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -150,6 +155,175 @@ public class DriTest {
     }
 
     @Test
+    public void testSupportedTypes() {
+        mDriImpl.publish();
+
+        // test initial value
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mDri.supportedTypes(), empty());
+
+        // mock update from backend
+        mDriImpl.updateSupportedTypes(EnumSet.of(Dri.TypeConfig.Type.FRENCH)).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mDri.supportedTypes(), is(EnumSet.of(Dri.TypeConfig.Type.FRENCH)));
+
+        // mock update from backend
+        mDriImpl.updateSupportedTypes(EnumSet.allOf(Dri.TypeConfig.Type.class)).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.supportedTypes(), is(EnumSet.allOf(Dri.TypeConfig.Type.class)));
+
+        // mock update from backend with same values does nothing
+        mDriImpl.updateSupportedTypes(EnumSet.allOf(Dri.TypeConfig.Type.class)).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.supportedTypes(), is(EnumSet.allOf(Dri.TypeConfig.Type.class)));
+    }
+
+    @Test
+    public void testTypeConfigState() {
+        mDriImpl.publish();
+
+        // test initial value
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+
+        // mock update from backend
+        mDriImpl.updateTypeConfigState(new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofFrench())).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofFrench()));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfigState(new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator1"))).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.getTypeConfigState(),
+                is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofEn4709002("operator1")));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfigState(new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator2"))).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mDri.getTypeConfigState(),
+                is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofEn4709002("operator2")));
+
+        // mock update from backend with same values does nothing
+        mDriImpl.updateTypeConfigState(new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.CONFIGURED,
+                Dri.TypeConfig.ofEn4709002("operator2"))).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mDri.getTypeConfigState(),
+                is(Dri.TypeConfigState.State.CONFIGURED, Dri.TypeConfig.ofEn4709002("operator2")));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfigState(new DriCore.TypeConfigStateCore(Dri.TypeConfigState.State.FAILURE, null))
+                .notifyUpdated();
+        assertThat(mComponentChangeCnt, is(5));
+        assertThat(mDri.getTypeConfigState(), is(Dri.TypeConfigState.State.FAILURE));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfigState(null).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(6));
+        assertThat(mDri.getTypeConfigState(), nullValue());
+    }
+
+    @Test
+    public void testTypeConfig() {
+        mDriImpl.publish();
+
+        // test initial value
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mMockBackend.mTypeConfig, nullValue());
+
+        // change type config from api
+        mDri.setTypeConfig(Dri.TypeConfig.ofFrench());
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+        assertThat(mMockBackend.mTypeConfig, is(Dri.TypeConfig.ofFrench()));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfig((DriCore.TypeConfigCore) Dri.TypeConfig.ofFrench()).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofFrench()));
+
+        // change type config from api
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"));
+        assertThat(mComponentChangeCnt, is(2));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofFrench()));
+        assertThat(mMockBackend.mTypeConfig, is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfig((DriCore.TypeConfigCore) Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"))
+                .notifyUpdated();
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mMockBackend.mTypeConfig, is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+
+        // set type config to same value from api does nothing
+        mMockBackend.mTypeConfig = null;
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"));
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mMockBackend.mTypeConfig, nullValue());
+
+        // mock update from backend to same values does nothing
+        mDriImpl.updateTypeConfig((DriCore.TypeConfigCore) Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz"))
+                .notifyUpdated();
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mMockBackend.mTypeConfig, nullValue());
+
+        // change type config from api
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc"));
+        assertThat(mComponentChangeCnt, is(3));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz")));
+        assertThat(mMockBackend.mTypeConfig, is(Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc")));
+
+        // mock update from backend
+        mDriImpl.updateTypeConfig((DriCore.TypeConfigCore) Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc")).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc")));
+        assertThat(mMockBackend.mTypeConfig, is(Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc")));
+
+        // change type config from api
+        mDri.setTypeConfig(null);
+        assertThat(mComponentChangeCnt, is(4));
+        assertThat(mDri.getTypeConfig(), is(Dri.TypeConfig.ofEn4709002("FRAgroundsdktstp-abc")));
+        assertThat(mMockBackend.mTypeConfig, nullValue());
+
+        // mock update from backend
+        mDriImpl.updateTypeConfig(null).notifyUpdated();
+        assertThat(mComponentChangeCnt, is(5));
+        assertThat(mDri.getTypeConfig(), nullValue());
+    }
+
+    /**
+     * Verify that setting a DRI type configuration with an invalid operator identifier triggers an exception.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testTypeConfigException() {
+        mDriImpl.publish();
+
+        // test initial value
+        assertThat(mComponentChangeCnt, is(1));
+        assertThat(mDri.getTypeConfig(), nullValue());
+
+        mDri.setTypeConfig(Dri.TypeConfig.ofEn4709002("invalidOperator"));
+    }
+
+    @Test
+    public void testTypeConfigValidation() {
+        assertThat(Dri.TypeConfig.ofFrench().isValid(), is(true));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyz").isValid(), is(true));
+        assertThat(Dri.TypeConfig.ofEn4709002("fin87astrdge12k8-xyz").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87Astrdge12k8-xyz").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87bstrdge12k8-xyz").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8.xyz").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k0-xyz").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8-xyy").isValid(), is(false));
+        assertThat(Dri.TypeConfig.ofEn4709002("FIN87astrdge12k8").isValid(), is(false));
+    }
+
+    @Test
     public void testCancelRollbacks() {
 
         mDriImpl.state().setEnabled(false);
@@ -181,10 +355,17 @@ public class DriTest {
 
         private boolean mEnabled;
 
+        private DriCore.TypeConfigCore mTypeConfig;
+
         @Override
         public boolean setState(boolean enabled) {
             mEnabled = enabled;
             return true;
+        }
+
+        @Override
+        public void setTypeConfig(@Nullable DriCore.TypeConfigCore typeConfig) {
+            mTypeConfig = typeConfig;
         }
     }
 }

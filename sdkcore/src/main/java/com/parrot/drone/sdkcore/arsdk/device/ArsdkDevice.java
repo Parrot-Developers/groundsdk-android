@@ -99,6 +99,22 @@ public class ArsdkDevice {
     /** Remote rejected the connection request. */
     public static final int REASON_REJECTED_BY_REMOTE = 2;
 
+    /** Int definition of API capabilities. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({API_UNKNOWN, API_FULL, API_UPDATE_ONLY})
+    public @interface Api {}
+
+    /* Numerical device type values MUST be kept in sync with C enum arsdk_device_api */
+
+    /** API capabilities unknown. */
+    public static final int API_UNKNOWN = 0;
+
+    /** Full API supported. */
+    public static final int API_FULL = 1;
+
+    /** Update API only. */
+    public static final int API_UPDATE_ONLY = 2;
+
     /**
      * Device listener, notified of device event.
      */
@@ -168,13 +184,15 @@ public class ArsdkDevice {
      * @param type         device type
      * @param name         device name
      * @param backendType  device backend type
+     * @param api          device API capabilities
      *
      * @return a new ArsdkDevice instance that represents the native device with the given handle
      */
     @NonNull
     public static ArsdkDevice obtain(@NonNull ArsdkCore arsdkCore, short deviceHandle, @NonNull String uid,
-                                     @ArsdkDevice.Type int type, @NonNull String name, @Backend.Type int backendType) {
-        return new ArsdkDevice(arsdkCore, deviceHandle, uid, type, name, backendType);
+                                     @ArsdkDevice.Type int type, @NonNull String name,
+                                     @Backend.Type int backendType, @ArsdkDevice.Api int api) {
+        return new ArsdkDevice(arsdkCore, deviceHandle, uid, type, name, backendType, api);
     }
 
     /** ArsdkCore instance. */
@@ -192,6 +210,10 @@ public class ArsdkDevice {
     /** Backend type. */
     @Backend.Type
     private final int mBackendType;
+
+    /** API capabilities. */
+    @ArsdkDevice.Api
+    private int mApi;
 
     /** Device name. */
     @NonNull
@@ -230,15 +252,18 @@ public class ArsdkDevice {
      * @param type         device type
      * @param name         device name
      * @param backendType  device backend type
+     * @param api          device API capabilities
      */
     private ArsdkDevice(@NonNull ArsdkCore arsdkCore, short nativeHandle, @NonNull String uid,
-                        @ArsdkDevice.Type int type, @NonNull String name, @Backend.Type int backendType) {
+                        @ArsdkDevice.Type int type, @NonNull String name,
+                        @Backend.Type int backendType, @ArsdkDevice.Api int api) {
         mArsdkCore = arsdkCore;
         mNativeHandle = nativeHandle;
         mUid = uid;
         mType = type;
         mName = name;
         mBackendType = backendType;
+        mApi = api;
         mNativePtr = nativeInit(mArsdkCore.getNativePtr(), mNativeHandle);
         if (mNativePtr == 0) {
             throw new AssertionError("Failed to create ArsdkDevice native backend");
@@ -289,6 +314,16 @@ public class ArsdkDevice {
     @Backend.Type
     public int getBackendType() {
         return mBackendType;
+    }
+
+    /**
+     * Gets device API capabilities.
+     *
+     * @return the device type
+     */
+    @ArsdkDevice.Api
+    public int getApiCapabilities() {
+        return mApi;
     }
 
     /**
@@ -645,11 +680,14 @@ public class ArsdkDevice {
     }
 
     @SuppressWarnings("unused") /* native-cb */
-    private void onConnected() {
+    private void onConnected(int api) {
         if (ULog.d(TAG_DEVICE)) {
             ULog.d(TAG_DEVICE, "ArsdkDevice connected [handle: " + this + "]");
         }
         mArsdkCore.dispatchToMain(() -> {
+            /* Update device info. */
+            mApi = api;
+
             assert mListener != null;
             mListener.onConnected();
         });
@@ -763,17 +801,19 @@ public class ArsdkDevice {
      * @param type         device type
      * @param name         device name
      * @param backendType  device backend type
+     * @param api          device API capabilities
      */
     @SuppressWarnings("ConstantConditions")
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     ArsdkDevice(short nativeHandle, @NonNull String uid, @ArsdkDevice.Type int type, @NonNull String name,
-                @Backend.Type int backendType) {
+                @Backend.Type int backendType, @ArsdkDevice.Api int api) {
         mArsdkCore = null;
         mNativeHandle = nativeHandle;
         mUid = uid;
         mType = type;
         mName = name;
         mBackendType = backendType;
+        mApi = api;
         mNoAckEncoders = new CopyOnWriteArraySet<>();
         mStreamController = new ArsdkDeviceStreamController(mArsdkCore, nativeHandle);
     }

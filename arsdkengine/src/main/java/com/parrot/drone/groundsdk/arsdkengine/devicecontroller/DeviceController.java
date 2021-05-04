@@ -56,6 +56,7 @@ import com.parrot.drone.sdkcore.arsdk.blackbox.ArsdkBlackBoxRequest;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkNoAckCmdEncoder;
 import com.parrot.drone.sdkcore.arsdk.crashml.ArsdkCrashmlDownloadRequest;
+import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkRequest;
 import com.parrot.drone.sdkcore.arsdk.device.ArsdkTcpProxy;
 import com.parrot.drone.sdkcore.arsdk.firmware.ArsdkFirmwareUploadRequest;
@@ -351,6 +352,10 @@ public abstract class DeviceController<D extends DeviceCore> {
     /** Memorizes the previous data sync allowance value in order to notify only if it has changed. */
     private boolean mPreviousDataSyncAllowed;
 
+    /** API capabilities. */
+    @ArsdkDevice.Api
+    private int mApiCapabilities;
+
     /**
      * Constructor.
      *
@@ -383,6 +388,7 @@ public abstract class DeviceController<D extends DeviceCore> {
             presetUid = PersistentStore.getDefaultPresetKey(mDevice.getModel());
         }
         mPresetDict = persistentStore.getPreset(presetUid, mPresetObserver);
+        mApiCapabilities = ArsdkDevice.API_UNKNOWN;
     }
 
     /**
@@ -625,6 +631,18 @@ public abstract class DeviceController<D extends DeviceCore> {
         }
         mStateChangeListener = null;
         stopSelf();
+    }
+
+    /**
+     * Called when API capabilities of the managed device are known.
+     * @param api API capabilities
+     */
+    public final void onApiCapabilities(@ArsdkDevice.Api int api) {
+        if (api != mApiCapabilities) {
+            if (api == ArsdkDevice.API_UNKNOWN) throw new IllegalArgumentException();
+            mApiCapabilities = api;
+            mComponentControllers.forEach( component -> component.onApiCapabilities(api));
+        }
     }
 
     /**

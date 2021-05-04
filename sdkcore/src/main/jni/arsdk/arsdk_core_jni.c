@@ -62,7 +62,8 @@ static void device_added(uint16_t handle, const struct arsdk_device_info *info,
 
 	(*env)->CallVoidMethod(env, (jobject) userdata,
 			s_jni_cache.jmid_device_added, (jshort) handle, juid,
-			(jint) info->type, jname, (jint) info->backend_type);
+			(jint) info->type, jname, (jint) info->backend_type,
+			(jint) info->api);
 
 out:
 	(*env)->DeleteLocalRef(env, juid);
@@ -91,7 +92,7 @@ Java_com_parrot_drone_sdkcore_arsdk_ArsdkCore_nativeClassInit(JNIEnv *env,
 		jclass clazz, jclass rectClazz)
 {
 	s_jni_cache.jmid_device_added = (*env)->GetMethodID(env, clazz,
-			"onDeviceAdded","(SLjava/lang/String;ILjava/lang/String;I)V");
+			"onDeviceAdded","(SLjava/lang/String;ILjava/lang/String;II)V");
 	s_jni_cache.jmid_device_removed = (*env)->GetMethodID(env, clazz,
 			"onDeviceRemoved", "(S)V");
 }

@@ -153,9 +153,12 @@ public class GsdkStreamView extends FrameLayout {
     /** Configured histogram computation. Modified from main thread, volatile read from rendering thread. */
     private volatile boolean mHistogramEnabled;
 
+    /** Configured as overlay of another SurfaceView. Modified from main thread. */
+    private boolean mIsMediaOverlay;
+
     /** Configured rendering overlayer. Modified from main thread, volatile read from rendering thread. */
     @Nullable
-    private volatile Overlayer mOverlayer;
+    private volatile Overlayer2 mOverlayer;
 
     /** Configured rendering texture loader. Modified from main thread, volatile read from rendering thread. */
     @Nullable
@@ -209,6 +212,7 @@ public class GsdkStreamView extends FrameLayout {
             mPaddingFill = a.getInteger(R.styleable.GsdkStreamView_gsdk_paddingFill, PADDING_FILL_NONE);
             mZebrasEnabled = a.getBoolean(R.styleable.GsdkStreamView_gsdk_zebrasEnabled, false);
             mZebraThreshold = a.getFraction(R.styleable.GsdkStreamView_gsdk_zebraThreshold, 1, 1, 0);
+            mIsMediaOverlay = a.getBoolean(R.styleable.GsdkStreamView_gsdk_isMediaOverlay, false);
         } finally {
             a.recycle();
         }
@@ -231,7 +235,37 @@ public class GsdkStreamView extends FrameLayout {
         mView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         mView.onPause();
 
+        mView.setZOrderMediaOverlay(mIsMediaOverlay);
         addView(mView);
+    }
+
+    /**
+     * Controls whether the GsdkStreamView's surface is placed on top of another regular surface view in the window
+     * (but still behind the window itself).
+     * This is typically used to place overlays on top of an underlying media surface view.
+     *
+     * Enabling ZOrderMediaOverlay may also be configured using XML view attribute {@code gsdk_isMediaOverlay}.
+     *
+     * @param isMediaOverlay {@code true} to place
+     */
+    public final void setZOrderMediaOverlay(boolean isMediaOverlay) {
+        if (mIsMediaOverlay != isMediaOverlay) {
+            mIsMediaOverlay = isMediaOverlay;
+            removeView(mView);
+            mView.setZOrderMediaOverlay(isMediaOverlay);
+            addView(mView);
+        }
+    }
+
+    /**
+     * Tells whether GsdkStreamView's surface is configured to be placed on top of another regular surface view.
+     *
+     * @return {@code true} if configured to be placed on top of another regular surface view, otherwise {@code false}
+     *
+     * @see #setZOrderMediaOverlay(boolean)
+     */
+    public final boolean isZOrderMediaOverlay() {
+        return mIsMediaOverlay;
     }
 
     /**
@@ -377,8 +411,22 @@ public class GsdkStreamView extends FrameLayout {
      * Configures rendering overlayer.
      *
      * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
+     *
+     * @deprecated use #setOverlayer2(Overlayer2) instead.
      */
+    @Deprecated
     public final void setOverlayer(@Nullable Overlayer overlayer) {
+        setOverlayer2(overlayer == null ? null : frameContext -> overlayer.overlay(
+                frameContext.renderZone(), frameContext.contentZone(),
+                (Overlayer.Histogram) frameContext.histogram()));
+    }
+
+    /**
+     * Configures rendering overlayer.
+     *
+     * @param overlayer overlayer to configure, {@code null} to disable rendering overlay
+     */
+    public final void setOverlayer2(@Nullable Overlayer2 overlayer) {
         if (mOverlayer == overlayer) {
             return;
         }

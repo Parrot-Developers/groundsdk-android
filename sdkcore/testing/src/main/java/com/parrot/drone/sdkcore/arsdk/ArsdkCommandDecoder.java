@@ -109,6 +109,17 @@ public class ArsdkCommandDecoder {
         return sb.toString();
     }
 
+    @NonNull
+    public byte[] readBinary() {
+        int size =  mBuf.getInt();
+        if (size < 0) {
+            throw new AssertionError("Binary buffer too large");
+        }
+        byte[] binary = new byte[size];
+        mBuf.get(binary);
+        return binary;
+    }
+
     public void reset() {
         mBuf.clear();
     }

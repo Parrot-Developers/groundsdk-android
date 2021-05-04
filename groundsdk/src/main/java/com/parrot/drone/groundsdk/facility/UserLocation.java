@@ -66,7 +66,8 @@ public interface UserLocation extends Facility {
      * <p>
      * If the application observes this facility, but either system location is disabled or permission is not
      * granted yet, location monitoring is not started. The application should ask the user to enable location and
-     * grant permission, and then call this method so that location monitoring starts.
+     * grant permission. System location changes are automatically detected, but not permission changes, so the
+     * application should call this method once permission is granted so that location monitoring starts.
      * <p>
      * Calling this method while location monitoring is already started has no effect.
      */

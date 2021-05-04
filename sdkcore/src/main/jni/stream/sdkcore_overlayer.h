@@ -44,12 +44,18 @@ struct sdkcore_overlayer_cbs {
 	 * Called back when overlay may be applied.
 	 * @param[in] render_zone: render zone
 	 * @param[in] content_zone: content zone
+	 * @param[in] session_info: PDRAW session info
+	 * @param[in] session_meta: session metadata
+	 * @param[in] frame_meta: frame metadata
 	 * @param[in] extra: PDRAW frame extraneous data
 	 * @param[in] userdata: opaque pointer from the caller
 	 */
 	void (*on_overlay) (
 			const struct pdraw_rect *render_zone,
 			const struct pdraw_rect *content_zone,
+			const struct pdraw_session_info *session_info,
+			const struct vmeta_session *session_meta,
+			const struct vmeta_frame *frame_meta,
 			const struct pdraw_video_frame_extra *extra,
 			void *userdata);
 };
@@ -69,6 +75,9 @@ struct sdkcore_overlayer *sdkcore_overlayer_create(
  * @param[in] self: overlayer instance to operate on
  * @param[in] render_zone: render zone
  * @param[in] content_zone: content zone
+ * @param[in] session_info: PDRAW session info
+ * @param[in] session_meta: session metadata
+ * @param[in] frame_meta: frame metadata
  * @param[in] extra: PDRAW frame extraneous data
  * @return 0 in case of success, a negative errno otherwise
  */
@@ -76,6 +85,9 @@ int sdkcore_overlayer_overlay(
 		struct sdkcore_overlayer *self,
 		const struct pdraw_rect *render_zone,
 		const struct pdraw_rect *content_zone,
+		const struct pdraw_session_info *session_info,
+		const struct vmeta_session *session_meta,
+		const struct vmeta_frame *frame_meta,
 		const struct pdraw_video_frame_extra *extra);
 
 /**

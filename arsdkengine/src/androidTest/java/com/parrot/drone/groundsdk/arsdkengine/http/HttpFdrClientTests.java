@@ -70,7 +70,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -108,9 +107,6 @@ public class HttpFdrClientTests {
 
     @Mock
     private HttpRequest.StatusCallback mStatusCb;
-
-    @Mock
-    private HttpFdrClient.Converter mConverter;
 
     @BeforeClass
     public static void init() {
@@ -204,7 +200,7 @@ public class HttpFdrClientTests {
 
         File destFile = new File(mTemporaryFolder.getRoot(), "log-1.bin");
 
-        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mConverter, mStatusCb);
+        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mStatusCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
@@ -217,7 +213,6 @@ public class HttpFdrClientTests {
 
         mFgLock.block();
 
-        verify(mConverter).onFdrDownloaded(destFile);
         verify(mStatusCb).onRequestComplete(HttpRequest.Status.SUCCESS, 200);
         assertThat(destFile.exists(), is(true));
     }
@@ -228,7 +223,7 @@ public class HttpFdrClientTests {
 
         File destFile = new File(mTemporaryFolder.getRoot(), "log-1.bin");
 
-        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mConverter, mStatusCb);
+        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mStatusCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
@@ -240,7 +235,6 @@ public class HttpFdrClientTests {
 
         mFgLock.block();
 
-        verify(mConverter, never()).onFdrDownloaded(destFile);
         verify(mStatusCb).onRequestComplete(HttpRequest.Status.FAILED, 500);
         assertThat(destFile.exists(), is(false));
     }
@@ -251,7 +245,7 @@ public class HttpFdrClientTests {
 
         File destFile = new File(mTemporaryFolder.getRoot(), "log-1.bin");
 
-        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mConverter, mStatusCb);
+        Cancelable request = mClient.downloadRecord("/data/fdr/log-1.bin", destFile, mStatusCb);
         assertThat(request, notNullValue());
 
         mMockService.assertPendingRequest(it -> it
@@ -263,7 +257,6 @@ public class HttpFdrClientTests {
 
         mFgLock.block();
 
-        verify(mConverter, never()).onFdrDownloaded(destFile);
         verify(mStatusCb).onRequestComplete(HttpRequest.Status.CANCELED, HttpRequest.STATUS_CODE_UNKNOWN);
         assertThat(destFile.exists(), is(false));
     }

@@ -91,8 +91,9 @@ public class ArsdkCommandEncoder {
         return this;
     }
 
-    ArsdkCommandEncoder writeBuffer(byte[] buff) {
-        mBuf.put(buff);
+    ArsdkCommandEncoder writeBinary(byte[] binary) {
+        mBuf.putInt(binary.length);
+        mBuf.put(binary);
         return this;
     }
 

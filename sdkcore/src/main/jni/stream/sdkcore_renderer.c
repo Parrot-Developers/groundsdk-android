@@ -89,8 +89,10 @@ static void render_ready(struct pdraw *pdraw,
  * @param[in] projection_matrix: projection 4x4 matrix, 16 element float array
  * @param[in] session_info: PDRAW session info
  * @param[in] session_meta: session metadata
- * @param[in] frame_meta: frame metadata
- * @param[in] frame_extra: PDRAW frame extraneous data
+ * @param[in] frame_meta: frame metadata;
+ *            NULL in case of redrawing old frame to keep the frame rate.
+ * @param[in] frame_extra: PDRAW frame extraneous data ;
+ *            NULL in case of redrawing old frame to keep the frame rate.
  * @param[in] userdata: renderer instance
  */
 static void render_overlay(struct pdraw *pdraw,
@@ -109,7 +111,7 @@ static void render_overlay(struct pdraw *pdraw,
 
 	if (self->overlayer) {
 		sdkcore_overlayer_overlay(self->overlayer, render_pos, content_pos,
-				frame_extra);
+				session_info, session_meta, frame_meta, frame_extra);
 	}
 }
 

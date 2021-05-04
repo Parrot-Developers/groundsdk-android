@@ -1,9 +1,20 @@
+import org.gradle.util.VersionNumber
+
 apply plugin: 'com.android.library'
 
 android {
-    defaultConfig.testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    defaultConfig {
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        // NOTE : As of AGP 4.1.0, VERSION_NAME is not relevant anymore for libraries and thus is
+        //        not automatically injected in BuildConfig by the plugin anymore.
+        //        We emulate the former behavior here.
+        if (VersionNumber.parse(com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION)
+            >= VersionNumber.parse('4.1.0')) {
+            buildConfigField('String', 'VERSION_NAME', '"0.0.0"')
+        }
+    }
 
-    sourceSets.androidTest.java.srcDirs += '../unittest-tools/java'
+    sourceSets.androidTest.java.srcDirs += 'unittest-tools/java'
 
     resourcePrefix 'gsdk_'
 }

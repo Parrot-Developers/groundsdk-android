@@ -56,12 +56,21 @@ def gen_jni_decode(feature, cls, evts, out):
                       ", ".join("&" + arg.name for arg in evt.args))
         else:
             out.write("\tint res = arsdk_cmd_dec_%s_%s(cmd);\n", c_name(full_name), c_name(evt.name))
+
         out.write("\tif (res < 0)\n\t\treturn res;\n")
+
+        for arg in evt.args:
+            if arg.argType == arsdkparser.ArArgType.BINARY:
+                out.write("\tjbyteArray j_%s = (*env)->NewByteArray(env, %s.len);\n", arg.name, arg.name)
+                out.write("\t(*env)->SetByteArrayRegion(env, j_%s, 0, %s.len, %s.cdata);\n", arg.name, arg.name, arg.name)
+
         out.write("\t(*env)->CallStaticVoidMethod(env, clazz, s_cb_%s_cache.jmid_%s, callback", full_name, evt.name)
         for arg in evt.args:
             out.write(", ")
             if arg.argType == arsdkparser.ArArgType.STRING:
                 out.write("(*env)->NewStringUTF(env, %s)", arg.name)
+            elif arg.argType == arsdkparser.ArArgType.BINARY:
+                out.write("j_%s", arg.name)
             else:
                 out.write("(%s)%s", jni_arg_type(arg), arg.name)
         out.write(");\n")
@@ -87,31 +96,40 @@ def gen_jni_decode(feature, cls, evts, out):
 def gen_jni_encode(feature, cls, cmds, out):
     full_name = feature.name + ("_" + cls.name if cls else "")
     for cmd in sorted(cmds, key=lambda cmd: cmd.cmdId):
-        if cmd.args:
-            out.write("JNIEXPORT jint JNICALL\n%s_nativeEncode%s(JNIEnv *env, jclass jcls, jlong nativeCmd, %s) {\n",
-                      jni_func_name(feature, cls), jni_method_name(cmd.name),
-                  ", ".join(jni_arg_type(arg) + " " + arg.name for arg in cmd.args))
-        else:
-            out.write("JNIEXPORT jint JNICALL\n%s_nativeEncode%s(JNIEnv *env, jclass jcls, jlong nativeCmd) {\n",
-                      jni_func_name(feature, cls), jni_method_name(cmd.name))
+        out.write("JNIEXPORT jint JNICALL\n%s_nativeEncode%s(JNIEnv *env, jclass jcls, jlong nativeCmd",
+                jni_func_name(feature, cls), jni_method_name(cmd.name))
+        for arg in cmd.args:
+            out.write(", %s %s", jni_arg_type(arg), arg.name)
+        out.write(") {\n")
+
         out.write("\tstruct arsdk_cmd *cmd = (struct arsdk_cmd *)(uintptr_t)nativeCmd;\n")
+
         for arg in cmd.args:
             if arg.argType == arsdkparser.ArArgType.STRING:
                 out.write("\tconst char* c_%s = (*env)->GetStringUTFChars(env, %s, NULL);\n", arg.name, arg.name)
+            elif arg.argType == arsdkparser.ArArgType.BINARY:
+                out.write("\tstruct arsdk_binary c_%s = {\n", arg.name)
+                out.write("\t\t.len = (*env)->GetArrayLength(env, %s),\n", arg.name)
+                out.write("\t\t.cdata = (*env)->GetPrimitiveArrayCritical(env, %s, NULL)\n", arg.name)
+                out.write("\t};\n")
 
-        if cmd.args:
-            out.write("\tint res = arsdk_cmd_enc_%s_%s(cmd, %s);\n",
-                  c_name(full_name), c_name(cmd.name),
-                  ", ".join("c_" + arg.name if arg.argType == arsdkparser.ArArgType.STRING
-                                            else arg.name
-                            for arg in cmd.args))
-        else:
-            out.write("\tint res = arsdk_cmd_enc_%s_%s(cmd);\n",
-                      c_name(full_name), c_name(cmd.name))
+        out.write("\tint res = arsdk_cmd_enc_%s_%s(cmd", c_name(full_name), c_name(cmd.name))
+        for arg in cmd.args:
+            arg_prefix = ""
+            if arg.argType == arsdkparser.ArArgType.STRING:
+                arg_prefix = "c_"
+            elif arg.argType == arsdkparser.ArArgType.BINARY:
+                arg_prefix = "&c_"
+            out.write(", %s%s", arg_prefix, arg.name)
+        out.write(");\n")
+
         for arg in cmd.args:
             if arg.argType == arsdkparser.ArArgType.STRING:
                 out.write("\tif (c_%s != NULL) (*env)->ReleaseStringUTFChars(env, %s, c_%s);\n",
                           arg.name, arg.name, arg.name)
+            if arg.argType == arsdkparser.ArArgType.BINARY:
+                out.write("\t(*env)->ReleasePrimitiveArrayCritical(env, %s, (void *) c_%s.cdata, JNI_ABORT);\n", arg.name, arg.name)
+
         out.write("\treturn res;\n")
         out.write("}\n\n")
 

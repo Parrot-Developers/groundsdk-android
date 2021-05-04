@@ -5,7 +5,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += "${project.buildDir}/generated/arsdk/gen"
-        androidTest.java.srcDirs += '../unittest-tools/java'
+        androidTest.java.srcDirs += 'unittest-tools/java'
     }
 }
 

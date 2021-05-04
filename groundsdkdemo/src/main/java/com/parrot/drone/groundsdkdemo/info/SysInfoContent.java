@@ -63,6 +63,9 @@ class SysInfoContent extends PeripheralContent<Peripheral.Provider, SystemInfo> 
         private final TextView mFirmwareBlacklistedText;
 
         @NonNull
+        private final TextView mUpdateRequired;
+
+        @NonNull
         private final TextView mHardwareVersionText;
 
         @NonNull
@@ -90,6 +93,7 @@ class SysInfoContent extends PeripheralContent<Peripheral.Provider, SystemInfo> 
             super(rootView);
             mFirmwareVersionText = findViewById(R.id.firmware);
             mFirmwareBlacklistedText = findViewById(R.id.firmware_blacklisted);
+            mUpdateRequired = findViewById(R.id.update_required);
             mHardwareVersionText = findViewById(R.id.hardware);
             mSerialNumberText = findViewById(R.id.serial);
             mCpuIdText = findViewById(R.id.cpu_id);
@@ -106,6 +110,7 @@ class SysInfoContent extends PeripheralContent<Peripheral.Provider, SystemInfo> 
         void onBind(@NonNull SysInfoContent content, @NonNull SystemInfo sysInfo) {
             mFirmwareVersionText.setText(sysInfo.getFirmwareVersion());
             mFirmwareBlacklistedText.setText(Boolean.toString(sysInfo.isFirmwareBlacklisted()));
+            mUpdateRequired.setText(Boolean.toString(sysInfo.isUpdateRequired()));
             mHardwareVersionText.setText(sysInfo.getHardwareVersion());
             mSerialNumberText.setText(sysInfo.getSerialNumber());
             mCpuIdText.setText(sysInfo.getCpuIdentifier());

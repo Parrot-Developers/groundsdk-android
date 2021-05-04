@@ -285,9 +285,9 @@ public class ArsdkCore {
     }
 
     @SuppressWarnings("unused") /* native-cb */
-    private void onDeviceAdded(short deviceHandle, @NonNull String uid, @ArsdkDevice.Type int type,
-                               @NonNull String name, @Backend.Type int backendType) {
-        ArsdkDevice device = ArsdkDevice.obtain(this, deviceHandle, uid, type, name, backendType);
+    private void onDeviceAdded(short deviceHandle, @NonNull String uid, @ArsdkDevice.Type int type,@NonNull String name,
+                               @Backend.Type int backendType, @ArsdkDevice.Api int api) {
+        ArsdkDevice device = ArsdkDevice.obtain(this, deviceHandle, uid, type, name, backendType, api);
         if (ULog.i(TAG)) {
             ULog.i(TAG, "Device added: " + device);
         }

@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import com.parrot.drone.groundsdk.internal.GroundSdkConfig;
 import com.parrot.drone.groundsdk.internal.component.ComponentStore;
 import com.parrot.drone.sdkcore.arsdk.command.ArsdkCommand;
+import com.parrot.drone.sdkcore.arsdk.device.ArsdkDevice;
 
 /**
  * Device component controller.
@@ -159,6 +160,17 @@ public abstract class DeviceComponentController<TYPE, CTRL extends DeviceControl
      * @param command the command received
      */
     protected void onCommandReceived(@NonNull ArsdkCommand command) {
+
+    }
+
+    /**
+     * Called when API capabilities of the managed device are known.
+     * <p>
+     * May be overridden by sub classes. Default implementation does nothing.
+     *
+     * @param api the API capabilities received
+     */
+    protected void onApiCapabilities(@ArsdkDevice.Api int api) {
 
     }
 

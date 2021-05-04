@@ -263,6 +263,6 @@ public final class CameraExposureLockCore implements CameraExposureLock {
         return (mode1 == Mode.NONE && mode2 == Mode.NONE)
                || (mode1 == Mode.CURRENT_VALUES && mode2 == Mode.CURRENT_VALUES)
                || (mode1 == Mode.REGION && mode2 == Mode.REGION
-                   && (Math.abs(centerX1 - centerX2) < 0.000001) && (Math.abs(centerY1 - centerY2) < 0.000001));
+                   && (Math.abs(centerX1 - centerX2) < 0.1) && (Math.abs(centerY1 - centerY2) < 0.1));
     }
 }

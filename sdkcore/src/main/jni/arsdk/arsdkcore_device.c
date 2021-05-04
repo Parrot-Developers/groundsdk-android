@@ -96,7 +96,7 @@ static void device_connected(struct arsdk_device *device,
 	int res = arsdk_device_create_cmd_itf(self->device, &cmd_cbs, &cmd_itf);
 	RETURN_IF_FAILED(cmd_itf != NULL, res);
 
-	self->cbs.device_connected(self->cbs.userdata);
+	self->cbs.device_connected(info->api, self->cbs.userdata);
 }
 
 static void device_disconnected(struct arsdk_device *device,
